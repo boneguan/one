@@ -1,0 +1,205 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<style>
+.table-input{
+	height:12px !important;
+	line-height:12px !important;
+	width:60px;
+	margin-bottom:0px !important;
+}
+.ns-main{margin-top: 0;}
+</style>
+ {/block}
+{block name="right_tab"} {/block}
+{block name="main"}
+<div class="options-btn">
+	<a class="btn-common-white" href="{:__URL('ADMIN_MAIN/Distribution/addPartnerLevel')}">添加</a>
+	{if condition="$shop_config_info.is_partner_enable eq 1 "} 
+		<a id="is_partner_enable"class="btn-common-white" href="javascript:openPartnerEnable(0)" >关闭股东分红(开启中)</a>
+	{else /}
+		<a id="is_partner_enable"class="btn-common" href="javascript:openPartnerEnable(1)" >开启股东分红(关闭中)</a>
+	{/if}
+</div>
+<!-- <div class="set-style">
+	<dl>
+		<dt>是否开启股东分红:</dt>
+		<dd>
+			{if condition="$shop_config_info.is_partner_enable eq 1 "}
+			<input id="is_partner_enable" class="checkbox" type="checkbox" checked="checked" />
+			{else /}
+			<input id="is_partner_enable" class="checkbox" type="checkbox" />
+			{/if}
+			<span class="help-inline" id="is_menuPrompt" style="display: none;"></span>
+		</dd>
+	</dl>
+</div> -->
+
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 25%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 15%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>等级名称</th>
+						<th>申请最低消费</th>
+						<th>股东分红佣金比率</th>
+						<th>创建时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 25%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 15%;">
+				</colgroup>
+				<tbody   id="partner_global">
+				{foreach name="partner_level_list" item="partner_level_info" }
+				    <tr align="center" data-level_id={$partner_level_info.level_id}>
+						<td>{$partner_level_info.level_name}</td>
+						<td><input  class="input-common harf" type="text" value="{$partner_level_info.level_money}" />&nbsp;元</td>
+						<td><input  class="input-common harf"  type="text" value="{$partner_level_info.commission_rate}" />&nbsp;%</td>
+						<td>{$partner_level_info.create_time|getTimeStampTurnTime}</td>
+						<td><a href="javascript:void(0);" onclick="deleteBox({$partner_level_info.level_id});">删除</a></td>
+					</tr>					
+				{/foreach}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="mod-table" style="padding:13px;text-align:center;">
+<button class="btn-common btn-big" onclick="updatePartnerLevelAll()">提交</button>
+</div>
+{/block}
+{block name="script"}
+<script>
+/**
+ * 修改股东等级
+ */
+function updatePartnerLevelAll(){
+	var count_rate = 0;
+	var trObj = $("#partner_global");
+	var partner_level_string = "";
+	var is_ok = false;
+	var is_cate_ok = false;
+	$("#partner_global tr").each(function() {
+		var level_id = $(this).data("level_id");
+		var level_money = $(this).children().eq(1).children("input").val();
+		if(level_money == ''){
+			is_ok = true;
+			return;
+		}
+		if(isNaN(level_money)){
+			is_ok = true;
+			return;
+		}
+		if(parseFloat(level_money)<0){
+			is_ok = true;
+			return;
+		}
+		var commission_rate = $(this).children().eq(2).children("input").val();
+		if(parseFloat(commission_rate) > 100){
+			is_cate_ok = true;
+			return;
+		}
+		partner_level_string = partner_level_string + ";" + level_id + "," + level_money + "," + commission_rate;
+		count_rate =parseFloat(count_rate) + parseFloat(commission_rate);
+	});
+	if(is_ok){
+		showMessage('error', "申请最低消费金额错误");
+		return;
+	}
+	if(is_cate_ok){
+		showMessage('error', "佣金比率不可超过100%！");
+		return;
+	}
+//	if(parseFloat(count_rate)>100 ){
+//		showMessage('error', "佣金比率不可超过100%！");
+//		return;
+//	}
+	partner_level_string = partner_level_string.substring(1, partner_level_string.length );
+	$.ajax({
+		type:"post",
+		url:"{:__URL('ADMIN_MAIN/distribution/updatepartnerlevelall')}",
+		data:{
+			'partner_level_string':partner_level_string
+		},
+		async:true,
+		success:function (data) {
+			if (data["code"] > 0) {
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/shareholderdividendsconfig')}");
+			}else{
+				showMessage('error', data["message"]);
+			}
+		}
+	});
+}
+/**
+ *删除框
+ */
+function deleteBox(level_id){
+	$( "#dialog" ).dialog({
+        buttons: {
+            "确定,#62c462": function() {
+                $(this).dialog('close');
+                deletePartnerLevel(level_id);
+            },
+            "取消,#e57373": function() {
+                $(this).dialog('close');
+            }
+        },
+        contentText:"确定删除吗",
+        title:"提醒"
+    });
+}
+//删除等级
+function deletePartnerLevel(level_id){
+	$.ajax({
+		type:"post",
+		url:"{:__URL('ADMIN_MAIN/distribution/deletepartnerlevel')}",
+		data:{
+			'level_id':level_id
+		},
+		async:true,
+		success:function (data) {
+			if (data["code"] > 0) {
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/shareholderdividendsconfig')}");
+			}else{
+				showMessage('error', data["message"]);
+			}
+		}
+	});
+}
+
+/**
+ * 开启关闭股东分红
+ */
+function openPartnerEnable(is_open){
+	$.ajax({
+		type:"post",
+		url:"{:__URL('ADMIN_MAIN/distribution/updatenfxshopconfigfield')}",
+		data:{
+			'fieldvalue':is_open,
+			'fieldname':'is_partner_enable'
+		},
+		async:true,
+		success:function (data) {
+			if (data["code"] > 0) {
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/shareholderdividendsconfig')}");
+			}else{
+				showMessage('error', data["message"]);
+			}
+		}
+	});
+}
+</script>
+{/block}

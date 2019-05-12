@@ -1,0 +1,35 @@
+<!-- 图片广告 -->
+<style>
+.slick{max-height: none;}
+.contro-slick div{display:block;text-align:center;width:100%;}
+.contro-slick img{width:100%;}
+</style>
+{if condition="!empty($custom_template_v['style_data']['img_ad'])"}
+	{if condition="$custom_template_v['style_data']['img_ad'][0]['adv_show_type'] eq 1"}
+	<div class="contro-slick{$K}">
+		<div onclick="location.href='{$custom_template_v.style_data['img_ad'][0]['href']}'">
+			<img src="{:__IMG($custom_template_v.style_data['img_ad'][0]['src'])}" alt="{:lang('display_advertising')}" style="max-width:100%;display: inline-block !important;vertical-align: middle !important;">
+		</div>
+	</div>
+	{else /}
+	<script src="__TEMP__/{$style}/public/js/slick.js"></script>
+	<div class="contro-slick{$k}">
+		{foreach name="custom_template_v.style_data['img_ad']" item="img_id_v"}
+		{if condition="$img_id_v['src'] !=''"}
+		<div onclick="location.href='{$img_id_v['href']}'">
+			<img src="{:__IMG($img_id_v['src'])}" alt="{:lang('display_advertising')}" style="max-width:100%;display: inline-block !important;vertical-align: middle !important;">
+		</div>
+		{/if}
+		{/foreach}
+	</div>
+	<script>
+	$('.contro-slick{$k}').slick({
+		slidesToShow: 1,
+		slidesToScroll: 1,
+		autoplay: true,
+		arrows:false,
+		autoplaySpeed: 2000,
+	});
+	</script>
+	{/if}
+{/if}

@@ -1,0 +1,144 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" href="__TEMP__/{$style}/public/css/pay/get_pay_value.css"/>
+{/block}
+
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="{$unpaid_goback}"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang('order_payments')}</div>
+</section>
+{/block}
+
+{block name="main"}
+<div class="head-info">
+	<div class="head-pay">支付金额</div>
+	<div class="head-pay-value">￥{$pay_value.pay_money}</div>
+</div>
+<div class="pay-type-item">
+	<div class="codes">
+
+		{if condition="$pay_config['ali_pay_config']['is_use'] eq 0 && $pay_config['wchat_pay_config']['is_use'] eq 0 && $pay_config['union_pay_config']['is_use'] eq 0"}
+			<div class="not-pay-type">
+				商家未配置支付方式
+			</div>
+		{else/}
+		
+			{if condition="$pay_config['wchat_pay_config']['is_use']==1"}
+				<div class="wchat-weixin">
+					<img src="__TEMP__/{$style}/public/images/weifu.png" class="wchat-photo">
+					<span class="wchat-title">{:lang('wechat_payment')}</span>
+					<span id="wchatpay"><img src="__TEMP__/{$style}/public/images/hgou.png"></span>
+				</div>
+			{/if}
+			{if condition="$pay_config['ali_pay_config']['is_use']==1"}
+				<div class="ali-pay">
+					<img src="__TEMP__/{$style}/public/images/zhifu.png" class="ali-photo">
+					<span class="ali-item">{:lang('alipay')}</span>
+					<span id="alipay"><img src="__TEMP__/{$style}/public/images/hgou.png"></span>
+				</div>
+			{/if}
+			{if condition="$pay_config['union_pay_config']['is_use']==1"}
+				<div class="union-pay">
+					<img src="__TEMP__/{$style}/public/images/yinfu.png" class="ali-photo">
+					<span class="ali-item">银联卡支付</span>
+					<span class="ali-desc">使用银联卡支付</span>
+					<span id="unionpay"><img src="__TEMP__/{$style}/public/images/hgou.png"></span>
+				</div>
+			{/if}
+		{/if}
+
+		{if condition="$pay_config['wchat_pay_config']['is_use']==1"} 
+		<input type="hidden" id="pay_type" value="0"> 
+		{elseif condition="$pay_config['ali_pay_config']['is_use']==1"}
+		<input type="hidden" id="pay_type" value="1"> 
+		{elseif condition="$pay_config['union_pay_config']['is_use']==1"}
+		<input type="hidden" id="pay_type" value="2"> 
+		{else}
+		<input type="hidden" id="pay_type" value="-1">
+		{/if}
+		<input type="hidden" id="out_trade_no" value="{$pay_value.out_trade_no}">
+	</div>
+</div>
+
+{if condition="$pay_config['ali_pay_config']['is_use'] eq 1 || $pay_config['wchat_pay_config']['is_use'] eq 1 || $pay_config['union_pay_config']['is_use'] eq 1"}
+	<section class="s-btn">
+		<a class="alipay" type="button" onclick="calculate()">{:lang('confirm_payment')}</a>
+	</section>
+{/if}
+
+{include file="wap/default_new/controlCopyRight"}
+<script>
+var __IMG__ = '__TEMP__/{$style}/public/images';
+$(function(){
+	
+	$(".pay-type-item .codes>div>span[id]").html("<img src='" + __IMG__ + "/hgou.png'>");
+	$(".pay-type-item .codes>div:eq(0)>span[id]").html("<img src='" + __IMG__ + "/segou.png'>");
+});
+
+var is_sub = false;
+function calculate() {
+	if(is_sub) return;
+	is_sub = true;
+	var pay_type = $("#pay_type").val();
+	var out_trade_no = $("#out_trade_no").val();
+	if (pay_type == 0) {
+		//微信支付
+		window.location.href = __URL("APP_MAIN/pay/wchatpay?no=" + out_trade_no);
+	} else if (pay_type == 1) {
+		//支付宝支付
+		window.location.href = __URL("APP_MAIN/pay/alipay?no=" + out_trade_no);
+	}else if (pay_type == 2) {
+		//银联卡支付
+		window.location.href = __URL("APP_MAIN/pay/unionpay?no=" + out_trade_no);
+	}else if(pay_type == -1){
+		showBox("{:lang('choose_payment_method')}","warning");
+	}
+}
+$(".alipay").click(function(){
+	window.webkit.messageHandlers.calculate.postMessage(null);
+})
+
+$(".ali-pay").click(function() {
+	$("#pay_type").val(1);
+	$("#alipay").html("<img src='" + __IMG__ + "/segou.png'>");
+	$("#wchatpay").html("<img src='" + __IMG__ + "/hgou.png'>");
+	$("#unionpay").html("<img src='" + __IMG__ + "/hgou.png'>");
+})
+
+$(".wchat-weixin").click(function() {
+	$("#pay_type").val(0);
+	$("#alipay").html("<img src='" + __IMG__ + "/hgou.png'>");
+	$("#wchatpay").html("<img src='" + __IMG__ + "/segou.png'>");
+	$("#unionpay").html("<img src='" + __IMG__ + "/hgou.png'>");
+})
+
+$(".union-pay").click(function() {
+	$("#pay_type").val(2);
+	$("#unionpay").html("<img src='" + __IMG__ + "/segou.png'>");
+	$("#alipay").html("<img src='" + __IMG__ + "/hgou.png'>");
+	$("#wchatpay").html("<img src='" + __IMG__ + "/hgou.png'>");
+})
+
+
+var payStatus = window.setInterval("payStatu()", 2000);
+
+function payStatu(){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/pay/wchatPayStatu')}",
+		data : {
+			out_trade_no : "{$pay_value.out_trade_no}"
+		},
+		success : function(data){
+			if(data['code'] > 0){
+				location.href="{:__URL('APP_MAIN/pay/wchatPayResult?out_trade_no='.$pay_value['out_trade_no'].'&msg=1')}";
+				clearInterval(payStatus);
+			}
+		}
+	})
+}
+
+</script>
+{/block}
+{block name="bottom"}{/block}

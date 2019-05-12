@@ -1,0 +1,37 @@
+<!-- 功能介绍：游戏入口 -->
+<style>
+	.promotion_game_content{
+		width: 100%;
+		height: auto;
+		background: #fff;
+		margin: 10px 0;
+	}
+	.promotion_game_content img.promotion_game_adv{
+		max-width: 100%;
+	}
+	.promotion_game_content ul.gameList{
+		width: 100%;
+		overflow: hidden; 
+	}
+	.promotion_game_content ul.gameList li{
+		display: inline-block;
+		width: 50%;
+		float: left;
+	}
+	.promotion_game_content ul.gameList li a{
+		display: block;
+	}
+	.promotion_game_content ul.gameList li a img{
+		max-width: 100%;
+	}
+</style>
+<div class="promotion_game_content">
+	<img src="__TEMP__/{$style}/public/images/promotion_game.png" alt="" class="promotion_game_adv">
+	{if count($gameList["data"]) > 0}
+	<ul class="gameList">
+		{volist name="$gameList['data']" id="vo"}
+		<li><a href="{:__URL('APP_MAIN/promotionGame/index?gid='.$vo['game_id'])}"><img src="{:__IMG($vo['activity_images'])}" alt=""></a></li>
+		{/volist}
+	</ul>
+	{/if}
+</div>

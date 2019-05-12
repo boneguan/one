@@ -1,0 +1,31 @@
+	{volist name="promotion_list['data']" id="vo"}
+		<li>
+			<div class="list-top">
+				<p class="coupon-value">¥&nbsp;{$vo['money']}</p>
+				<p class="coupon-condition">满{$vo['at_least']}元可用</p>
+				{if $vo.term_of_validity_type eq 0}
+				<p class="coupon-time">{$vo['start_time']|date='Y.m.d',###}-{$vo['end_time']|date='Y.m.d',###}</p>
+				{else/}
+				<p class="coupon-time">领取之日起{$vo.fixed_term}日内有效</p>
+				{/if}
+			</div>
+			<div class="list-bottom">
+				<p class="coupon-item">限商品：{eq name="$vo['range_type']" value="1"}全场产品使用{else/}指定产品可使用{/eq}</p>
+				<p class="coupon-item">限数量：{eq name="$vo['max_fetch']" value="0"}无领取数量限制{else/}每人最多可领取{$vo['max_fetch']}张{/eq}</p>
+				<p class="coupon-item">领取量：{if $vo['surplus_percentage'] > 0}还有<font color="red">{$vo['surplus_percentage']}%</font>未领取{else/}该优惠券已被抢光{/if}</p>
+				<p class="coupon-btn">
+					{if $vo['surplus_percentage'] > 0}
+						<!-- 如果还有优惠券 -->
+						<!-- 如果限领数为0 或者 领取数小于最大领取数 -->
+						{if $vo['max_fetch'] == 0 || $vo['received_num'] < $vo['max_fetch']}
+							<span onclick="coupon_receive(this,{$vo.coupon_type_id})" class="active">立即领取</span>
+						{else/}
+							<span>您已领取</span>
+						{/if}	
+					{else/}
+						<span>已抢光</span>
+					{/if}
+				</p>
+			</div>
+		</li>
+	{/volist}

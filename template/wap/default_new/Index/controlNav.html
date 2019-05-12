@@ -1,0 +1,42 @@
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/navi.css">
+<style>
+.navi .navi-item .navi-item_row>a{
+	width: 49%;
+	height: auto;
+}
+.navi .navi-item .navi-item_row>a img{
+	width: 100%;
+}
+.navi .navi-item .navi-item_row>a{
+	width: 49%;
+	height: auto;
+	margin-right: 1%;
+}
+.navi .navi-item .navi-item_row>a{
+	margin-top: 10px;
+}
+</style>
+<div class="navi">
+	<div class="navi-item">
+		<nav class="navi-item_row">
+			{if count($navigation_list) > 0}
+				{foreach name="$navigation_list" item="vo"}
+					{if condition='$vo.nav_type eq 0'}
+					<a href="{:__URL('APP_MAIN'.$vo.nav_url)}">
+					{else/}
+					<a href="{$vo.nav_url}">
+					{/if}
+						<img src="{:__IMG($vo.nav_icon)}">
+					</a>
+				{/foreach}
+			{/if}
+		</nav>
+	</div>
+</div>
+
+<!-- <div class="shopInfo">
+	<div class="shopTitle">公司介绍</div>
+	<div class="shopContent">
+		我们公司凭借良好的协调能力、专业的行业操作规范，遵循“客户、创新、诚信、承担、协作”的经营宗旨，为客户提供全方位细致周到的服务。
+	</div>
+</div> -->

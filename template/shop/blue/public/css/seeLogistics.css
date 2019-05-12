@@ -1,0 +1,112 @@
+@charset "utf-8";
+
+.package-info{
+	margin: 0 15px 15px 15px;
+	border:1px solid #eee;
+}
+.package-info .tit-wrap{
+	padding: 10px 20px;
+	background: #eee;
+	color: #666;
+	cursor: pointer;
+}
+.package-info .tit-wrap ul.package{
+	overflow:hidden;
+}
+.package-info .tit-wrap ul.package li{
+	margin-bottom: 0!important;
+	line-height: normal;
+}
+.package-info .tit-wrap ul.package li:last-child{
+    float: right;
+	line-height: 16px;
+}
+.package-info .tit-wrap ul.package li:last-child a{
+	color: #0D84D4;
+}
+.package-info .tit-wrap ul.package li:last-child a i.icon-triangle{
+	display: inline-block;
+	background: url(../images/icon_triangle.png) no-repeat;
+	width: 10px;
+    height: 6px;
+    margin-left: 5px;
+    transition: all 0.3s;
+    transform: rotate(0deg);
+	transform-origin: center; 
+}
+.package-info .tit-wrap ul.package li:last-child a.open i.icon-triangle{
+    transform: rotate(180deg);
+}
+.package-info .logistics-trace{
+	margin: 15px;
+	border:1px solid #eee;
+	padding: 20px;
+	background: #f8f8f8;
+	overflow:hidden;
+}
+.package-info .logistics-trace ul li i {
+	display: block;
+	position: absolute;
+	top: 0px;
+	left: -6px;
+	width: 12px;
+	height: 12px;
+	overflow: hidden;
+	background: url(../images/order-icons.png) no-repeat;
+	vertical-align: middle;
+}
+.package-info .logistics-trace ul li.first i {
+	background: url(../images/order-curr-icons.png) no-repeat;
+}
+.package-info .logistics-trace ul li {
+	position: relative;
+	overflow: visible;
+	padding: 0px 0 0 15px;
+	border-left: 1px solid #e3e3e3;
+	clear: both;
+    margin-bottom: 0!important;
+	overflow: inherit!important;
+}
+.package-info .logistics-trace ul li a {
+	color: #333333;
+}
+.order-info{
+	margin: 0 15px 15px 15px;
+	border:1px solid #eee;
+	overflow:hidden;
+}
+.order-info .left-container{
+	width: 446px;
+	padding: 15px;
+	float: left;
+	display: table-cell;
+	min-height: 150px;
+}
+.order-info .left-container dl dt,.order-info .left-container dl dd{
+	display: inline-block;
+	line-height: 25px
+}
+.order-info .right-container{
+	width: 446px;
+	padding: 15px;
+	border-left: 1px solid #eee;
+	float: right;
+	display: table-cell;
+	min-height: 150px;	
+}
+.order-info .right-container p{
+	line-height: 25px;
+}
+.sepa{
+	width: 1px;
+	height: 15px;
+	background: #ddd;
+	display: inline-block;
+	float: left;
+	margin:1px 20px;	
+}
+.clear-float:after,.clear-float:before{
+	content: '';
+	display: block;
+	clear: both;
+}

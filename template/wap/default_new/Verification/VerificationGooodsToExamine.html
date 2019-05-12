@@ -1,0 +1,66 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/VerificationOrder.css">
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">核销商品核销</div>
+</section>
+<div style="clear: both;height: 45px;"></div>
+{/block}
+{block name="main"}
+<section class="VerificationGoodsInfo">
+	<h2 class="title">
+		<div class="custom-store-img"></div>
+		{:lang('shop_name')}：{$title}
+		</div>
+	</h2>
+	<div class="goods_info">
+		<div class="goods_img">
+			<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+		 		<img src="{:__IMG($info.picture.pic_cover_mid)}" alt="">
+		 	</a>
+		</div>
+		<div class="data_goods_info">
+			<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$info['goods_id'])}"><p class="goods_name">{$info.goods_name}</p></a>
+			<p class="sku_name">{$info.virtual_goods_name}</p>
+		</div>
+	</div>
+</section>
+<div class="list-container">
+	<ul>
+		<li><span class="title">核销人</span><span class="tip">{$verificadition_person_info.nick_name}</span></li>
+		<li><span class="title">核销码</span><span class="tip">{$info.virtual_code}</span></li>
+		<li><span class="title">有效期</span><span class="tip">{if condition="$info.end_time != 0"}到{$info.end_time|date='Y-m-d',###}之前有效{else/}不限{/if}</span></li>
+		<!-- <li style="border: none;"><span class="title">备注</span>
+			<textarea name="" id="" cols="30" rows="10" class="remarks" placeholder="备注"></textarea>
+		</li> -->
+	</ul>
+</div>
+
+<div class="btn-verrfication" onclick="verificationVirtualGoods({$info.virtual_goods_id});">确认核销</div>
+<script>
+	var is_click = false;
+	function verificationVirtualGoods(virtual_goods_id){
+		if(!is_click){
+			is_click = true;
+			$.ajax({
+				type : "post",
+				url : "{:__URL('APP_MAIN/Verification/verificationVirtualGoods')}",
+				data : {"virtual_goods_id" : virtual_goods_id},
+				success : function(data){
+					if(data['code'] > 0){
+						is_click = false;
+						showBox("核销成功","success","{:__URL('APP_MAIN/member/index')}");
+					}else{
+						showBox("核销失败","error",location.href);
+					}
+				}
+			})
+		}
+	}	
+</script>
+{/block}
+{block name="bottom"}
+{/block}

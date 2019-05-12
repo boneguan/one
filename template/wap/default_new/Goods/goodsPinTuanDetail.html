@@ -1,0 +1,73 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/mall.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/pre_foot.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/goods_detail.css">
+<style>
+.big-btn{line-height: 24px;font-size: 14px;}
+.big-btn-2-1{width: initial;}
+</style>
+<script src="__TEMP__/{$style}/public/js/goods_product.js"></script>
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/jscommon.js" charset="gb2312"></script>
+<script src="__TEMP__/{$style}/public/js/jquery.lazyload.js" type="text/javascript"></script>
+{/block}
+{block name="goodsHead"}
+<section class="head goodsDetailHead">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+</section>
+<section class="head" id="DataHeadNav">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">
+		<ul class="heav-nav">
+			<li class="current"><span>商品</span></li>
+			{if $evaluates_count['evaluate_count'] > 0}
+			<li><span>评价</span></li>
+			{/if}
+			<li><span>详情</span></li>
+		</ul>
+	</div>
+</section>
+{/block}
+{block name="main"}
+	{include file="wap/default_new/Goods/controlPinTuanDetail" /}
+	{include file='wap/default_new/share'/}
+{/block}
+{block name="bottom"}
+<div style="height: 50px;"></div>
+<div class="js-bottom-opts bottom-fix">
+	<div class="responsive-wrapper">
+		<a href="{:__URL('APP_MAIN')}" class="new-btn buy-cart">
+			<img src="__TEMP__/{$style}/public/images/go_home.png" style="height:20px;margin-top: 4px;"/>
+			<span class="desc">{:lang("home_page")}</span>
+		</a>
+		<a href="{$customservice_config['value']['service_addr']}" class="new-btn buy-cart" target="_blank">
+			<img src="__TEMP__/{$style}/public/images/kefux.png" style="width:20px;height:20px;margin-top: 4px;"/>
+			<span class="desc">{:lang('united_states_customer_service')}</span>
+		</a>
+		<div class="big-btn-2-1">
+			{if condition="$tuangou_group_count==0"}
+			<a href="javascript:;" class="big-btn orange-btn" id="buyBtn1">
+				<span class="goods-price" style="position: relative; top: 5px;">￥{if condition="$goods_detail.promotion_price < $goods_detail.member_price"}{$goods_detail.promotion_price}{else/}{$goods_detail.member_price}{/if}</span>
+				<br>
+				<span>{:lang('goods_alone_purchase')}</span>
+			</a>
+			<a href="javascript:;" class="big-btn red-btn" id="spelling">
+				<span class="goods-price" style="position: relative; top: 5px;">￥{$goods_pintuan['tuangou_money']}</span>
+				<br>
+				<span class="click-font">{:lang('goods_start_share')}</span>
+			</a>
+			{else/}
+			<a href="javascript:;" class="big-btn red-btn" id="spelling" style="width:100%;">
+				<span class="goods-price" style="position: relative; top: 5px;">￥{$goods_pintuan['tuangou_money']}</span>
+				<br>
+				<span class="click-font">{:lang('join_together')}</span>
+			</a>
+			{/if}
+			<input type="hidden" id="hidden_goods_type" value="{$goods_detail.goods_type}" />
+		</div>
+	</div>
+</div>
+<div class="btn_wrap btn_wrap_static btn_wrap_nocart no-server js-shelves">
+	<div class="product-status">{:lang('goods_laid_off')}</div>
+</div>
+{/block}

@@ -1,0 +1,97 @@
+<!-- 商品列表 -->
+<style>
+/*公共*/
+.control-thumbnail {text-align: center;color: #ffffff;margin: 0;}
+.control-goods-buy-style-cart{border: 0;float: right;height: 30px;width: 40px;outline: none;padding: 0;background: transparent;}
+.control-goods-buy-style-cart img{display: inline-block;vertical-align: middle;max-width: 100%;max-height: 100%;height: auto;}
+.control-goods-price {height: 30px;line-height: 30px;}
+.control-goods-price em {font-style: normal;color: #ff6600;font-weight: bold;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;/*width: 65%;*/display: inline-block;font-size:14px;}
+
+/*大图样式*/
+.control-goods-list-big{}
+.control-goods-list-big li {padding: 10px;border: 1px solid #e5e5e5;margin: 0 0 10px 0;background: #ffffff;}
+.control-goods-list-big .control-thumbnail a{display: block;}
+.control-goods-list-big .control-thumbnail img{display:inline-block;vertical-align: middle;max-width: 100%;max-height: 100%;height: auto;font-size:12px;}
+.control-goods-list-big .control-goods-name {font-weight: bold;margin: 10px 0 0;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+
+/*小图样式*/
+.control-goods-list-small{overflow: hidden;}
+.control-goods-list-small li {float: left;width: 46.5%;margin: 1% 0;background: #ffffff;border: 1px solid #e5e5e5;padding: 1%;}
+.control-goods-list-small li:NTH-CHILD(even) {float: right;}
+.control-goods-list-small .control-thumbnail {padding: 10px 5px;}
+.control-goods-list-small .control-thumbnail a{display:block;}
+.control-goods-list-small .control-thumbnail img{display:inline-block;vertical-align: middle;max-width: 100%;max-height: 100%;height: auto;max-width:100%;font-size:12px;}
+.control-goods-list-small .control-goods-name {font-weight: normal;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;padding:0 5px;}
+
+/*商品标签，包邮*/
+i.goods-tab {font-style: normal;font-size: 12px;background: #f44;color: #fff;padding: 1px 3px;margin-right: 2px;border-radius: 2px;font-weight: normal;}
+i.shipping-fee{font-style: normal;font-size: 12px;background: #fff;color: #f44;padding: 1px 3px;margin-left: 5px;border-radius: 2px;border: 1px solid #f44;display: inline-block;line-height: 1;font-weight: normal;}
+</style>
+
+<div class="category-goods-list">
+	<div {if condition="$custom_template_v.style_data.goods_list.goods_list_type eq 1"}class="control-goods-list-big" {else /}class="control-goods-list-small"{/if}>
+		<ul>
+			{foreach $custom_template_v['goods_list'] as $k=>$v}
+			<li>
+				<div class="control-thumbnail" onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$v['goods_id'])}'">
+					<img src="{:__IMG($v['pic_cover_small'])}" alt="{$v["goods_name"]}" />
+				</div>
+				
+				{if condition="$custom_template_v['style_data']['goods_list']['goods_show_goods_name'] eq 1"}
+				<h5 class="control-goods-name" onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$v['goods_id'])}'">
+					{if condition="count($v.gorup_list)>0"}
+						{if condition="$v.gorup_list[0]->group_name"}
+						<i class="goods-tab">{$v.gorup_list[0]->group_name}</i>
+						{/if}
+					{/if}
+					<span>{$v["goods_name"]}</span>
+				</h5>
+				{/if}
+				
+				<div class="control-goods-price">
+					{if condition="$custom_template_v['style_data']['goods_list']['goods_show_goods_price'] eq 1"}
+						<em onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$v['goods_id'])}'">￥{$v["promotion_price"]}
+						{if condition="$v.shipping_fee==0"}
+						<i class="shipping-fee">包邮</i>
+						{/if}
+						</em>
+					{/if}
+					{if condition="$custom_template_v['style_data']['goods_list']['goods_show_buy_button'] eq 1"}
+					
+					{if condition="$v['goods_type'] == 1"}
+<!-- 					<button class="control-goods-buy-style-cart" onclick="CartGoodsInfo({$v['goods_id']}, {$v['state']})"> -->
+<!-- 						<img src="{:__IMG($custom_template_v.style_data.goods_list.goods_buy_button_src)}"> -->
+<!-- 					</button> -->
+					{/if}
+					
+					{/if}
+				</div>
+				
+			</li>
+			{/foreach}
+		</ul>
+</div>
+</div>
+<script>
+$(function(){
+	resizeHeight();
+})
+$(window).resize(function(){
+	resizeHeight();
+});
+function resizeHeight(){
+
+	var height = 0;
+	$(".control-goods-list-small li .control-thumbnail img").each(function(){
+		var self = $(this);
+		$.ajax({
+			url : $(this).attr("src"),
+			success : function(res){
+				height = self.height();
+			},error : function(){
+				if(height>0) self.css("height",height);
+			}
+		});
+	});
+}
+</script>

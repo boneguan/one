@@ -1,0 +1,150 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/member_address.css">
+{/block} {block name="goodsHead"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang('modify_account_information')}</div>
+</section>
+{/block}
+{block name="main"}
+<form class="form-info">
+	<input type="hidden" value="{$result.id}" id="account_id"/>
+	<div class="div-item">
+		<span>{:lang('member_full_name')}</span>
+		<input type="text" placeholder="{:lang('member_enter_your_real_name')}" id="realname" value="{$result.realname}"/>
+	</div>
+	<div class="div-item">
+		<span>{:lang('cell_phone_number')}</span>
+		<input type="text" placeholder="{:lang('member_enter_your_phone_number')}" id="mobile" value="{$result.mobile}"/>
+	</div>
+	<div class="div-item">
+		<span>{:lang('member_account_type')}</span>
+		<select id="account_type">
+			{foreach name="$withdraw_account" item="vo"}
+			{if condition="$vo.is_checked"}
+			<option value="{$vo.value}" data-account-type-name="{$vo.name}" {if condition="$result.account_type == $vo.value"}selected="selected"{/if}>{$vo.name}</option>
+			{/if}
+			{/foreach}
+		</select>
+	</div>
+	<div class="div-item" data-flag="branch_bank_name" {if condition="$result.account_type != 1"}style="display:none;"{/if}>
+		<span>{:lang('member_sub_branch_information')}</span>
+		<input type="text" placeholder="{:lang('member_input_sub_branch_information')}" id="branch_bank_name" value="{$result.branch_bank_name}"/>
+	</div>
+	<div class="div-item" data-flag="account_number" {if condition="$result.account_type == 2"}style="display:none;"{/if}>
+		<span>{:lang('cash_account')}</span>
+		<input type="text" placeholder="{:lang('please_enter_your_cash_account')}" id="account_number" value="{$result.account_number}"/>
+	</div>
+	<input type="hidden" value="{$shop_id}" id="shop_id"/>
+</form>
+<button onclick="update()" class="btn-save">{:lang('member_modify')}</button>
+{/block}
+{block name="bottom"}{/block} 
+ {block name="javascript"}
+<script type="text/javascript">
+$(function(){
+	
+	$("#account_type").change(function(){
+		switch(parseInt($("#account_type").find("option:selected").val())){
+			case 1:
+				
+				//银行卡
+				$(".div-item[data-flag='branch_bank_name']").show();
+				$(".div-item[data-flag='account_number']").show();
+				
+				break;
+				
+			case 2:
+				
+				//微信
+				$(".div-item[data-flag='branch_bank_name']").hide();
+				$(".div-item[data-flag='account_number']").hide();
+				break;
+				
+			case 3:
+				
+				//支付宝
+				$(".div-item[data-flag='branch_bank_name']").hide();
+				$(".div-item[data-flag='account_number']").show();
+				
+				break;
+		}
+	});
+});
+
+function update(){
+	var shop_id = $("#shop_id").val();
+	var id = $("#account_id").val();
+	var realname = $("#realname").val();
+	var mobile = $("#mobile").val();
+	var account_type = $("#account_type").val();
+	var account_type_name = $("#account_type").find("option:selected").attr("data-account-type-name");
+	var account_number = $("#account_number").val();
+	var branch_bank_name = $("#branch_bank_name").val();
+	if(realname==''){
+		showBox("{:lang('member_name_cannot_empty')}","warning");
+		$("#realname").focus();
+		return false;
+	}
+	if(!(/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(mobile))){
+		showBox("{:lang('member_phone_not_correct')}","warning");
+		$("#mobile").focus();
+		return false;
+	}
+	if(parseInt(account_type) == 1){
+		if(branch_bank_name==''){
+			showBox("{:lang('member_branch_cannot_empty')}","warning");
+			$("#branch_bank_name").focus();
+			return false;
+		}
+	}
+	if(parseInt(account_type) != 2){
+		if(account_number==''){
+			showBox("{:lang('member_bank_cannot_empty')}","warning");
+			$("#account_number").focus();
+			return false;
+		}
+		if(account_number.length>30){
+			showBox("{:lang('member_bank_max_length')}","warning");
+			$("#account_number").focus();
+			return false;
+		}
+	}
+
+	switch(parseInt(account_type)){
+	case 2:
+		//微信不需要这些数据
+		account_number = "";
+		branch_bank_name = "";
+		break;
+	case 3:
+		//支付宝不需要这些数据
+		branch_bank_name = "";
+		break;
+	}
+	
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/member/updateaccount')}",
+		dataType : "json",
+		data : {
+			"id":id,
+			"realname":realname,
+			"mobile":mobile,
+			"account_type" : account_type,
+			'account_type_name' : account_type_name,
+			"account_number":account_number,
+			"branch_bank_name":branch_bank_name
+		},
+		success : function(data) {
+			if(data['code']>0){
+				showBox(data['message'],"success",__URL("APP_MAIN/member/accountlist?shop_id="+shop_id));
+			}else{
+				showBox("{:lang('unable_to_change')}","error");
+			}
+		}
+	});
+}
+</script>
+{/block}

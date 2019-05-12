@@ -1,0 +1,56 @@
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/components.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/group_goods_list.css">
+<style>
+.two-list-menu {
+    left: 109px;
+	top:45px;
+}
+
+.wenzhang_list a{
+	line-height: 44px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom: 1px solid #ddd;
+	padding: 3px 7px;
+	display: block;
+}
+</style>
+<!-- 分类 -->
+<div class="custom-tag-list clearfix">
+    <div class="mask" id="grouGoodsListmask"></div>
+	{notempty name="platform_help_class"}
+	<div class="custom-tag-list-menu-block" >
+		<div style="height: 294px; display: none;"></div>
+		<ul class="custom-tag-list-side-menu" style="position: relative;" id='goods_group'>
+			{foreach name="platform_help_class" id="class_vo" key="k"}
+			<li>
+				<a href="javascript:;" data-groupid="{$class_vo.class_id}" onclick="getSubordinateClass({$class_vo.class_id},this)" {if condition="$k==0"}class="selected"{/if}>
+					<span>{$class_vo.name}</span>
+				</a>
+			</li>
+			{/foreach}
+		</ul>
+	</div>
+    <div class="custom-tag-list-goods wenzhang_list">
+      	{foreach name="platform_help_class" id="class_vo" key="k"}
+      		{foreach name="class_vo['child_list']" id="class_to"}
+				<a href="{:__URL('APP_MAIN/Articlecenter/articleList','class_id='.$class_to['class_id'])}" {if condition="$k > 0"}style="display:none;"{/if} data-parent-class="{$class_vo['class_id']}">{$class_to.name}</a>
+			{/foreach}
+		{/foreach}
+    </div>
+    {else/}
+		<p style="color:#939393;text-align:center;margin-top:100px;"><img src="__TEMP__/{$style}/public/images/wap_nodata.png" height="100"><br>暂无文章分类</p>
+	{/notempty}
+</div>
+<script>
+function getSubordinateClass(pid,obj){
+	$('[data-parent-class]').hide();
+	$('[data-parent-class="'+pid+'"]').show();
+	if(obj != 'no'){
+		$(".custom-tag-list-side-menu li a").removeClass("selected");
+		$(obj).addClass("selected");	
+	}
+}
+</script>

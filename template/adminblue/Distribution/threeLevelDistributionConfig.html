@@ -1,0 +1,129 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/defau.css">
+<style>
+.help-inline{    margin-left: 50px;color: red;}
+</style>
+{/block}
+{block name="main"}
+<div class="set-style">
+	<dl>
+		<dt>是否开启分销:</dt>
+		<dd>			
+			{if condition="$shop_config_info.is_distribution_enable eq 1 "} 
+			<input id="is_distribution_enable" type="checkbox" class="checkbox" checked="checked" />					
+			{else /}
+			<input id="is_distribution_enable" type="checkbox" class="checkbox" />
+			{/if}
+			<span class="help-inline"  style="color: #999999">三级分销设置总开关</span>
+							
+		</dd>
+	</dl>
+	
+    <dl>
+		<dt>推广员是否需要申请:</dt>
+		<dd>			
+			{if condition="$shop_config_info.is_distribution_start eq 1 "} 
+			<input id="is_distribution_start" type="checkbox" class="checkbox" checked="checked" />					
+			{else /}
+			<input id="is_distribution_start" type="checkbox" class="checkbox" />
+			{/if}
+			<span class="help-inline" style="color: #999999">关闭之后会员注册将直接成为推广员，需提前设置好推广员等级。<span style="color:red;">此选择涉及佣金的计算方式，请谨慎选择！</span></span>
+		</dd>
+	</dl>
+	
+	<dl>
+		<dt>推广申请是否需要审核:</dt>
+		<dd>			
+			{if condition="$shop_config_info.is_distribution_audit eq 1 "} 
+			<input id="is_distribution_audit" type="checkbox" class="checkbox" checked="checked" />					
+			{else /}
+			<input id="is_distribution_audit" type="checkbox" class="checkbox" />
+			{/if}
+			<span class="help-inline" style="color: #999999">会员成为推广员的申请信息是否需要审核，如需注册的会员自动成为推广员将推广员申请、推广员申请审核关闭即可</span>
+		</dd>
+	</dl>
+
+	
+	<dl>
+		<dt>批量设置为推广员:</dt>
+		<dd>			
+			{if condition="$shop_config_info.is_distribution_set eq 1 "} 
+			<input id="is_distribution_set" type="checkbox" class="checkbox" checked="checked" />					
+			{else /}
+			<input id="is_distribution_set" type="checkbox" class="checkbox" />
+			{/if}
+			<span class="help-inline">开启后将会把之前所有普通会员设置为推广员，请谨慎操作</span>
+		</dd>
+	</dl>
+	
+	<dl>
+		<dt>分销佣金:</dt>
+		<dd>		
+            <label class="radio inline normal">
+            	<i class="radio-common {if condition="$shop_config_info.distribution_use eq 0"}selected{/if}">
+            		<input type="radio" name="distribution_use" value="0"  id="distribution_use_yes" {if condition="$shop_config_info.distribution_use eq 0"}checked{/if}>
+        		</i>
+            	<span>使用利润</span>
+            </label> 
+		    <label class="radio inline normal">
+		    	<i class="radio-common {if condition="$shop_config_info.distribution_use eq 1"}selected{/if}">
+		    		<input type="radio" name="distribution_use" value="1"  id="distribution_use_no"  {if condition="$shop_config_info.distribution_use eq 1"}checked{/if}>
+	    		</i>
+		    	<span>销售价格</span>
+		    </label> 
+		</dd>
+	</dl>
+	
+	<dl>
+		<dt></dt>
+		<dd>
+			<button class="btn-common btn-big" onclick="modifyShopConfigIsDistribution();" >提交</button>
+		</dd>
+	</dl>
+</div>
+<script>		
+function modifyShopConfigIsDistribution(){
+	if($("#is_distribution_enable").prop("checked")){
+		var is_open = 1;
+	}else{
+		var is_open = 0;
+	}
+	if($("#is_distribution_audit").prop("checked")){
+		var is_audit = 1;
+	}else{
+		var is_audit = 0;
+	}
+	if($("#is_distribution_start").prop("checked")){
+		var is_start = 1;
+	}else{
+		var is_start = 0;
+	}
+	if($("#is_distribution_set").prop("checked")){
+		var is_set = 1;
+	}else{
+		var is_set = 0;
+	}
+	var distribution_use = $("input[type='radio'][name='distribution_use']:checked").val();
+	$.ajax({
+		type:"post",
+		url:"{:__URL('ADMIN_MAIN/Distribution/modifyShopConfigIsDistributionOrPromoterIsAudit')}",
+		data:{
+			'is_open':is_open,
+			'is_audit':is_audit,
+			'is_start':is_start,
+			'is_set':is_set,
+			'distribution_use':distribution_use
+		},
+		async:true,
+		success:function (data) {
+			if (data["code"] > 0) {
+				showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/threeLevelDistributionConfig')}");
+			}else{
+				showMessage('error', data["message"]);
+			}	
+		}
+	});
+}
+</script>
+{/block}

@@ -1,0 +1,447 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/control_type.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/goods_list.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/group_buy.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/spelling_list.css">
+<style type="text/css">
+.custom-search-button{top: 1px;}
+.sliding {overflow-y: auto;background: #ffffff;}
+.sliding::-webkit-scrollbar {display: none;}
+.sliding ul {white-space: nowrap;text-align: center;}
+.sliding ul li {padding: 10px 10px 0 10px;display: inline-block;background: #ffffff;border-right: 2px solid #f8f8f8;width:25%;}
+.sliding ul li img{width:60px;height:60px;}
+.members_goodspic{border-bottom:1px solid #f3f3f3;}
+/* .info p.goods-title{padding-top:5px;} */
+.info p.goods-price{margin:0;margin-bottom:8px;}
+.info .goods-info .goods_price{float: none;}
+.controltype{height:35px;margin:0;width:100%;line-height:32.5px;}
+.controltype>.control_l_content{top:0;background: none;}
+.info p.goods-price>em{font-size:12px;font-weight:bold;color:#f23030;}
+.popup{background: none;padding:0;}
+.code{width: 60%;margin: 0 auto;background: #fff;border-radius: 13px;}
+.controltype>.control_l_content {width: 22%;left:39%;display: inline-block;background:#F3F5F7;}
+.members_goodspic>ul>li.gooditem>div.info {margin-top: 0;height:80px;}
+.com-content{min-height:600px;}
+.category_name{height: 30px;line-height: 30px;padding: 5px 10px;background: #fff;}
+.imgs{height:150px;}
+.floor{margin-top:10px;}
+.floor-right-nav{float:right;font-size:12px;color:#FF4E00;font-weight:bold;}
+.floor-left-nav{float:left;font-size:15px;}
+.floor .members_goodspic ul li:nth-child(1),.floor .members_goodspic ul li:nth-child(2){margin-top:0;}
+.floor .category_name{border-bottom:1px solid #eee;}
+i.title-border{display: inline-block;width: 3px;height: 20px;vertical-align: middle;margin-right: 5px;margin-top: -3px;}
+i.goods_tab{font-style: normal;font-size: 12px!important;;background: #f44;color: #fff;padding: 1px 3px;margin-right: 2px;border-radius: 2px;font-weight: normal!important;}
+i.shipping_fee{font-style: normal;font-size: 12px!important;;background: #fff;color: #f44;padding: 1px 3px;margin-left: 5px;border-radius: 2px;border:1px solid #f44;display: inline-block;line-height: 1!important;font-weight: normal!important;}
+/* 楼层模块 */
+.floor .category_name{
+	width: 100%;
+	border-bottom: none;
+	padding: 0;
+	height: 35px;
+	line-height: 35px;
+}
+.floor .category_name .floor-left-nav{
+	float: none;
+	font-size: 16px;
+	color: #000;
+}
+.members_goodspic{
+	background: #FFF;
+}
+.members_goodspic>ul>li{
+	background: #FFF;
+}
+.members_goodspic>ul>li.gooditem.imgShow>div.imgs{
+	border-radius: 10px;
+	width: 95%;
+	margin: 0 auto;
+	overflow: hidden;
+}
+.members_goodspic>ul>li.gooditem>div.imgs a{
+	padding: 0;
+	line-height: 0;
+}
+.members_goodspic>ul>li.gooditem>div.imgs a img{
+	position: inherit;
+}
+.members_goodspic>ul>li.gooditem>div.info .goods-info .videoNum{
+	display: block;
+	color:#999;
+	font-size: 12px;
+	display: inline-block;
+}
+.info p.goods-title a{
+	line-height: 22px;
+	padding-top: -3px;
+	overflow: hidden;
+	text-overflow:ellipsis; 
+	display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+}
+.members_goodspic>ul>li.gooditem.transverse>div.imgs{
+	width:100px;
+	display: block;
+	margin-left: 2%;
+	float: left;
+}
+.members_goodspic>ul>li.gooditem.transverse{
+	width:100%;
+	display: block;
+	margin-left: 2%;
+	float: left;
+	margin-top: 20px;
+}
+.members_goodspic>ul>li.gooditem.transverse>div.info{
+	display: block;
+	margin-left: 110px;
+	padding-right: 10px;
+	position: relative;
+}
+.members_goodspic>ul>li.gooditem.transverse>div.info .goods-info{
+	display: block;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding-bottom:0px; 
+}
+.members_goodspic>ul>li.gooditem.transverse>div.info .goods-info .goods-title{
+	line-height: 15px;
+	max-height: 30px;
+	font-size: 12px;
+}
+.members_goodspic>ul>li.gooditem.transverse>div.info .goods-info .goods-title a{
+	font-size: 12px;
+}
+.members_goodspic>ul>li.gooditem>div.info .goods-info .videoNum{
+	display: block;
+	color:#999;
+	font-size: 12px;
+	display: inline-block;
+	padding-bottom: 5px;
+}
+.members_goodspic>ul>li.gooditem>div.info .goods-info .goods_price{
+	float: right;
+	display: block;
+	margin-top: 0;
+	margin-right: 5px;
+}
+.members_goodspic>ul>li.gooditem.transverse::first-child{
+	margin-top:20px;
+}
+.members_goodspic>ul>li.gooditem.transverse>div.info .goods-info .goods_price{
+	margin-right: 20px;
+}
+.btnMore{
+	display: none;
+	width: 100%;
+	background: #fff;
+	padding-top: 20px;
+	text-align: center;
+	margin-bottom: 10px;
+}
+.btnMore a{
+	padding: 3px 10px;
+	border: 1px solid #3c78d8;
+	color: #3c78d8;
+	border-radius: 10px;
+}
+.imgInfoNum{
+	background: #F4F4F4;
+	color: #999999;
+	font-size: 12px;
+    height: 22px;
+	line-height: 22px;
+}
+
+</style>
+{/block}
+
+{block name="goodsHead"}
+<!-- 标识：是否显示顶部关注  0：[隐藏]，1：[显示]-->
+{if condition="$is_subscribe == 1"}
+<div class="fixed-focus-on">
+	<i class="close" onclick="$('.fixed-focus-on').hide();">x</i>
+	<div class="foucs-on-block">
+		<div class="foucs-block">
+		{if condition="$source_img_url != ''"}
+			<img class="user-bg" src="{:__IMG($source_img_url)}">
+			{else/}
+			<img class="user-bg" src="{:__IMG($web_info['web_wechat_share_logo'])}">
+		{/if}
+		</div>
+		{if condition="$source_user_name != ''"}
+		<p>{:lang("i_am_your_best_friend")}<span>{$source_user_name}</span>,{:lang("recommended_to_you_business_from_now")}</p>
+		{else/}
+		<p>{:lang("you_are_not_currently_concerned_about_the_WeChat_public_account")}，{:lang("click_on_the_attention")}</p>
+		{/if}
+		<button id="subscribe">{:lang("click_on_the_attention")}</button>
+	</div>
+</div>
+{/if}
+
+<!-- 遮罩层 -->
+<div class="shade" style="position:fixed;top:0px;left:0;width:100%;height:100%;margin-top:0;background: rgba(0, 0, 0, 0.7);z-index: 999;display:none;"><span style="float: right; padding: 15px;font-size: 22px;color: #fff;background: transparent;" id="close">X</span></div>
+<!-- 弹出层 --> 
+<div class="popup" style="position:fixed;top: 36%;left: 0;width: 100%;height: 100%;margin-left:0;display:none;">
+	<div class="code">
+		<div style="overflow: hidden;">
+			<img src="{:__IMG($web_info.web_qrcode)}"  style="max-width: 100%;margin-top: 10px;"/>
+			<div style="color:#666; margin-bottom: 10px;">{:lang("press_two_dimensional_code_public_concern_WeChat")}</div>
+		</div>
+	</div>
+</div>
+{/block}
+
+{block name="main"}
+{include file='wap/default_new/share'/}
+
+<div class="com-content">
+
+	<!-- 轮播图 -->
+	{include file='wap/default_new/Index/controlSlide'/}
+
+	<!-- 搜索栏 -->
+	<!-- {include file='wap/default_new/Index/controlSearch'/} -->
+
+	<!-- 导航 -->
+	{include file='wap/default_new/Index/controlNav'/}
+
+	<!-- 公告 -->
+	{if condition="count($notice) gt 0"}
+		{include file='wap/default_new/Index/controlNotice' /}
+	{/if}
+
+	<!-- 优惠券领取 -->
+	<!-- {if condition="count($coupon_list) gt '0'"}
+	{include file='wap/default_new/Index/controlCoupon'/}
+	{/if}  -->
+
+	<!-- 游戏入口 -->
+	<!-- {if count($gameList["data"]) > 0}
+		{include file='wap/default_new/Index/controlPromotionGame'/}
+	{/if} -->
+	<!-- <{include file="wap/default_new/Index/controlFigureAdv"/}> -->
+
+	<!-- {if condition="count($discount_list) >0"}
+	{include file='wap/default_new/Index/controlDiscount'/}
+	{/if} -->
+	
+	{if condition="$is_support_pintuan == 1"}
+	{niu:gettuangougoodslist  name="list" page="1" num="5" where="npg.is_open=1 and npg.is_show=1" order="npg.create_time desc"}
+	{if condition="$list.data"}
+	<div class="spelling-block">
+		<header>
+			<h3>拼团推荐</h3>
+			<a href="{:__URL('APP_MAIN/goods/spellingGroupZone')}">查看更多</a>
+		</header>
+		<ul>
+			{foreach name="$list.data" item="vo" key="k"}
+			<li onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$vo.goods_id)}'">
+				<div>
+					<img src="{:__IMG($default_goods_img)}" class="lazy_load pic" data-original="{:__IMG($vo.pic_cover_mid)}">
+				</div>
+				
+				<footer>
+					<p>{$vo.goods_name}</p>
+					<div>
+					<span class="tuangou-money">￥{$vo.tuangou_money}</span><br>
+					<span class="original-money">单买价&nbsp;{$vo.promotion_price}元</span>
+					<button>去拼单&nbsp;&gt;</button>
+					</div>
+				</footer>
+			</li>
+			{/foreach}
+		</ul>
+	</div>
+	{/if}
+	{/niu:gettuangougoodslist}
+	{/if}
+	
+	<!-- 新品 精品 热卖等推荐商品-->
+	{include file="wap/default_new/Index/AdminRecommendGoodsList" /}
+
+	<!-- 标签版块 -->
+	{foreach name="goods_platform_list" item="class"}
+		{if condition="!empty($class.goods_list)"}
+		<div class="controltype" style="position: relative;">
+			<div style="width: 60%;border-top: 1px solid #FF4E01;margin:17px 20%;vertical-align: middle;position: absolute;"></div>
+			<span class="control_l_content" style="color:#FF4E01;">{$class.group_name|mb_substr=0,12}</span>
+		</div>
+		<section class="members_goodspic">
+			<ul>
+			{if !empty($class.goods_list)}
+				{foreach name="class.goods_list" item="goods" key = "k"}
+					<li class="gooditem">
+						<div class="imgs">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$goods['goods_id'])}">
+							<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($goods['pic_cover_small'])}">
+							</a>
+						</div>
+						<div class="info">
+							<p class="goods-title">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$goods['goods_id'])}">{$goods.goods_name}</a>
+							</p>
+							<div class="goods-info">
+								<span class="goods_price"><em style="color: #fb3a2f;">￥{$goods.promotion_price}</em></span>
+								<a href="javascript:CartGoodsInfo({$goods.goods_id},{$goods.state})" class="add-cart"></a>
+							</div>
+						</div>
+					</li>
+				{/foreach}
+			{else/}
+				<li style="text-align:center;height: 130px;">
+					<img src="__TEMP__/{$style}/public/images/commend-type.png" style="max-width: 80px;vertical-align: middle;margin: 10px 0 2px 0;"/>
+					<div style="text-align:center;color:#666;margin-top: 10px;">{:lang("shop_name")}</div>
+				</li>
+			{/if}
+			</ul>
+		</section>
+		{/if}
+	{/foreach}
+
+	<!-- 楼层版块 -->
+	{foreach name="block_list" item="class"}
+		{if condition="!empty($class['goods_list']) "}
+		<div class="floor">
+			<div class="category_name">
+				<span class="floor-left-nav"><i class="title-border" style="background: {$class.color};"></i>{$class.category_alias}</span>
+				<!-- <a class="floor-right-nav" href="{:__URL('APP_MAIN/goods/goodslist?category_id='.$class['category_id'])}">查看更多</a> -->
+			</div>
+			<section class="members_goodspic">
+				<ul>
+					{foreach name="class.goods_list" item="listH" offset="0" length="2" key='k'}
+						<li class="gooditem imgShow">
+							<div class="imgs">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$listH['goods_id'])}">
+									<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($listH['pic_cover_small'])}" >
+								</a>
+							</div>
+							<!-- <div class="info">
+								<p class="goods-title">
+									<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+										{if count($list['group_list']) gt 0 && $list['group_list'][0]->group_name neq ""}
+											<i class="goods_tab">{$list['group_list'][0]->group_name}</i>
+										{/if}
+										{$list.goods_name}
+									</a>
+								</p>
+								<div class="goods-info">
+									<span class="videoNum">已更新10期</span>
+									<span class="goods_price">
+										{in name="$list.point_exchange_type" value="0,2"}
+										<em style="color: #fb3a2f;">￥{$list.promotion_price}</em>
+										{else/}
+											{if $list['point_exchange_type'] == 1 && $list['promotion_price'] > 0}
+												<em style="color: #fb3a2f;">￥{$list.promotion_price}+{$list.point_exchange}积分</em>
+											{else/}
+												<em style="color: #fb3a2f;">{$list.point_exchange}积分</em>
+											{/if}
+										{/in}
+									{if $list['shipping_fee'] eq 0 }
+										<i class="shipping_fee">包邮</i>
+									{/if}
+									</span>
+								</div>
+							</div> -->
+						</li>
+					{/foreach}
+					{foreach name="class.goods_list" item="list" offset="2" length="3" key='k'}
+					<li class="gooditem transverse">
+						<div class="imgs">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+								<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($list['pic_cover_small'])}" >
+							</a>
+							<div class="imgInfoNum">11.2万人</div>
+						</div>
+						<div class="info">
+							<p class="goods-title">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+									{if count($list['group_list']) gt 0 && $list['group_list'][0]->group_name neq ""}
+										<i class="goods_tab">{$list['group_list'][0]->group_name}</i>
+									{/if}
+									{$list.goods_name}
+								</a>
+							</p>
+							<div class="goods-info">
+								<span class="videoNum">已经更新10期</span>
+								<span class="goods_price">
+									{in name="$list.point_exchange_type" value="0,2"}
+									<em style="color: #fb3a2f;">￥{$list.promotion_price}</em>
+									{else/}
+										{if $list['point_exchange_type'] == 1 && $list['promotion_price'] > 0}
+											<em style="color: #fb3a2f;">￥{$list.promotion_price}+{$list.point_exchange}积分</em>
+										{else/}
+											<em style="color: #fb3a2f;">{$list.point_exchange}积分</em>
+										{/if}
+									{/in}
+								<!-- {if $list['shipping_fee'] eq 0 }
+									<i class="shipping_fee">包邮</i>
+								{/if} -->
+								</span>
+							</div>
+						</div>
+					</li>
+					{/foreach}
+				</ul>
+				<div class="btnMore">
+					<a href="{:__URL('APP_MAIN/goods/goodslist?category_id='.$class['category_id'])}">MORE+</a>
+				</div>
+			</section>
+		</div>
+		{/if}
+	{/foreach}
+</div>
+<!-- <div class="foot-nav">
+	<div class="nav">
+		{empty name="$uid"}
+		<a href="{:__URL('APP_MAIN/login/index')}">{:lang("login")}</a>
+		<a href="{:__URL('APP_MAIN/login/register')}">{:lang("register")}</a>
+		{/empty}
+		<a href="javascript:;" onclick="locationShop();">{:lang("pc_version")}</a>
+		<a href="{:__URL('APP_MAIN/member/index')}">{:lang("member_member_center")}</a>
+	</div>
+	{include file="wap/default_new/controlCopyRight" /}
+</div> -->
+{/block}
+{block name="javascript"}
+<script>
+$(function(){
+	//关注微信公众号弹出
+	$("#subscribe").click(function(){
+		
+		$(".shade").show();
+		$(".popup").show();
+	})
+	//关注微信公众号关闭
+	$("#close").click(function(){
+		$(".shade").hide();
+		$(".popup").hide();
+	})
+	
+	$.ajax({
+		type:"post",
+		url : "{:__URL('APP_MAIN/index/getShareContents')}",
+		data : {"shop_id" : "{$shop_id}" , "flag" : "shop" },
+		success : function(data){
+			{include file='wap/default_new/shareContents'/}
+		}
+	})
+})
+//跳转到电脑端
+function locationShop(){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/index/setClientCookie')}",
+		data : { "client" : "shop"},
+		success : function(data){
+			if(data['code'] > 0){
+				location.href= __URL("SHOP_MAIN");
+			}
+		}
+	})
+}
+</script>
+{/block}
+

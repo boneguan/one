@@ -1,0 +1,114 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/newMyPath.css">
+<style>
+body{padding-top:44px;}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">我的足迹</div>
+</section>
+{/block}
+{block name="main"}
+<div class="new-my-path">
+	<nav></nav>
+	<div class="list"></div>
+</div>
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}
+<script type="text/javascript">
+var category_id = '';
+$(function(){
+	LoadingInfo();
+});
+function LoadingInfo(){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/member/newMyPath')}",
+		data : { "page_index" : 1, "page_size" : 0, 'category_id':category_id },
+		success : function(data) {
+			var list = data['data'];
+			var html = '';
+			var day = '';
+			var list_html = '';
+				list_html += '<ul>';
+			for(var i = 0;i < list.length;i++){
+				if(list[i]['goods_info']["goods_name"] != undefined){
+					list_html += '<li>';
+						if(list[i]['day'] != day){
+							day = list[i]['day'];
+							list_html += '<div class="date">'+ list[i]['month'] +'月'+ list[i]['day'] +'日</div>';
+						}
+						list_html += '<div class="right">';
+							list_html += '<div class="img-block" onclick="location.href=\''+ __URL('APP_MAIN/goods/goodsdetail?id=' + list[i]['goods_id']) +'\'">';
+								if(list[i]['goods_info']['picture_info'] != null){
+									list_html += '<img src="{:__IMG($default_goods_img)}" class="lazy_load J_LazyLoad" data-original="'+ __IMG(list[i]['goods_info']['picture_info']['pic_cover']) +'"  alt=""  >';
+								}else{
+									list_html += '<img src="{:__IMG($default_goods_img)}" class="lazy_load J_LazyLoad" data-original=""  alt=""  >';
+								}
+								
+							list_html += '</div>';
+							
+							list_html += '<div class="content-block">';
+								list_html += '<a href="'+ __URL('APP_MAIN/goods/goodsdetail?id=' + list[i]['goods_id']) +'" class="goods-name">'+ list[i]['goods_info']['goods_name'] +'</a>';
+								if(list[i]['goods_info']['point_exchange_type'] == 0 || list[i]['goods_info']['point_exchange_type'] == 2){
+									list_html += '<span class="price">￥'+ list[i]['goods_info']['promotion_price'] +'</span>';
+								}else{
+									if(list[i]['goods_info']['point_exchange_type'] == 1 && list[i]['goods_info']['promotion_price'] > 0){
+										list_html += '<span class="price">￥'+ list[i]['goods_info']['promotion_price'] +'+'+ list[i]['goods_info']['point_exchange']+'积分</span>';
+									}else{
+										list_html += '<span class="price">'+ list[i]['goods_info']['point_exchange'] +'积分</span>';
+									}
+								}
+
+								list_html += '<a href="javascript:delMyPath('+ list[i]['browse_id'] +');" class="del">删除</a>';
+							list_html += '</div>';
+						list_html += '</div>';
+					list_html += '</li>';
+				}
+			}
+			list_html += '</ul>';
+			
+			$(".new-my-path .list").html(list_html);
+			if(!category_id){
+				
+				var cate = data['category_list'];
+				var html = '';
+					html += '<ul>';
+						html += '<li data-category-id="" class="selected" onclick="select_cate(this)">全部宝贝</li>';
+						for(var i = 0;i < cate.length;i++){
+							html += '<li data-category-id="'+ cate[i]['category_id'] + '" onclick="select_cate(this)">' + cate[i]['category_name'] + '</li>';
+						}
+					html += '</ul>';
+				$(".new-my-path nav").html(html);
+			}
+			img_lazyload();
+		}
+	});
+}
+
+function delMyPath(id){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/member/delMyPath')}",
+		data : { "type" : 'browse_id', "value" : id },
+		success : function(data) {
+			
+			if(data['code'] > 0){
+				LoadingInfo();
+			}
+		}
+	});
+}
+
+function select_cate(event){
+	
+	$(event).addClass("selected").siblings().removeClass("selected");
+	category_id = $(event).attr('data-category-id');
+	LoadingInfo();
+}
+</script>
+{/block}

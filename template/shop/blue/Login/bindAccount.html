@@ -1,0 +1,135 @@
+{extend name="shop/blue/Login/registerBase"}
+{block name="main"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/layer.css">
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/layer.js"></script>
+<style type="text/css">
+.reg-wrap-con{ min-height: 300px; }
+.form-horizontal .form-group label.input-left{ width: 156px;min-height: 40px; }
+.error{ color: red; }
+</style>
+<div class="header w990">
+	<div class="logo-info">
+		<a href="{:__URL('SHOP_MAIN')}" class="web-logo-a"><img alt="logo" src="{:__IMG($web_info['logo'])}" class="weblogo"/></a>
+	</div>
+</div>
+<div class="reg-content">
+	<div class="w990">
+		<div class="reg-form">
+			<div class="reg-con">
+				<div class="reg-type">
+					<ul class="clearfix">
+						<li><a href="{:__URL('SHOP_MAIN/login/perfectInfo')}">完善信息</a></li>
+						<li class="active"><a href="">绑定账号</a></li>
+					</ul>
+				</div>
+				<div class="reg-wrap">
+					<div class="reg-wrap-con" style="background: {$register_adv['background']} url({:__IMG($register_adv['adv_image'])}) no-repeat right 60px;background-size: 420px 220px">
+						<form class="form-horizontal" action="javascript:;" method="post">
+							<!-- 用户名 -->
+							<div class="form-group form-group-spe">
+								<label for="" class="input-left">
+									<span class="spark">*</span>
+									<span>用户名/邮箱/手机号：</span>
+								</label>
+								<div class="form-control-box">
+									<input type="text" id="username" class="form-control" name="username" placeholder="用户名/邮箱/手机号" />
+									<span class="error"></span>
+								</div>
+							</div>
+							<!-- 密码 -->
+							<div class="form-group form-group-spe">
+								<label for="" class="input-left">
+									<span class="spark">*</span>
+									<span>{:lang('password')}：</span>
+								</label>
+								<div class="form-control-box">
+									<input type="password" id="pass" class="form-control" name="qrpassword" autocomplete="off" placeholder="请输入密码">
+									<span class="error"></span>
+								</div>
+								<div class="invalid"></div>
+							</div>
+							{if condition = "$login_verify_code['pc'] == 1"}
+							<div class="form-group form-group-spe">
+								<label for="verify_code" class="input-left">
+									<span class="spark">*</span>
+									<span>验证码：</span>
+								</label>
+								<div class="form-control-box">
+									<input type="text" id="verify_code" class="form-control" name="qrpassword" autocomplete="off" placeholder="请输入验证码" style="width: 120px;" maxlength="4">
+									<label class="img" style="margin-left: 5px"> 
+										<img class="verifyimg" src="{:__URL('SHOP_MAIN/captcha')}" onclick="this.src='{:__URL('SHOP_MAIN/captcha?tag=1')}'+'&send='+Math.random()"  alt="captcha" style="vertical-align: middle; cursor: pointer; height: 35px;" /> 
+									</label>	
+									<span class="error"></span>
+								</div>
+								<div class="invalid"></div>
+							</div>
+							{/if}
+							<!-- 按钮 -->
+							<div class="form-group form-group-spe">
+								<label for="" class="input-left"></label>
+								<div class="form-control-box">
+									<button class="loginBind-btn" onclick="loginBind()">登录绑定</button>
+									<button class="perfectInfo-btn" onclick="location.href='{:__URL('SHOP_MAIN/login/perfectInfo')}'">没有账号</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var is_sub = false; // 防止重复提交
+function loginBind(){
+	var username = $("#username").val(),
+		pass = $("#pass").val(),
+		verify_code = $("#verify_code").val();
+		if(vertify(username, pass, verify_code)){
+			if(is_sub) return;
+			is_sub = true;
+			$.ajax({
+				type : "post",
+				url : "{:__URL('SHOP_MAIN/login/bindAccount')}",
+				data : {
+					"username" : username,
+					"password" : pass,
+					"captcha" : verify_code
+				},
+				success : function(data){
+					if(data["code"] > 0){
+						layer.msg(data['message']);
+						setTimeout(function(){
+							location.href = "{:__URL('SHOP_MAIN/member/index')}";
+						},1000)
+					}else{
+						is_sub = false;
+						layer.msg(data['message']);
+					}
+				}
+			})
+		}
+}
+
+function vertify(username, pass, verify_code){
+	if(username.length == 0){
+		$("#username").focus();
+		layer.msg("请输入用户名");
+		return false;
+	}
+	if(pass.length == 0){
+		$("#pass").focus();
+		layer.msg("请输入密码");
+		return false;
+	}
+	{if condition = "$login_verify_code['pc'] == 1"}
+	if(verify_code.length == 0 && verify_code != undefined){
+		$("#verify_code").focus();
+		layer.msg("请输入验证码");
+		return false;
+	}
+	{/if}
+	return true;
+}
+</script>
+{/block}

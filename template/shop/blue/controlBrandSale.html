@@ -1,0 +1,24 @@
+{niu:adv name="advlist" id="[ap_id]"}
+	{notempty name="$advlist['adv_list']"}
+	<div class="banner">
+		<ul class="full-screen-slides" id="fullScreenSlides" >
+			{foreach name="$advlist['adv_list']" item="vo" key="k"}
+				{if $k eq 0}
+					<li style="background:{$vo['background']} url({:__IMG($vo['adv_image'])}) no-repeat 50% 50%;"><a href="{:__URL($vo['adv_url'])}" target="_blank" title="">&nbsp;</a></li>
+				{else/}
+					<li style="display: none;background:{$vo['background']} url({:__IMG($vo['adv_image'])}) no-repeat 50% 50% ;"><a href="{:__URL($vo['adv_url'])}" target="_blank" title="">&nbsp;</a> </li>
+				{/if}
+			{/foreach}
+		</ul>
+		<ul class="full-screen-slides-pagination" style="height:0px;">
+			{volist name="$advlist['adv_list']" id="vo" key="k"}
+				{if $k eq 1}
+					<li class="current"><a href="javascript:void(0);">{$k}</a></li>
+				{else/}
+					<li><a href="javascript:void(0);">{$k}</a></li>
+				{/if}
+			{/volist}
+		</ul>
+	</div>
+	{/notempty}
+{/niu:adv}

@@ -1,0 +1,123 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<style>
+	.container{
+		width: 100%;
+		height: auto;
+	}
+	.container .winning_record_img{
+		max-width: 100%;
+	}
+	.container .winning_record_list{
+		margin: 10px 0; 
+		background: #fff;
+	}
+	.container .winning_record_list li{
+		padding:8px;
+		overflow:hidden;
+		position: relative;
+		border-bottom: 1px solid #eee;	
+	}
+	.container .winning_record_list li .winning_info{
+		display: inline-block;
+		float: left;
+		width: 80%;
+	}
+	.container .winning_record_list li .winning_info .promotion_name{
+		line-height: 25px;
+		color: #666
+	}
+	.container .winning_record_list li .winning_info .winning_content{
+		line-height: 25px;
+		font-size: 13px;
+		color: #666;
+	    white-space: nowrap;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	}
+	.container .winning_record_list li .winning_info .winning_content.integral{
+		padding-left: 20px;
+		background: url(__TEMP__/{$style}/public/images/winning/integral.png) no-repeat left;
+		background-size: 16px;
+	}
+	.container .winning_record_list li .winning_info .winning_content.hongbao{
+		padding-left: 20px;
+		background: url(__TEMP__/{$style}/public/images/winning/hongbao.png) no-repeat left;
+		background-size: 16px;
+	}
+	.container .winning_record_list li .winning_info .winning_content.gift{
+		padding-left: 20px;
+		background: url(__TEMP__/{$style}/public/images/winning/gift.png) no-repeat left;
+		background-size: 16px;
+	}
+	.container .winning_record_list li .winning_info .winning_content.coupon{
+		padding-left: 20px;
+		background: url(__TEMP__/{$style}/public/images/winning/coupon.png) no-repeat left;
+		background-size: 16px;
+	}
+
+	.container .winning_record_list li .winning_info .the_winning_time{
+		font-size: 12px;
+		color: #999;
+	}
+	.container .winning_record_list li .receive{
+		display: inline-block;
+		text-align: right;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		right: 8px;
+	}
+	.container .winning_record_list li .receive a{
+		display: inline-block;
+		color: #f44;
+		border:1px solid #f44;
+		padding:0px 10px;
+	}
+	.container .record_empty{
+	    text-align: center;
+   	 	padding: 50px 0;
+	}
+</style>
+{/block}
+{block name="main"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang('my_winning_record')}</div>
+</section>
+<div style="clear: both;height: 45px;"></div>
+<div class="container">
+	<img src="__TEMP__/{$style}/public/images/winning_record.png" alt="" class="winning_record_img">
+	{if count($gamesWinningRecordsList["data"]) > 0}
+	<ul class="winning_record_list">
+		{foreach name="$gamesWinningRecordsList['data']" item="vo"}
+		<li>
+			<div class="winning_info">
+				<p class="promotion_name">【{$vo.name}】</p>
+				{switch name="$vo['type']"} 
+					{case value="1"} <p class="winning_content integral"> {/case}
+					{case value="2"} <p class="winning_content coupon"> {/case}
+					{case value="3"} <p class="winning_content hongbao"> {/case}
+					{case value="4"} <p class="winning_content gift"> {/case}
+				{/switch}
+				{$vo.remark|strstr="】"|mb_substr="1",mb_strlen($vo['remark']),"utf-8"}</p>
+				<p class="the_winning_time">{$vo.add_time|date="Y-m-d H:i:s",###}</p>
+			</div>
+			{if $vo['is_use'] == 0 && $vo['type'] == 4}
+			<div class="receive">
+				<a href="{:__URL('APP_MAIN/member/toReceiveThePrize?gift_id='.$vo['gift_id'].'&record_id='.$vo['associated_gift_record_id'])}">领取</a>
+			</div>
+			{/if}
+		</li>
+		{/foreach}
+	</ul>
+	{else /}
+		<p class="record_empty">暂无中奖记录！</p>
+	{/if}
+</div>
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}
+<script type="text/javascript">
+</script>
+{/block}

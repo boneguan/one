@@ -1,0 +1,27 @@
+<!--
+	创建人：王永杰
+	创建时间：2017年2月7日 12:02:25
+	功能描述： 首页顶部广告图，可以关闭。此广告只在网站首页展示 
+-->
+{niu:adv name="headadv" id="1051"}
+	{notempty name="headadv"}
+		{empty name="headadv['adv_list'][0]['adv_image']"}
+			<div class="top-active" style="background-color:#0287E1">
+				<div class="top-active-wrap">
+					<a href="javascript:;" target="_blank"><img src="__TEMP__/{$style}/public/images/style_blue_head_adv.png"></a><a href="javascript:void(0);" title="{:lang('goods_close')}" class="top-active-close"></a>
+				</div>
+			</div>
+		{else /}
+			<div class="top-active" style="background-color:{$headadv['adv_list'][0]["background"]}">
+				<div class="top-active-wrap">
+					<a href="{:__URL($headadv['adv_list'][0]['adv_url'])}" target="_blank"><img src="{:__IMG($headadv['adv_list'][0]['adv_image'])}"></a><a href="javascript:void(0);" title="{:lang('goods_close')}" class="top-active-close"></a>
+				</div>
+			</div>
+		{/empty}
+	{/notempty}
+{/niu:adv}
+<script type="text/javascript">
+if($.cookie("1051_close")!=null){
+	$(".top-active").hide();
+}
+</script>

@@ -1,0 +1,504 @@
+{extend name="adminblue/base" /}
+{block name="resources"/} 
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style  type="text/css">
+.ns-main{margin-top: 0;}
+.modal-div{width:90%;margin:auto}
+.modal-dl{overflow:hidden}
+.modal-dl dt{line-height:31px;float:left;font-weight:400;width:30px}
+.modal-dl dd{float:left}
+.modal-dl dd span{display:block;color:#de533c}
+.btn.off{background-color:#e26f6f;color:#FFF}
+.btn.sure{color:#FFF;background-color:#62c462}
+.status-error{display:inline-block;padding-left:5px;padding-right:5px;padding-bottom:3px;padding-top:3px;color:#FFF;background-color:#de533c}
+.status-success{display:inline-block;color:#FFF;padding-left:5px;padding-right:5px;padding-bottom:3px;padding-top:3px;background-color:#5be15b}
+</style>
+{/block}
+{block name="right_tab"}
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th>
+			申请时间：
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker()" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker()" />
+			用户姓名：<input id="userName" class="input-common middle" type="text" value="">
+			代理类型：
+			<select id="agent_type" class="select-common middle">
+				<option value="0">默认</option>
+				<option value="1">省代理</option>
+				<option value="2">市代理</option>
+				<option value="3">区代理</option>
+			</select>
+			状态：
+			<select id="is_audit" class="select-common middle">
+				<option value="10">--选择状态--</option>
+				<option value="0">待审核</option>
+				<option value="1">通过</option>
+				<option value="-1">审核未通过</option>
+				<option value="2">取消</option>
+			</select>			
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>		
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 3%;">
+					<col style="width: 7%;">
+					<col style="width: 7%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 7%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+
+				</colgroup>
+				<thead>
+					<tr>
+						<th><label style="margin-left: 5px;"> <input type="checkbox"  onclick="CheckAll(this)"></label></th>
+						<th>会员信息</th>
+						<th>手机号</th>
+						<th>代理类型</th>
+						<th>代理省份</th>
+						<th>代理市</th>
+						<th>代理区县</th>
+						<th>联系地址</th>
+						<th>状态</th>
+						<th>申请时间</th>				
+						<th>操作</th>
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 3%;">
+					<col style="width: 7%;">
+					<col style="width: 7%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 7%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+				</colgroup>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 审核区域代理 -->
+<div class="modal hide" id="editArea" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">分配代理区域</h4>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-div">
+            		<input type="hidden"  id="region_agent_id"  value=''/>
+            		<dl class="modal-dl">
+            			<dt>省:</dt>
+            			<dd>
+            				<select id="province" >
+            					<option value="0">--请选择省--</option>
+            				</select>           				
+            			</dd>
+            		</dl>
+					<dl class="modal-dl" id="city_box">
+            			<dt>市:</dt>
+            			<dd>
+            				<select id="city">
+            					<option value="0">--请选择市--</option>
+            					
+            				</select>           				
+            			</dd>
+            		</dl> 
+            		<dl class="modal-dl" id="district_box">
+            			<dt>县:</dt>
+            			<dd>
+            				<select id="district">
+            					<option value="0">--请选择县--</option>
+            				</select>           				
+            			</dd>
+            		</dl>           		            		
+            	</div>
+            	<input type="hidden" value="" id="agent_type"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="regionSure();">提交</button>
+                <button type="button" class="btn" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+<script type="text/javascript">	
+//查询
+function searchData(){
+	LoadingInfo(1);
+}
+$(function() {
+		$.ajax({
+	     url: "{:__URL('ADMIN_MAIN/distribution/getprovincelist')}",
+	     type: "post",   
+	     async : false,
+	     success: function (res) { 	    	 
+	    	 $.each(res,function(k, c) {
+						var $option = "<option value=' "+ c.province_id + "'>"
+								+ c.province_name
+								+ "</option>";
+						$("#province").append($option);
+					
+				});
+	     }	
+	 	});	
+		$("#province").change(function () {	
+			$("#city option:gt(0)").remove();
+	        $("#district option:gt(0)").remove();
+	        var province_id = $(this).val();
+			$.ajax({
+			     url: "{:__URL('ADMIN_MAIN/distribution/getcitylist')}",
+			     type: "post",  
+			     data:{"province_id" : province_id },
+			     async : false,
+			     success: function (res) { 	    	 
+			    	 $.each(res, function (k, c) { 
+				         var $option = "<option value=' "+ c.city_id + "'>" + c.city_name + "</option>";
+				         $("#city").append($option);                        
+				     });	
+			     }	
+			 });	
+	    });
+		$("#city").change(function () {
+	        var city_id = $(this).val();                        
+	        $("#district option:gt(0)").remove();
+	        $.ajax({
+			     url: "{:__URL('ADMIN_MAIN/distribution/getdistrictlist')}",
+			     type: "post",  
+			     data:{"city_id" : city_id },
+			     async : false,
+			     success: function (res) { 	    	 
+			    	 $.each(res, function (k, d) { 
+				        var $option = "<option value=' "+ d.district_id + "'>" + d.district_name + "</option>";
+				        $("#district").append($option);                     
+				     });	
+			     }	
+			 });	
+	        
+	     });			   	     	 
+})
+	//加载数据
+	function LoadingInfo(pageIndex) {
+	var user_name = $("#userName").val();
+	var start_date = $("#startDate").val();
+	var end_date = $("#endDate").val();
+	var agent_type = $("#agent_type").val();
+	var is_audit = $("#is_audit").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/promoterRegionAgentList')}",
+			async : false,
+			data : {
+				"pageIndex" : pageIndex,
+				"user_name":user_name,
+				"start_date" : start_date, 
+				"end_date" : end_date,
+				"is_audit" : is_audit,
+				"agent_type":agent_type
+			},
+			success : function(data) {
+				//alert(JSON.stringify(data));
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						var agent_type= "";
+						if(data["data"][i]["agent_type"] == 1){
+							var agent_type = "省代";
+						}else if(data["data"][i]["agent_type"] == 2 ){
+							var agent_type = "市代";
+						}else{
+							var agent_type = "区县代理";
+						}
+						var audit_status = "";
+						if(data["data"][i]["is_audit"] == 0){
+							audit_status = "待审核";
+						}else if(data["data"][i]["is_audit"] == 1 ){
+							audit_status = "通过";
+						}else if(data["data"][i]["is_audit"] == -1 ){
+							audit_status = "审核未通过";
+						}else{
+							audit_status = "取消";
+						}
+						html += '<tr align="center">';
+						html += '<td><div class="cell"><label ><input name="sub" type="checkbox" value="'+ data["data"][i]["region_agent_id"] +'" ></label></div></td>';
+						html += '<td>' + data["data"][i]["real_name"] + '<br/>' + data["data"][i]["promoter_no"] + '</td>';
+						html += '<td>' + data["data"][i]["user_tel"] + '</td>';
+						html += '<td>' + agent_type + '</td>';
+						html += '<td>' + data["data"][i]["province_name"] + '</td>';
+						html += '<td>' + data["data"][i]["city_name"] + '</td>';
+						html += '<td>' + data["data"][i]["district_name"] + '</td>';
+						html += '<td>' + data["data"][i]["agent_address"] + '</td>';
+						html += '<td>' + audit_status + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["reg_time"]) + '</td>';
+						html +='<td>';
+						if(data["data"][i]["is_audit"] == "0"){
+							html += '<a href="javascript:void(0);" onclick="promoterAudit('+ data["data"][i]["region_agent_id"] +','+data["data"][i]["agent_type"]+',1);">通过</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="promoterAudit('+ data["data"][i]["region_agent_id"] +','+data["data"][i]["agent_type"]+',-1);">拒绝</a> ';
+						}else if(data["data"][i]["is_audit"] == "1"){
+							html += '<a href="javascript:void(0);" onclick="promoterEdit('+ data["data"][i]["region_agent_id"] +','+ data["data"][i]["agent_provinceid"] +','+ data["data"][i]["agent_cityid"] +','+ data["data"][i]["agent_districtid"] +', '+data["data"][i]["agent_type"]+');">修改</a> ';
+							//html += '<a href="javascript:void(0);" onclick="promoterCancel('+ data["data"][i]["region_agent_id"] +');">取消</a> ';
+							html += '<a href="javascript:void(0);" onclick="removeRegionAgent('+ data["data"][i]["region_agent_id"] +');">取消资格</a> ';
+						}else if(data["data"][i]["is_audit"] == "2"){
+							//html += '<a href="javascript:void(0);" onclick="promoterCancel('+ data["data"][i]["region_agent_id"] +');">恢复</a> ';
+						}
+						html +='</td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="11">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	//区域代理审核通过
+	function promoterAudit(region_agent_id, agent_type, is_audit){
+		if(is_audit == 1){
+			$( "#dialog" ).dialog({				
+	            buttons: {
+	                "通过,#62c462": function() {
+	                	//audit(region_agent_id,1);
+	                    $(this).dialog('close');
+	                	regionChoice(region_agent_id, agent_type);
+	                },
+	                "取消,#e57373": function() {
+	                    $(this).dialog('close');
+	                }
+	            },
+	            contentText:"确定要通过此用户的区域代理审核吗？",
+			});			
+		}else if(is_audit == -1){
+			$( "#dialog" ).dialog({				
+	            buttons: {
+	                "拒绝,#62c462": function() {
+	                	audit(region_agent_id,is_audit);
+	                    $(this).dialog('close');
+	                	//regionChoice(region_agent_id, agent_type);
+	                },
+	                "取消,#e57373": function() {
+	                    $(this).dialog('close');
+	                }
+	            },
+	            contentText:"确定要拒绝此用户的区域代理审核吗？",
+			});	
+		}
+	}
+	//区域代理审核取消
+	function promoterCancel(region_agent_id){
+		$( "#dialog" ).dialog({				
+            buttons: {
+                "确定,#62c462": function() {
+                	audit(region_agent_id,2);
+                    $(this).dialog('close');
+                },
+                "取消,#e57373": function() {
+                	//audit(promoter_id,-1);
+                    $(this).dialog('close');
+                }
+            },
+            contentText:"确定要取消此用户的区域代理审核吗？",
+		});
+	}
+	function audit(region_agent_id,is_audit){
+		if(is_audit == 1){
+			var province_id = $("#province").val();
+			var city_id = $("#city").val();
+			var district_id = $("#district").val();
+			var agent_type = $("#agent_type").val();
+			if(agent_type == 1 ){
+				if(province_id == 0){
+					showMessage('error', "省代用户必须分配所代理省份！");	
+					return;
+				}
+			}else if(agent_type == 2){
+				if(city_id == 0){
+					showMessage('error', "市代用户必须分配所代理城市！");	
+					return;
+				}
+			}else if(agent_type == 3){
+				if(district_id == 0){
+					showMessage('error', "区代用户必须分配所代理区县！");	
+					return;
+				}
+			}else{
+				showMessage('error', "省代用户必须分配所代理省份！");	
+				return;
+			}
+			$.ajax({
+				type : "post",
+				url : "{:__URL('ADMIN_MAIN/Distribution/modifyPromoterRegionAgentIsAudit')}",
+				async : true,
+				data : {
+					"region_agent_id" : region_agent_id,
+					"is_audit":is_audit,
+					"province_id":province_id,
+					"city_id":city_id,
+					"district_id":district_id
+				},
+				success : function(data) {	
+					if(data.code == 1){
+						showMessage('success', "审核成功！");	
+						location.reload();
+					}else{
+						$("#editArea").modal("hide");
+						showMessage('error', "同一级代理一片区域只能分配一次！");	
+					}
+				}
+	    	})
+		}
+		if(is_audit == -1){
+			$.ajax({
+				type : "post",
+				url : "{:__URL('ADMIN_MAIN/Distribution/modifyPromoterRegionAgentIsAudit')}",
+				async : true,
+				data : {
+					"region_agent_id" : region_agent_id,
+					"is_audit":is_audit
+				},
+				success : function(data) {
+					if(data.code == 1){
+						showMessage('success', "拒绝成功！");	
+						location.reload();
+					}
+				}
+			})
+		}
+		
+		
+	}
+	/**
+	**区域选择框
+	*/
+	function regionChoice(region_agent_id, agent_type){
+		$("#region_agent_id").val(region_agent_id);
+		$("#editArea").modal("show");
+		$("#district_box").show();
+		$("#city_box").show();
+		$("#province").val(0);
+		$("#district").val(0);
+		$("#city").val(0);
+		$("#agent_type").val(agent_type);
+		if(agent_type == 1){
+			$("#district_box").hide();
+			$("#city_box").hide();
+		}else if((agent_type == 2)){
+			$("#district_box").hide();
+		}			
+	}
+	
+	function regionSure(){
+		var region_agent_id = $("#region_agent_id").val();
+		audit(region_agent_id,1);
+	}
+	
+	function promoterEdit(region_agent_id, agent_provinceid, agent_cityid, agent_districtid, agent_type){
+		$("#editArea").modal("show");
+		$("#district_box").show();
+		$("#city_box").show();
+		$("#province").val(0);
+		$("#district").val(0);
+		$("#city").val(0);
+		$("#region_agent_id").val(region_agent_id);
+		$("#agent_type").val(agent_type);
+		if(agent_type == 1){
+			$("#district_box").hide();
+			$("#city_box").hide();
+		}else if((agent_type == 2)){
+			$("#district_box").hide();
+		}	
+		
+			$("#province").val(agent_provinceid);
+			$("#province option").each(function(){
+				if($(this).val() == agent_provinceid){
+					$(this).attr("selected", "selected");
+					return;
+				}
+			})
+			$("#province").trigger('change');	
+			$("#city option").each(function(){
+				if($(this).val() == agent_cityid){
+					$(this).attr("selected", "selected");
+					return;
+				}
+			})
+			$("#city").trigger('change');
+			$("#district option").each(function(){
+				if($(this).val() == agent_districtid){
+					$(this).attr("selected", "selected");
+					return;
+				}
+			})
+			
+	}
+	//区域代理审核取消
+	function removeRegionAgent(region_agent_id){
+		$( "#dialog" ).dialog({				
+            buttons: {
+                "确定,#62c462": function() {
+                	removePromoterRegionAgent(region_agent_id);
+                    $(this).dialog('close');
+                },
+                "取消,#e57373": function() {
+                	//audit(promoter_id,-1);
+                    $(this).dialog('close');
+                }
+            },
+            contentText:"确定要取消此用户的区域代理资格吗？",
+		});
+	}
+	function removePromoterRegionAgent(region_agent_id){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/distribution/removepromoterregionagent')}",
+			async : true,
+			data : {
+				"region_agent_id" : region_agent_id
+			},
+			success : function(data) {
+				if(data.code == 1){
+					showMessage('success', "区域代理资格取消成功！");	
+					location.reload();
+				}
+			}
+		})
+	}
+	
+	
+</script>
+{/block}

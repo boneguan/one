@@ -1,0 +1,246 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<style>
+/* 分享弹出框 */
+.mask-layer-bg{position: fixed;top: 0;bottom: 0;left: 0;right: 0;background: rgba(0, 0, 0, .8);z-index: 1000;}
+.mask-layer-invite-friends{z-index:1001;position: fixed;width:100%;height:100%;top:10%;left:0;}
+.mask-layer-invite-friends div{text-align: right;margin:10px 10px 30px;}
+.mask-layer-invite-friends div img{width: 50px;}
+.mask-layer-invite-friends h4{color:#ffffff;text-align: center;font-weight: bold;font-size:18px;}
+.mask-layer-invite-friends h4 strong{color:#E02E24;}
+.mask-layer-invite-friends a{display:block;text-align: center;color:#ffffff;font-weight: bold;background: #E02E24;padding: 5px 15px;width: 50%;border-radius: 3px;margin: 30px auto;}
+
+body{background: url(__TEMP__/{$style}/public/images/bargain_bg.png) no-repeat;background-size: 100% 100%;}
+.bargain_header{position: relative;}
+.bargain_header .bargain_content{    padding: 10px;background: #fff;width: 88%;margin: 0 auto;margin-top: 45px;position: relative;border-radius: 8px;}
+.bargain_header .activi_rule{    position: absolute;right: 15px;top: -30px;background: rgba(255, 255, 255, .7);display: block;width: 72px;text-align: center;border-radius: 15px;color: #333333;font-size: 12px;}
+.bargain_header .bargain_content .user_headimg {    position: absolute;left: 50%;transform: translateX(-50%);top: -25px;}
+.bargain_header .bargain_content .user_headimg img{    width: 45px;max-width: 100%;max-height: 100%;vertical-align: middle;border-radius: 50%;}
+.bargain_header .bargain_content .user_name{    text-align: center;margin-top: 12px;}
+.bargain_header .bargain_content .propaganda{text-align: center;font-size: 15px;color: #000;line-height: 22px;overflow: hidden;}
+.bargain_header .bargain_content .goods_info {background: #f7f7f7;margin: 7px 0;}
+.bargain_header .bargain_content .goods_info .goods_left{     display: inline-block;width: 20%;height: 65px;line-height: 65px;padding: 7px;text-align: center;}
+.bargain_header .bargain_content .goods_info .goods_left img{max-width: 100%;max-height: 100%;vertical-align: middle;}
+.bargain_header .bargain_content .goods_info .goods_right{width: 73%;float: right;padding-right: 2%;margin: 0px;padding-top: 7px; padding-bottom: 7px;height: 65px;position: relative;}
+.bargain_header .bargain_content .goods_info .goods_right .goods_name{ overflow: hidden;display: block;white-space: nowrap;text-overflow: ellipsis;}
+.bargain_header .bargain_content .goods_info .goods_right .goods_price{ position: absolute; bottom: 7px;font-size: 14px;color: red;font-weight: bold;}
+.bargain_info{margin-top: 15px;}
+
+.bargain_info h3{width: 100%;text-align: center;color: #fff;font-size: 16px;}
+.bargain_info h3 span{    color: #fed866; font-size: 18px; }
+.bargain_info h3 span:last-child{font-size: 16px;}
+#share_friends{    display: block;width: 94%;margin: 0 auto;background: #fff700; border: none;height: 38px; line-height: 38px; color: red; border-radius: 5px;margin-top: 10px;}
+.friend_brafain{    display: block;width: 94%;margin: 0 auto;background: #fff700; border: none;height: 38px; line-height: 38px; color: red; border-radius: 5px;margin-top: 10px;}
+.bargain_info h3:last-child{    font-size: 14px; font-weight: normal; margin: 10px 0;}
+.bargain_list{width: 94%;margin:15px auto;background: rgba(255, 255, 255, 0.19);}
+.bargain_list h3{height: 35px;line-height: 35px;color: #fff;text-align: center;font-size: 16px;font-weight: normal;border-bottom: 1px solid rgba(255, 255, 255, 0.33);margin: 0 10px;}
+.bargain_list ul{padding-bottom: 10px;}
+.bargain_list ul li {margin: 0 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.33); }
+.bargain_list ul li:last-child{ border-bottom: none;}
+.bargain_list ul li .user_headimg { display: inline-block;    max-width: 12%;height: 40px;line-height: 40px;padding: 7px;}
+.bargain_list ul li .user_headimg img{max-width: 100%;max-height: 100%;vertical-align: middle;    border-radius: 50%;}
+.bargain_list ul li .user_info{    width: 82%;float: right;position: relative;}
+.bargain_list ul li .user_info .bargain_price{position: absolute;right: 3px;top: 20px;color: #fed866;font-weight: bold;}
+.clear{clear: right;}
+.bargain_header .idnex{    position: absolute;left: 15px;top: -30px;background: rgba(255, 255, 255, .7); display: block; width: 50px;text-align: center;   border-radius: 15px;}
+.partake_number{float: right;margin-right: 10px;font-size: 12px;color: #9E9E9E;}
+</style>
+{/block}
+{block name="goodsHead"}{/block}
+{block name="main"}
+{include file='wap/default_new/share'/}
+<script>
+</script>
+<section class="bargain_header">
+	<a href="{:__URL('APP_MAIN/index/index')}" class="idnex">首页</a>
+<!-- 	<span class="activi_rule">活动规则</span> -->
+	<div class="bargain_content" onclick="jump_goods({$goods_info['goods_id']},{$launch_info['bargain_id']})">
+		<div class="user_headimg">
+			{if condition="$user_info.user_headimg"}
+			<img src="{:__IMG($default_headimg)}" class="lazy_load" data-original="{:__IMG($vo.user_headimg)}"/>
+			{else}
+			<img src="{:__IMG($default_headimg)}"/>
+			{/if}
+		</div>
+		<div class="user_name">{$user_info.user_name}</div>
+		<div class="propaganda">{$partake_info.propaganda}</div>
+		<div class="goods_info" >
+			<div class="goods_left"><img src="{:__IMG($goods_info['pic']['pic_cover'])}" alt=""></div>
+			<div class="goods_right"><span class="goods_name">{$goods_info['goods_name']}</span>
+			<span style="font-size: 12px;color: #999;">最低可砍至 <b style="color: red;">{$launch_info['bargain_min_money']}</b>元</span><br />
+				<span class="goods_price">￥{$goods_info['price']}</span>
+				
+				<span class="partake_number">{$bargain_goods_info['sales'] + $bargain_goods_info['fictitious_sales']}人已参与</span>
+			</div>
+		</div>
+	</div>
+</section>
+<section class="bargain_info">
+	
+	{if condition="$launch_info['status'] == 1"}
+		<h3>已砍<span>{$launch_info.bargain_money}</span>元，还差<span>{$launch_info['surplus']}</span>元</h3>
+		{if condition="$is_seif eq 1"}
+			<button id="share_friends">喊好友砍一刀</button>
+		{else/}
+			{if condition = "$is_max_partake eq 1"}
+				<button id="" class="friend_brafain" onclick="jump_bargain()">我也要免费拿</button>
+			{else /}
+				<button id="" class="friend_brafain" onclick="friend_brafain({$launch_id})">帮他砍一刀</button>
+			{/if}
+		{/if}
+	{/if}
+	{if condition="$launch_info['status'] == 1"}
+		<h3>还剩<time data-end-time="{$launch_info.end_time}">00:00:00</time>结束，快来砍价吧~</h3>
+	{elseif condition="$launch_info['status'] == 2"}
+		<h3>砍价已结束</h3>
+	{else}
+		<h3>砍价已取消</h3>
+	{/if}
+
+	
+</section>
+	
+<section class="bargain_list">
+	<h3>砍价帮</h3>
+	<ul>
+		{foreach name="partake_list" id="v"}
+		<li>
+			<div class="user_headimg">
+				{if condition="$v.user_info.user_headimg"}
+				<img src="{:__IMG($default_headimg)}"  class="lazy_load" data-original="{:__IMG($v.user_info.user_headimg)}">
+				{else}
+				<img src="{:__IMG($default_headimg)}"/>
+				{/if}
+			</div>
+
+			<div class="user_info">
+				<p style="padding: 6px 0;color: #fff;">{$v.user_info.nick_name} <br>{$v.remark}</p>
+				<span class="bargain_price">砍掉{$v.bargain_money}元</span>
+			</div>
+		</li>
+		
+		{/foreach}
+	</ul>
+</section>
+{if condition = "$is_seif == 1"}
+<div class="mask-layer-bg"  style="display: none"></div>
+<div class="mask-layer-invite-friends" style="display: none">
+	<div><img src="__TEMP__/{$style}/public/images/invite-friends_share.png"/></div>
+	<h4>已砍<strong>{$launch_info.bargain_money}</strong>元，点击右上角发送给好友</h4>
+	<!-- <a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$tuangou_detail['goods_id'].'&group_id='.$tuangou_detail['group_id'])}">参与拼单</a> -->
+</div>
+{/if}
+<input type="hidden" id="ms_time" value="{:time()}"/>
+<input type="hidden" id="launch_id" value="{$launch_id}">  
+
+{include file='wap/default_new/share'/}
+{/block}
+{block name="javascript"}
+<script>
+$(function(){
+
+	$("body").css("min-height",window.screen.height-45)
+	$(".mask-layer-bg,.mask-layer-invite-friends").click(function(){
+		$(".mask-layer-bg,.mask-layer-invite-friends").hide();
+	})
+
+	$("#invite_friends,#share_friends").click(function(){
+		$(".mask-layer-bg,.mask-layer-invite-friends").show();
+	})
+	
+	//分享
+	$.ajax({
+		type:"post",
+		data : {"shop_id" : "{$shop_id}" , "flag" : "bargain" , "launch_id" : "{$launch_id}"},
+		url : "{:__URL('APP_MAIN/goods/getShareContents')}",
+		success : function(data){
+			{include file='wap/default_new/shareContents'/}
+		}
+	});
+})
+
+commonCountDown($(".bargain_info time").attr("data-end-time"),$(".bargain_info time"));
+
+function jump_goods(goods_id,bargain_id){
+	window.location.href= __URL('APP_MAIN/Goods/Goodsdetail?id='+goods_id+'&bargain_id='+bargain_id);
+}
+function jump_bargain(){
+	window.location.href= __URL('APP_MAIN/Goods/bargainlist');
+}
+var flag = true;
+function friend_brafain(launch_id)
+{	
+	if($("#uid").val() == null || $("#uid").val() == ""){
+		window.location.href = __URL(APPMAIN+ "/login");
+		return;
+	}
+	if(flag){
+		$.ajax({
+			type:'post',
+			url : "{:__URL('APP_MAIN/Goods/bargainLaunch')}",
+			data : {'launch_id' : launch_id},
+			success : function(res){
+				if(res == "-9001"){
+					$(".friend_brafain").attr("onclick","jump_bargain()").text("寻找砍价商品");
+					showBox("当前砍价已结束","warning");	
+					flag = false;
+				}else if(res == "-9002"){
+					$(".friend_brafain").attr("onclick","jump_bargain()").text("我也要砍价商品");
+					showBox("您已参加过当前砍价","warning");	
+					flag = false;
+				}else if( res > 0){
+					flag = false;
+					showBox("帮好友砍价成功","success", __URL('APP_MAIN/Goods/bargainLaunch?launch_id='+launch_id));	
+					
+				}else{
+					showBox("砍价失败","warning");	
+				}
+			}
+		})
+	}
+	
+}
+
+function commonCountDown(time,obj){
+	if(null != time && "" != time){
+		var sys_second = (time-$("#ms_time").val());///1000;
+		if(sys_second>1){
+			sys_second -= 1;
+			var day = Math.floor((sys_second / 3600) / 24);
+			var hour = Math.floor((sys_second / 3600) % 24);
+			var minute = Math.floor((sys_second / 60) % 60);
+			var second = Math.floor(sys_second % 60);
+			var s_hour = hour<10?"0"+hour:hour;
+			var s_minute = minute<10?"0"+minute:minute;
+			var s_second = second<10?"0"+second:second;
+			var s_day = day > 0 ? day + "天" : "";
+			var str = s_day + s_hour + ":" + s_minute + ":" + s_second;
+// 			console.log(s_hour);
+			obj.text(str);
+		}else{
+			obj.parent().text("砍价已结束");
+		}
+		var timer = setInterval(function(){
+			if (sys_second > 1) {
+				sys_second -= 1;
+				var day = Math.floor((sys_second / 3600) / 24);
+				var hour = Math.floor((sys_second / 3600) % 24);
+				var minute = Math.floor((sys_second / 60) % 60);
+				var second = Math.floor(sys_second % 60);
+				var s_hour = hour<10?"0"+hour:hour;
+				var s_minute = minute<10?"0"+minute:minute;
+				var s_second = second<10?"0"+second:second;
+				var s_day = day > 0 ? day + "天" : "";
+ 				var str = s_day +s_hour + ":" + s_minute + ":" + s_second;
+				obj.text(str);
+			} else { 
+				obj.parent().text("砍价已结束");
+				clearInterval(timer);
+			}
+		}, 1000);
+	}
+}
+
+</script>
+{/block}
+{block name="bottom"}{/block}

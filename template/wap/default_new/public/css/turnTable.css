@@ -1,0 +1,117 @@
+@CHARSET "UTF-8";
+/* 大转盘css */
+.game-img{
+	position:relative;
+}
+.game-img .table-bg{
+	width:100%!important;
+}
+.game-img .table-title{
+	width:58%!important;
+	position:absolute;
+	top:20px;
+	left:50%;
+	transform: translateX(-50%);
+}
+.game-img .banner{
+	display:block;
+	width:90vw;
+	height:90vw;
+	position:absolute;
+	left:5vw;
+	bottom:24px;
+	background-image:url('../images/turnplate-bg.png');
+	background-size:100% 100%;
+}
+.game-img .banner .item{
+	width:100%;
+}
+.game-img .pointer{
+	width:27.5%;
+	height:42.5%;
+	position:absolute;
+	left:50%;
+	top:43%;
+	transform: translateX(-50%) translateY(-50%);
+}
+.game-text{
+	border-top:8px solid #ff9362;
+	background-color:#fed74c;
+	padding-bottom:1px;
+}
+.game-text>div{
+	width:90vw;
+	border:4px solid #fbc156;
+	background-color:#fff5d1;
+	margin:26px auto 0;
+	position:relative;
+	border-radius:10px;
+}
+.game-text .name-list{
+	margin-bottom:50px;
+}
+.game-text>div img.title{
+	width:44%!important;
+	position:absolute;
+	top:-11px;
+	left:50%;
+	transform: translateX(-50%);
+}
+.game-text .name-list .list-desc{
+	margin:20px 14px 14px;
+	font-size:14px;
+	height:104px;
+	line-height:26px;
+	overflow: hidden;
+}
+.game-text .name-list .list-desc ul li{
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.game-text .active-rule .rule-desc{
+	margin:20px 14px 14px;
+}
+.game-text .active-rule .rule-table{
+	border-color: #999!important;
+    border: none;
+    width: 100%;
+    margin: 5px 0;
+}
+.game-text .active-rule .rule-table td.left{
+	text-indent:8px;
+}
+.restriction{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10;
+}
+.restriction .tip-info-container{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    width: 220px;
+    padding: 15px;
+    margin:0 auto;
+    text-align: center;
+    border-radius: 8px;
+}
+.restriction .tip-info-container .tip-info{
+    margin:10px 0 15px;
+    font-size: 15px;
+    color: #666;
+}
+.restriction .tip-info-container button{
+    border:none;
+    color: #fff;
+    background: #FF5B3F;
+    padding: 0 15px;  
+    border-radius: 3px;
+    height: 35px;
+    line-height: 1;
+}

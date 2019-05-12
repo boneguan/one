@@ -1,0 +1,618 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style  type="text/css">
+.ns-main{margin-top: 0;}
+.modal-div{width:90%;margin:auto}
+.modal-dl{overflow:hidden}
+.modal-dl dt{line-height:33px;float:left;font-weight:400}
+.modal-dl dd{float:left}
+.modal-dl dd span{display:block;color:#de533c}
+.btn.off{background-color:#e26f6f;color:#FFF}
+.btn.sure{color:#FFF;background-color:#62c462}
+.status-error{display:inline-block;padding-left:5px;padding-right:5px;padding-bottom:3px;padding-top:3px;color:#FFF;background-color:#de533c}
+.status-success{display:inline-block;color:#FFF;padding-left:5px;padding-right:5px;padding-bottom:3px;padding-top:3px;background-color:#5be15b}
+.update_up{
+	float:left;
+}
+</style>
+{/block}
+{block name="right_tab"}
+<!-- <li><a class="nscs-table-handle_green" href="javascript:;" onclick="addBrand()"><i class="fa fa-plus-circle"></i>&nbsp;添加品牌</a></li> -->
+{/block}
+{block name="main"}
+<table class="mytable">
+	
+	<tr>
+		<th>	
+			<button onclick="update_up()" value="修改" class="btn-common update_up" >修改上级</button>
+			申请时间：
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			<button class="btn-common-white more-search"><i class="fa fa-chevron-down"></i></button>
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+			<button onclick="promoterExcel()" value="搜索" class="btn-common" >导出数据</button>
+			<div class="more-search-container">
+				<dl>
+					<dt>用户昵称：</dt>
+					<dd>
+						<input id="userName" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>手机号：</dt>
+					<dd>
+						<input id="userTel" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>上级编号：</dt>
+					<dd>
+						<input id="up_bianhao" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt></dt>
+					<dd>
+						<button onclick="searchData()" class="btn-common">完成</button>
+					</dd>
+				</dl>
+			</div>	
+		</th>
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+				<table class="table-class">
+				<colgroup>
+					<col style="width: 2%;">
+					<col style="width: 8%;">
+					<col style="width: 12%;">
+					<col style="width: 10%;">
+					<col style="width: 8%;">
+					<col style="width: 8%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 5%;">
+					<col style="width: 16%;">
+					<col style="width: 11%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)" id="check"/></i></th>
+						<th>编号</th>
+						<th>姓名</th>
+						<th>等级</th>
+						<th>店铺名称</th>
+						<th>团队</th>
+						<th>销售总额</th>
+						<th>上级推广员</th>
+						<th>状态</th>
+						<th>申请时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- 修改用户上级（Modal）开始 -->
+<div class="modal fade hide" id="editParent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">推广员上级修改</h3>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-div">
+            		<input type="hidden"  id="promoter_id"  value=''/>
+            		<dl class="modal-dl">
+            			<dt>上级推广员编号:</dt>
+            			<dd>
+            				<input  type="text" id="parent_promoter"value=""/>
+            				<span id="ever_parent_promoter"></span>
+            			</dd>
+            		</dl>           		            		
+            	</div>
+            </div>
+            <div class="modal-footer">
+            	<input type="hidden" id="up_id"/>
+            	<input type="hidden" id="no_arr" value=""/>
+                <button type="button" class="btn-common btn-big" onclick="modifyPromoterParent();">修改</button>
+                <button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade hide" id="editLevel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">推广员等级修改</h3>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-div">
+            		<input type="hidden"  id="level_promoter_id"  value=''/>
+            		<dl class="modal-dl">
+            			<dt>推广员等级:</dt>
+            			<dd>
+            				<select id="level_id">
+            					{foreach name="level_list" item="level_info" }
+								    <option value="{$level_info.level_id}">{$level_info.level_name}</option>
+								{/foreach}
+            				</select>	
+            			</dd>
+            		</dl>           		            		
+            	</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-common btn-big" onclick="modifyPromoterLevel();">修改</button>
+                <button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 修改用户上级（Modal）结束 -->
+
+<!--修改店铺名称  -->
+<div class="modal fade hide" id="editShopName" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">店铺名称修改</h3>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-div">
+            		<input type="hidden"  id="shop_promoter_id"  value=''/>
+            		<dl class="modal-dl">
+            			
+            			<dt>店铺名称：</dt>
+            			<dd>
+            				<input  type="text" id="shop_name" value=""/>
+            			</dd>
+		            	
+            		</dl>           		            		
+            	</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-common btn-big" onclick="modifyShopName();">修改</button>
+                <button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+<!--我的团队显示 -->
+
+
+
+<div class="modal fade hide" id="myTeam" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:60%;left:35%">
+
+	<div class="modal-dialog" >
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3 class="modal-title" id="myModalLabel">我的团队 <input type="button" onclick="dataExcel()" value="导出数据" class="btn-common" style="float: right;margin-right:50px!important"/>	</h3>
+			</div>
+			<div class="modal-body" style="min-height: 360px;">
+				<div class="modal-infp-style" style="height: 600px; overflow: auto;">
+					<table class="modal-tab table-class">
+						<thead>
+							<tr align="center">
+								<th>编号</th>
+								<th>昵称</th>
+								<th>等级</th>
+								<th>店铺名称</th>
+								<th>角色</th>
+								<th>申请时间</th>
+							</tr>
+						</thead>
+						<colgroup>
+							<col style="width: 8%;">
+							<col style="width: 12%;">
+							<col style="width: 10%;">
+							<col style="width: 8%;">
+							<col style="width: 7%;">
+							<col style="width: 16%;">
+						</colgroup>
+						<tbody id="my_team_list"></tbody>
+					</table>
+				</div>
+			</div>
+			
+			<input type="hidden" value="" id="hidden_promoter_id"/>
+			<div class="modal-footer">
+				<button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+	
+</div>
+
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+<script type="text/javascript">
+//全选
+function CheckAll(event){
+	var checked = event.checked;
+	$(".table-class tbody input[type = 'checkbox']").prop("checked",checked);
+	if(checked) $(".table-class tbody input[type = 'checkbox']").parent().addClass("selected");
+	else $(".table-class tbody input[type = 'checkbox']").parent().removeClass("selected");
+}
+	//查询
+	function searchData(){
+		$(".more-search-container").slideUp();
+		LoadingInfo(1);
+	}
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var user_name = $("#userName").val();
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();
+		var user_phone = $("#userTel").val();
+		var up_bianhao = $("#up_bianhao").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/promoterList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"is_audit":{$is_audit},
+				"user_name":user_name,
+				"start_date" : start_date, 
+				"end_date" : end_date,
+				"user_phone":user_phone,
+				"up_bianhao" : up_bianhao
+			},
+			success : function(data) {
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						var lock_status = "";
+						var lock_operrate = "";
+						var lock_do = 0;
+						if(data["data"][i]["is_lock"] == 1){
+							lock_operrate = "解冻";
+							lock_do = 0;
+						}else{
+							lock_operrate = "冻结";
+							lock_do = 1;
+						}
+						var parent_realname ="";
+						if(data["data"][i]["parent_realname"] != null){
+							parent_realname = data["data"][i]["parent_realname"];
+						}
+						var user_tel = '';
+						if(data["data"][i]["user_tel"] !=''){
+							user_tel = "<p>"+data["data"][i]["user_tel"]+"</p>";
+						}
+						html += '<tr align="center">';
+						html += '<td ><i class="checkbox-common"><input type="checkbox"  value="'+data['data'][i]['promoter_id']+'" name="sub" promoter_no="'+ data['data'][i]['promoter_no'] +'"></i></td>';
+						html += '<td>';
+						if(data["data"][i]["user_headimg"] ==""){
+							html += '<img src="__STATIC__/images/default_user_portrait.gif" class="head-portrait" />'+data["data"][i]["promoter_no"];
+						}else{
+							html += '<img src="'+ __IMG(data["data"][i]["user_headimg"]) +'" class="head-portrait" />'+data["data"][i]["promoter_no"];
+						}
+						html += '</td>';
+						html += '<td>' + data["data"][i]["real_name"] + user_tel+'</td>';
+						html += '<td>' + data["data"][i]["level_name"] + '</td>';
+						html += '<td>' + data["data"][i]["promoter_shop_name"] + '</td>';
+						html += '<td>推广员数:'+data["data"][i]["promoter_num"]+'<br/>粉丝数:'+data["data"][i]["fans_num"]+'</td>';
+						html += '<td>' + data["data"][i]["order_total"] + '</td>';
+						html += '<td>' + parent_realname + '</td>';
+						
+						if(data["data"][i]["is_audit"] == 1){
+							html += '<td><span class="status-success">已审核</span></td>';
+						}else if(data["data"][i]["is_audit"] == -1){
+							html += '<td><span class="status-error">已拒绝</span></td>';
+						}
+						
+						html += '<td>' +timeStampTurnTime(data["data"][i]["regidter_time"])+ '</td>';
+						
+						html += '<td>';
+						//html += '<a href="ADMIN_MAIN/Distribution/modifyPromoterParent?promoter_id='+data["data"][i]["promoter_id"]+'&parent_promoter='+data["data"][i]["parent_promoter"]+'" >修改上级</a>';
+						if(data["data"][i]["is_audit"] == 1){
+							html += '<a href="'+__URL('ADMIN_MAIN/Distribution/promoterAccount?promoter_id='+data["data"][i]["promoter_id"]+'&uid='+data["data"][i]["uid"])+'" target="_blank">账户详情</a>';
+							html += '<a href="javascript:void(0);"  onclick="showEditParent('+data["data"][i]["promoter_id"]+',&#39;'+data["data"][i]["parent_promoter_no"]+'&#39;);" >修改上级</a><br/>';
+							html += '<a href="javascript:void(0);" onclick="modifyPromoterLock('+data["data"][i]["promoter_id"]+','+lock_do+');">'+lock_operrate+'店铺</a>';
+							html += '<a href="javascript:void(0);"  onclick="showEditLevel('+data["data"][i]["promoter_id"]+',&#39;'+data["data"][i]["promoter_level"]+'&#39;);" >修改等级</a><br/>';
+							html += '<a href="javascript:void(0);"  onclick="showTeamList('+data["data"][i]["promoter_id"]+');" >我的团队</a>';
+							html += '<a href="javascript:void(0);"  onclick="showEditShopName('+data["data"][i]["promoter_id"]+',&#39;'+data["data"][i]["promoter_shop_name"]+'&#39;);" >修改店铺</a>';
+							
+							
+						}
+						
+						
+						html += '</td> ';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="11">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+/* 	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	 */
+	
+	//
+	function modifyPromoterLock(promoter_id, is_lock){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/modifyPromoterLock')}",
+			async : true,
+			data : {
+				"promoter_id" : promoter_id,
+				"is_lock":is_lock
+			},
+			success : function(data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/PromoterList')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+	//修改上级弹出框
+	function showEditParent(promoter_id,parent_promoter_no){
+		$("#promoter_id").val(promoter_id);
+		if(parent_promoter_no == "" ){
+			var parent_promoter_no = "此推广员无上级";
+		}else{
+			var parent_promoter_no = "原上级推广员编号为:"+parent_promoter_no;
+		}
+		$("#ever_parent_promoter").html(parent_promoter_no);
+		$("#editParent").modal('show');
+	}
+	//修改上级
+	function modifyPromoterParent(){
+		var promoter_id = $("#promoter_id").val();
+		var parent_promoter = $("#parent_promoter").val();
+		var up_id = $("#up_id").val();
+		var up_promoter = $("#no_arr").val();
+		if(parent_promoter == ''){
+			showMessage('error', "上级推广员编号不可为空！");	
+			return false;
+		}
+		
+		//批量修改上级推广员判断
+		if(up_id != ""){			
+			var up_array = up_promoter.split(',');
+			for(var i=0; i<up_array.length; i++){
+				if(parent_promoter == up_array[i]){
+					showMessage('error', "自己不能当自己的上级");	
+					return false;
+				}
+			}
+			var query_res = false;
+			$.ajax({
+				type : "post",
+				async: false,
+				url : "{:__URL('ADMIN_MAIN/Distribution/selectUpTuiGuang')}",
+				data : {
+					'parent_promoter':parent_promoter,
+					'up_id' : up_id
+				},
+				success : function (data){
+					if(data == 1){
+						query_res = true;
+					}
+				}
+			})
+			if(query_res){
+				showMessage('error', "作为下级的推广员不能转上级");	
+				return false;
+			}
+		}
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/modifyPromoterParent')}",
+			data:{
+				'promoter_id':promoter_id,
+				'parent_promoter':parent_promoter,
+				'up_id' : up_id
+			},
+			async:true,
+			success:function (data) {
+			
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/promoterList')}");
+					$("#editParent").modal('hide');
+				}else{
+					showMessage('error', '不可添加自己为上级或者上级编号不存在！');
+				}	
+			}
+		});
+	}
+
+	//修改等级框
+	function showEditLevel(promoter_id,promoter_level){
+		$("#level_promoter_id").val(promoter_id);
+		$("#level_id").val(promoter_level);
+		$("#editLevel").modal('show');
+	}
+	//修改上级
+	function modifyPromoterLevel(){
+		var promoter_id = $("#level_promoter_id").val();
+		var level_id = $("#level_id").val();
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/modifyPromoterLevel')}",
+			data:{
+				'promoter_id':promoter_id,
+				'level_id':level_id
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/promoterList')}");
+					$("#editLevel").modal('hide');
+				}else{
+					showMessage('error', '您已是此等级无需修改！');
+				}	
+			}
+		});
+	}
+	
+	//修改店铺名称显示
+	function showEditShopName(promoter_id,shop_name){
+		$("#shop_promoter_id").val(promoter_id);
+		$("#shop_name").val(shop_name);
+		$("#editShopName").modal('show');
+	}
+	//修改店铺名称
+	function modifyShopName(){
+		var promoter_id = $("#shop_promoter_id").val();
+		var promoter_shop_name = $("#shop_name").val();
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/modifyPromoterShopName')}",
+			data:{
+				'promoter_id':promoter_id,
+				'promoter_shop_name':promoter_shop_name
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/promoterList')}");
+					$("#editShopName").modal('hide');
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+	
+	
+	//我的团队显示
+	function showTeamList(promoter_id){
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/teamList')}",
+			data:{
+				'promoter_id':promoter_id
+			},
+			async:true,
+			success:function (data) {
+ 				//alert(JSON.stringify(data[0]));
+				var html = '';
+				if (data.length > 0) {
+					for (var i = 0; i < data.length; i++) {
+						html += '<tr>';
+						if(data[i]["promoter_info"]["promoter_no"] == undefined){
+							html += '<td style="text-align:center;">--</td>';
+						}else{
+							html += '<td style="text-align:center;">' + data[i]["promoter_info"]["promoter_no"] + '</td>';
+						}
+						html += '<td style="text-align:center;">' + data[i]["user_info"]["nick_name"] + '</td>';
+						
+						if(data[i]["promoter_info"]["level_name"] == null){
+							html += '<td style="text-align:center;">--</td>';
+						}else{
+							html += '<td style="text-align:center;">' + data[i]["promoter_info"]["level_name"] + '</td>';
+						}
+						
+						if(data[i]["promoter_info"]["promoter_shop_name"] == undefined){
+							html += '<td style="text-align:center;">--</td>';
+						}else{
+							html += '<td style="text-align:center;">' + data[i]["promoter_info"]["promoter_shop_name"] + '</td>';
+						}
+						
+						html += '<td style="text-align:center;">' + data[i]["role_name"] + '</td>';
+						html += '<td style="text-align:center;">' + timeStampTurnTime(data[i]["user_info"]["reg_time"]) + '</td>';
+						html += '</tr>';
+					}
+				} else {
+					   html += '<tr align="center"><td colspan="11">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$("#my_team_list").html(html);
+				
+			}
+		});
+		
+		$("#hidden_promoter_id").val(promoter_id);
+		$("#myTeam").modal('show');
+	}
+	
+
+	/**
+	 * 团队数据导出
+	 */
+	function dataExcel(){
+		var promoter_id = $("#hidden_promoter_id").val();
+		window.location.href=__URL("ADMIN_MAIN/Distribution/memberDataExcel?promoter_id="+promoter_id); 	
+	}	
+	
+	/**
+	 * 订单数据导出
+	 */
+	function promoterExcel(){
+		var user_name = $("#userName").val();
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();
+		var user_phone = $("#userTel").val();
+		window.location.href=__URL("ADMIN_MAIN/distribution/promoterDataExcel?is_audit={$is_audit}&start_date="+start_date+"&end_date="+end_date+"&user_name="+user_name+"&user_phone="+user_phone); 	
+	}
+
+	// 点击显示更多搜索
+	$(".more-search").on("click", function(e){
+		$(".more-search-container").slideToggle();
+		$(document).one("click", function(){
+	        $(".more-search-container").slideUp();
+	    });
+	    e.stopPropagation();
+	})
+
+	$(".more-search-container").on("click", function(e){
+	    e.stopPropagation();
+	});
+	
+function update_up(){
+	var obj = $(".table-class tbody input[type='checkbox']:checked");
+	var id_arr = new Array();
+    var no_arr = new Array();
+	for(var i=0; i<obj.length; i++){
+		id_arr.push(obj.eq(i).val());
+		no_arr.push(obj.eq(i).attr('promoter_no'));
+	}
+	
+	if(id_arr == ""){
+		showMessage("error","请选择推广员");
+		return false;
+	}else{
+		$("#editParent").modal('show');
+		$("#up_id").val(id_arr);
+		$("#no_arr").val(no_arr.toString());
+	}	
+}
+</script>
+{/block}

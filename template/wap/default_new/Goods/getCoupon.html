@@ -1,0 +1,68 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<style>
+.container{background: #fff;}
+.content{background: url(__TEMP__/{$style}/public/images/getcouponbk.png) no-repeat;background-size: 100% auto;}
+.wx-code{position: relative;margin: 0 auto;top: 34%;width: 137px;height: 132px;background: #fff;text-align: center;box-shadow: 0 0 20px -1px;}
+.wx-code img{width: 85%;padding: 7px;}
+.get-coupon{position: relative;margin: 0 auto;width: 226px;top: 37%;text-align: center;}
+.get-span{text-align: center;background: #ff6252;display: block;border-radius: 3px;margin-top: 29px;height: 35px;line-height: 35px;color: #fff;}
+.get-coupon i{position: absolute;left: 0;bottom: -25px;color:#a2a2a2;font-size: 12px;}
+.nogetcoupon{background-color: #ccc !important;}
+</style>
+{/block}
+{block name="goodsHead"}{/block}
+{block name="main"}
+	<section class="container">
+		<div class="content">
+			<div class="wx-code"><img src="{:__IMG($code_path)}" alt="" ></div>
+			<div class="get-coupon">
+				<span style="font-size: 18px;color: #333;">{$data['coupon_name']}</span><br>
+				<span style="color: #ff4444;font-size: 26px;"><b>￥{$data['money']}</b></span><br>
+				<span style="color: #999">{if condition="$data['range_type'] eq 1"}全场产品可使用{else/}仅限购买部分商品{/if}(&nbsp;满{$data['at_least']}使用)</span><br>
+				<span class="get-span" onclick="getcoupon({$data['coupon_type_id']})">领取</span>
+				<i>注:扫描二维码或点击右上角进行分享</i>
+			</div>
+			
+		</div>
+	</section>
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}
+<script>
+$(document).ready(function(){
+// alert($(window).height()); //浏览器当前窗口可视区域高度
+	var mobileratio = $(window).height();
+	$(".content").css({
+		height : mobileratio +'px',
+	});
+})
+
+//领取优惠券
+function getcoupon(coupon_type_id){
+
+	$.ajax({
+		type : "post",
+		url  : "{:__URL('APP_MAIN/index/getCoupon')}",
+		data : { 'coupon_type_id' : coupon_type_id },
+		success : function(data){
+			if(data["code"]>0){
+				showBox("恭喜您，领取成功","success");
+			}else{
+				if(data["code"] == "-2009"){
+					location.href="{:__URL('APP_MAIN/login/index')}";
+				}else if(data["code"] == "-2010"){
+					showBox("您已领取过，请勿重复领取","warning");
+					$(".get-span").addClass("nogetcoupon");
+ 					$(".get-span").text("您已领取过","warning");
+				}else{
+					showBox(data["message"]);
+					$(".get-span").addClass("nogetcoupon");
+					$(".get-span").text(data["message"]);
+				}
+			}
+		}
+	});
+}
+</script>
+{/block}

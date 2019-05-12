@@ -1,0 +1,42 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<style type="text/css">
+.group-child{left:0;}
+body{background: #ffffff;}
+.main_content{margin-top: 45px;}
+h3{line-height: 30px;text-align: center;font-size: 16px;padding: 10px 0;}
+p.fu_title{padding-left: 10px;}
+#html_content{padding: 0 10px;}
+#html_content img{width: 100% !important;}
+.location_other_article{
+	padding:0 10px;
+	margin-top: 30px;
+}
+.next{
+	float:right
+}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="{:__URL('APP_MAIN/')}"><i class="icon-back"></i></a>
+	<div class="head-title" style="margin-left: 10%;">公告内容<a href="{:__URL('APP_MAIN/index/noticelist')}"><span style="float:right;margin-right:8px;font-size:14px">全部</span></a></div>
+</section>
+{/block}
+{block name="main"}
+<div class="main_content">
+	<h3>{$article_info.notice_title}</h3>
+	<p class="fu_title">{:lang('position_posted_on')}：{$article_info.create_time|getTimeStampTurnTime}</p>
+	<div id="html_content">{$article_info.notice_content}</div>
+	
+	<div class="location_other_article">
+		{notempty name="prev_info"}
+		<a href="{:__URL('APP_MAIN/index/noticeContent', 'id='.$prev_info.id)}" class="prev">上一篇：{$prev_info.notice_title}</a>
+		{/notempty}
+		{notempty name="next_info"}
+		<a href="{:__URL('APP_MAIN/index/noticeContent', 'id='.$next_info.id)}" class="next">下一篇：{$next_info.notice_title}</a>
+		{/notempty}
+	</div>
+</div>
+{/block}
+{block name="bottom"}{/block}

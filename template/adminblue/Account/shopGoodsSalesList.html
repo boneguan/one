@@ -1,0 +1,95 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<script src="ADMIN_JS/highcharts.js"></script>
+<script src="ADMIN_JS/exporting.js"></script>
+<style  type="text/css">
+.alert li{font-size: 12px;}
+.ns-main{margin-top:0px;}
+</style>
+{/block}
+{block name="alert_info"}
+1、符合以下任何一种条件的订单即为有效订单：a）采用在线支付方式支付并且已付款；b）采用货到付款方式支付并且交易已完成<br/>
+2、以下列表为从昨天开始最近30天有效订单中的所有商品数据<br/>
+3、近30天下单商品数：从昨天开始最近30天有效订单的某商品总销量<br/>
+4、近30天下单金额：从昨天开始最近30天有效订单的某商品总销售额
+{/block}
+{block name="main"}
+
+<table class="mytable">
+	<tr>
+		<th>
+			<input type="text" id="goods_name" class="input-common" placeholder="请输入商品名称"/>
+			<button class="btn-common" value="搜索" onclick="LoadingInfo(1);">搜索</button>
+		</th>
+	</tr>
+</table>
+<table class="table-class">
+	<colgroup>
+		<col style="width: 2%;">
+		<col style="width: 24%;">
+		<col style="width: 24%;">
+		<col style="width: 25%;">
+		<col style="width: 25%;">
+		<col >
+	</colgroup>
+	<thead>
+		<tr>
+			<th align="left"><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)"></i></th>
+			<th align="left">商品名称</th>
+			<th align="right">价格<span class="row-30"></span></th>
+			<th align="right">近30天下单商品数<span class="row-30"></span></th>
+			<th align="right">近30天下单金额<span class="row-30"></span></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
+<script type="text/javascript">
+function LoadingInfo(page_index) {
+	var goods_name = $("#goods_name").val();
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/account/shopgoodssaleslist')}",
+		data : {
+			"page_index" : page_index,
+			"page_size" : $("#showNumber").val(),
+			"goods_name":goods_name
+		},
+		success : function(data) {
+			if (data["data"].length > 0) {
+
+				$(".table-class tbody").empty();
+				for (var i = 0; i < data["data"].length; i++) {
+					var html = '';
+					var goods_name = "";
+					if(data["data"][i]["goods_name"].length > 23){
+						goods_name = data["data"][i]["goods_name"].substring(0 ,24)+"..." ;
+					}else{
+						goods_name =  data["data"][i]["goods_name"];
+					}
+					html += '<tr>';
+					html += '<td  style="text-align: center;"><i class="checkbox-common"><input name="sub" type="checkbox" value="'+ data["data"][i]["id"]+'" ></i></td>';
+					html += '<td align="left" class="tal" title="' + data["data"][i]["goods_name"] + '">' + goods_name + '</td>';
+					html += '<td align="right" class="tal">' + data["data"][i]["price"] + '<span class="row-30"></span></td>';
+					html += '<td align="right">' + data["data"][i]["sales_info"]["sales_num"] + '<span class="row-30"></span></td>';
+					html += '<td align="right">' + data["data"][i]["sales_info"]["sales_money"] + '<span class="row-30"></span></td>';
+					html += '</tr>';
+					$(".table-class tbody").append(html);
+				}
+			} else {
+				var html = '<tr align="center"><td colspan="4">暂无符合条件的数据记录</td></tr>';
+				$(".table-class tbody").html(html);
+			}
+			initPageData(data["page_count"],data['data'].length,data['total_count']);
+			$("#pageNumber").html(pagenumShow(jumpNumber,$("#page_count").val(),{$pageshow}));
+		}
+	});
+}
+
+function CheckAll(event){
+	var checked = event.checked;
+	$("#productTbody input[type = 'checkbox']").prop("checked",checked);
+	if(checked) $(".table-class tbody input[type = 'checkbox']").parent().addClass("selected");
+	else $(".table-class tbody input[type = 'checkbox']").parent().removeClass("selected");
+}
+</script>
+{/block}

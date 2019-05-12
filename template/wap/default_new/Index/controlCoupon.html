@@ -1,0 +1,131 @@
+<style>
+.coupon-container{
+	padding:10px 0;
+	background: #fff;
+	margin: 10px 0;
+}
+.coupon-container .coupon-title{
+	width: 70%;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.coupon-container .coupon-title img{
+	width: 100%;
+}
+.coupon-container .coupon-all{   
+    white-space: nowrap;
+    overflow-y: auto;
+    padding: 10px 0 0 0;
+}
+.coupon-container .coupon-all::-webkit-scrollbar {
+	display: none;
+}
+.coupon-container .coupon-all .receive-coupons{
+	width: 31.3%;
+	height: 70px;
+	display: inline-block;
+	float: left;
+	background: #f23c3c url("__TEMP__/{$style}/public/images/index_coupon_bg.png") no-repeat;
+	background-size:  100% 100%;
+	margin-left: 1.5%;
+	color: #fff;
+	text-align: center;
+}
+.coupon-container .coupon-all .receive-coupons.received{
+	background: #aaa url("__TEMP__/{$style}/public/images/index_coupon_bg.png") no-repeat;
+	background-size:  100% 100%;
+}
+.coupon-container .coupon-all .receive-coupons big.money-number{
+    display: block;
+    margin: 0;
+    padding-top: 8px;
+    line-height: 22px;
+    font-size: 21px;
+    color: #fff;
+    text-align: center;
+}
+.coupon-container .coupon-all .receive-coupons p.explanation{
+	display: block;
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255,255,255,.7);
+    text-align: center;
+}
+
+.coupon-container .coupon-all .receive-coupons span.get{    
+	line-height: 16px;
+    font-size: 14px;
+    position: relative;
+    color: rgba(255,255,255,.7);
+}
+.coupon-container .coupon-all .receive-coupons span.get:before,
+.coupon-container .coupon-all .receive-coupons span.get:after{
+	content: "";
+	background: rgba(255,255,255,.7);
+	width: 8px;
+	height: 1px;
+	position: absolute;
+	top: 50%;
+	
+}
+.coupon-container .coupon-all .receive-coupons span.get:before{
+	left: -10px;
+}
+.coupon-container .coupon-all .receive-coupons span.get:after{
+	right: -10px;
+}
+</style>
+
+<div class="coupon-container">
+	<div class="coupon-title">
+		<img src="__TEMP__/{$style}/public/images/coupon_title_bg.png" alt="">
+	</div>
+	<div  class="coupon-all">
+		{volist name="coupon_list" id="vo" }
+		<div class="receive-coupons" data-max-fetch="{$vo.max_fetch}" data-received-num="{if !empty($uid)}{$vo.received_num}{else/}0{/if}" onclick="coupon_receive(this,{$vo.coupon_type_id})">
+			<big class="money-number">￥{$vo['money']}</big>
+			<p class="explanation">满{$vo.at_least}可用</p>
+			<span class="get">领取</span>
+		</div>
+		{/volist}
+	</div>
+</div>
+
+<script type="text/javascript">
+var is_have = true;
+function coupon_receive(event,coupon_type_id){
+	var info = new Array();
+		info['maxFetch'] = $(event).attr("data-max-fetch");
+		info['receivedNum'] = $(event).attr("data-received-num");
+		
+	if(is_have){
+		is_have = false;
+		$.ajax({
+			type:"post",
+			url : "{:__URL('APP_MAIN/index/getCoupon')}",
+			async: false,
+			dataType:"json",
+			data:{ 'coupon_type_id' : coupon_type_id },
+			success : function(data){
+				if(data['code']>0){
+					showBox("恭喜您，领取成功！","success");
+					is_have = true;
+					var received_num = parseInt(info['receivedNum']) + 1; // 该用户已领取数
+					$(event).attr("data-received-num", received_num);
+					
+					if(info['maxFetch'] > 0 && received_num >= info['maxFetch']){
+						$(event).find(".get").text("已领取");
+						$(event).addClass("received");
+					}
+				}else if(data['code'] == -2009){
+					location.href="{:__URL('APP_MAIN/login/index')}";
+				}else{
+					showBox(data['message'],"warning");
+					is_have = true;
+				}
+			}
+		})
+	} 
+}
+</script>

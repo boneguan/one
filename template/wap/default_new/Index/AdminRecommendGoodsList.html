@@ -1,0 +1,135 @@
+<!-- 新品 -->
+{if count($recommend_goods_list.goods_new_list)}
+	<div class="floor">
+		<div class="category_name">
+			<span class="floor-left-nav"><i class="title-border"></i>新品</span>
+			<!-- <a class="floor-right-nav" href="{:__URL('APP_MAIN/goods/goodslist?category_id='.$class['category_id'])}">查看更多</a> -->
+		</div>
+		<section class="members_goodspic">
+			<ul>
+				{foreach name="$recommend_goods_list.goods_new_list" item="list" key='k'}
+					<li class="gooditem">
+						<div class="imgs">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+								<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($list['pic_cover_mid'])}" >
+							</a>
+						</div>
+						<div class="info">
+							<p class="goods-title">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+									{$list.goods_name}
+								</a>
+							</p>
+							<div class="goods-info">
+								<span class="goods_price">
+									{in name="$list.point_exchange_type" value="0,2"}
+									<em style="color: #fb3a2f;">￥{$list.promotion_price}</em>
+									{else/}
+										{if $list['point_exchange_type'] == 1 && $list['promotion_price'] > 0}
+											<em style="color: #fb3a2f;">￥{$list.promotion_price}+{$list.point_exchange}积分</em>
+										{else/}
+											<em style="color: #fb3a2f;">{$list.point_exchange}积分</em>
+										{/if}
+									{/in}
+								{if $list['shipping_fee'] eq 0 }
+									<i class="shipping_fee">包邮</i>
+								{/if}
+								</span>
+							</div>
+						</div>
+					</li>
+				{/foreach}
+			</ul>
+		</section>
+	</div>
+{/if}
+<!-- 精品 -->
+{if count($recommend_goods_list.goods_recommend_list)}
+	<div class="floor">
+		<div class="category_name">
+			<span class="floor-left-nav"><i class="title-border"></i>精品</span>
+			<!-- <a class="floor-right-nav" href="{:__URL('APP_MAIN/goods/goodslist?category_id='.$class['category_id'])}">查看更多</a> -->
+		</div>
+		<section class="members_goodspic">
+			<ul>
+				{foreach name="$recommend_goods_list.goods_recommend_list" item="list" key='k'}
+					<li class="gooditem">
+						<div class="imgs">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+								<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($list['pic_cover_mid'])}" >
+							</a>
+						</div>
+						<div class="info">
+							<p class="goods-title">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+									{$list.goods_name}
+								</a>
+							</p>
+							<div class="goods-info">
+								<span class="goods_price">
+									{in name="$list.point_exchange_type" value="0,2"}
+									<em style="color: #fb3a2f;">￥{$list.promotion_price}</em>
+									{else/}
+										{if $list['point_exchange_type'] == 1 && $list['promotion_price'] > 0}
+											<em style="color: #fb3a2f;">￥{$list.promotion_price}+{$list.point_exchange}积分</em>
+										{else/}
+											<em style="color: #fb3a2f;">{$list.point_exchange}积分</em>
+										{/if}
+									{/in}
+								{if $list['shipping_fee'] eq 0 }
+									<i class="shipping_fee">包邮</i>
+								{/if}
+								</span>
+							</div>
+						</div>
+					</li>
+				{/foreach}
+			</ul>
+		</section>
+	</div>
+{/if}
+<!-- 热卖 -->
+{if count($recommend_goods_list.goods_hot_list)}
+	<div class="floor">
+		<div class="category_name">
+			<span class="floor-left-nav"><i class="title-border"></i>热卖</span>
+			<!-- <a class="floor-right-nav" href="{:__URL('APP_MAIN/goods/goodslist?category_id='.$class['category_id'])}">查看更多</a> -->
+		</div>
+		<section class="members_goodspic">
+			<ul>
+				{foreach name="$recommend_goods_list.goods_hot_list" item="list" key='k'}
+					<li class="gooditem">
+						<div class="imgs">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+								<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($list['pic_cover_mid'])}" >
+							</a>
+						</div>
+						<div class="info">
+							<p class="goods-title">
+								<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$list['goods_id'])}">
+									{$list.goods_name}
+								</a>
+							</p>
+							<div class="goods-info">
+								<span class="goods_price">
+									{in name="$list.point_exchange_type" value="0,2"}
+									<em style="color: #fb3a2f;">￥{$list.promotion_price}</em>
+									{else/}
+										{if $list['point_exchange_type'] == 1 && $list['promotion_price'] > 0}
+											<em style="color: #fb3a2f;">￥{$list.promotion_price}+{$list.point_exchange}积分</em>
+										{else/}
+											<em style="color: #fb3a2f;">{$list.point_exchange}积分</em>
+										{/if}
+									{/in}
+								{if $list['shipping_fee'] eq 0 }
+									<i class="shipping_fee">包邮</i>
+								{/if}
+								</span>
+							</div>
+						</div>
+					</li>
+				{/foreach}
+			</ul>
+		</section>
+	</div>
+{/if}

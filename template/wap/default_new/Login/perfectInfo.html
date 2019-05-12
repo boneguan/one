@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>绑定账号{if condition="$seoconfig.seo_title neq ''"}-{$seoconfig.seo_title}{/if}</title>
+	<meta name="keywords" content="{$seoconfig.seo_meta}" />
+	<meta name="description" content="{$seoconfig.seo_desc}"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<link rel="shortcut  icon" type="image/x-icon" href="__TEMP__/{$style}/public/images/faviconNew.ico" media="screen"/>
+	<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/showbox.css">
+	<link rel="stylesheet" href="__TEMP__/{$style}/public/css/login_base.css">
+	<link rel="stylesheet" href="__TEMP__/{$style}/public/css/login_wap.css">
+	<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/showbox.css">
+	<style type="text/css">
+		body{ font-family: "Helvetica Neue", "Microsoft YaHei", Helvetica, STHeiTi, 微软雅黑, sans-serif; }
+		.content{max-width: 648px;margin:auto;}
+		.reg-box{ width: 90%; }
+		.reg-box .reg-cont label{ width: 100%;margin-left: 0%; }
+		.reg-box .reg-cont label span,.reg-box .nk-cont label span{ width: 70px;display: inline-block; }
+		.reg-box .lang-btn,.reg-box .nk-cont{ width: 100%;margin-left: 0%; }
+		.tit-info{ width: 92%;margin: 20px auto; }
+		.tit-info .h3{ font-size: 16px;color: #333;}
+		.tit-info p{ font-size:12px;color: #999; margin-top: 3px;}
+		.footer { margin: 100px 0 0 0;padding: 0;min-height: 1px;text-align: center;line-height: 16px;background-color: #fff; }
+		.ft-copyright { padding: 50px 0 20px;margin: 0 15px;font-size: 12px;background: url("__TEMP__/{$style}/public/images/logo_copy.png") no-repeat center 15px;background-size: 110px 30px;}
+		.ft-copyright a { padding-top: 45px; color: #ccc;}
+	</style>
+</head>
+<body>
+	{include file='wap/default_new/urlModel'/}
+	<!-- showBox弹出框 -->
+	<div class="motify" style="display: none;">
+		<i class="show_type warning"></i>
+		<div class="motify-inner">{:lang('pop_up_prompt')}</div>
+	</div>
+
+	<div class="content">
+		<div class="tit-info">
+			<div class="h3">完善基本的账号信息</div>
+			<p>完善了基本信息后，您可以直接把第三方登录的用户信息与您的注册账号进行绑定</p>
+		</div>
+		<div class="reg-box">
+			<div class="reg-cont">
+				<label class="login-txt" for="username">
+					<span>用户名</span>
+					<input class="" type="text" name="username" id="username" placeholder="请输入用户名">
+				</label>
+			</div>
+			<div class="reg-cont">
+				<label for="password">
+					<span>{:lang('password')}</span>
+					<input class="" type="password" name="password" id="password" placeholder="{:lang('please_input_password')}" >
+				</label>
+			</div>
+			<div class="reg-cont">
+				<label for="cfpassword"><span style="padding-right:3px;">{:lang('member_confirm_password')}</span><input
+					class="" type="password" name="cfpassword" id="cfpassword"
+					placeholder="{:lang('confirm_password')}">
+				</label>
+			</div>
+			{if condition="$code_config['pc'] eq 1"}
+			<div class="nk-cont" >
+				<label>
+					<span  style="color: #333;">{:lang('member_verification_code')}</span>
+					<input type="text" name="captcha" id="captcha"  placeholder="{:lang('please_enter_verification_code')}" maxlength="4">
+			        <img class="verifyimg" style="width:75px!important;float: right;margin: 11px 4px;" src=" {:__URL('SHOP_MAIN/captcha')}" onclick="this.src='{:__URL('SHOP_MAIN/captcha')}'"  alt="captcha" style="vertical-align: middle; cursor: pointer; height: 35px;" />
+		        </label>
+			</div>
+		   	{/if}
+			
+			<button id="login-button" class="lang-btn" onclick="perfectInfo()" style="margin-top: 20px;">完善信息</button>
+			<a href="{:__URL('APP_MAIN/login/bindAccount')}"><button class="lang-btn register_immediately">已有账号</button></a>
+		
+		</div>
+	</div>
+	
+	<div class="footer" style="min-height: 86px;" id="rigister_copyright">
+		<div class="copyright">
+			<div class="ft-copyright">
+				<a href="http://www.niushop.com.cn" target="_blank" >山西牛酷信息科技有限公司&nbsp;提供技术支持</a>
+			</div>
+		</div>
+	</div>
+
+	<script src="__TEMP__/{$style}/public/js/showBox.js"></script>
+	<script src="__TEMP__/{$style}/public/js/jquery.js"></script>
+	<script src="__STATIC__/js/load_bottom.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		var APPMAIN='APP_MAIN';
+		var STATIC = "__STATIC__";
+		var is_sub = false;
+		function perfectInfo(){
+			var username = $("#username").val();
+			var password = $("#password").val();
+			var cfpassword = $("#cfpassword").val();
+			var captcha = $("#captcha").val();
+			
+			if(username == ''){
+				showBox("用户名不可为空", "error");
+				return false;
+			}
+			//账号验证
+			var is_username_true = verifyUsername(username);
+			if(is_username_true > 0){
+				return false;
+			}
+			if(password == ''){
+				showBox("{:lang('password_cannot_empty')}", "error");
+				return false;
+			}
+
+			//密码验证
+			var is_password_true = verifyPassword(password);
+			if(is_password_true > 0){
+				return false;
+			}
+			
+			if(cfpassword == ''){
+				showBox("{:lang('confirm_password_can_not_be_empty')}", "error");
+				return false;
+			}
+			if(password != cfpassword){
+				showBox("{:lang('two_password_input_is_inconsistent')}", "error");
+				return false;
+			}
+
+			if(captcha == ''){
+				showBox("{:lang('verification_code_cannot_be_null')}", "error");
+				return false;
+			}
+
+			if(is_sub) return;
+			is_sub = true;
+
+			$.ajax({
+				type : "post",
+				url : "{:__URL('APP_MAIN/login/perfectInfo')}",
+				data : {
+					"username" : username,
+					"password" : password,
+					"captcha" : captcha
+				},
+				success : function(data){
+					if(data["code"] > 0){
+						showBox(data['message'], "success", data["url"]);
+					}else{
+						is_sub = false;
+						showBox(data['message'], "error");
+					}
+				}
+			})
+		}
+
+		//验证用户名
+		function verifyUsername(username){
+			var is_true =0;
+			if(/.*[\u4e00-\u9fa5]+.*$/.test(username) ){
+				is_true = 1;
+				showBox("{:lang('user_name_cannot_contain_chinese_characters')}", "error");
+				return is_true;
+			}
+			if(/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(username) ){
+				is_true = 1;
+				showBox("{:lang('user_name_canno_be_mailbox')}", "error");
+				return is_true;
+			}
+			if(/^1(3|4|5|7|8)\d{9}$/.test(username) ){
+				is_true = 1;
+				showBox("{:lang('user_name_canno_be_phone')}", "error");
+				return is_true;
+			}
+			
+			var username_verify = "{$reg_config['name_keyword']}";
+			var usernme_verify_array = new Array();
+			if($.trim(username_verify) != "" && username_verify != undefined){
+				usernme_verify_array  = username_verify.split(",");
+			}
+			usernme_verify_array.push(",");
+			$.each(usernme_verify_array,function(k,v){
+				if($.trim(v) != ""){
+					if(username.indexOf(v) >= 0){
+						is_true = 1;
+						showBox("{:lang('username_cannot_includ')}"+v+"{:lang('such_characters')}", "error");
+						return false;
+					}
+				}
+			});
+			return is_true;
+		}
+
+		//验证密码
+		function verifyPassword(password){
+			var is_true = 0;
+			var min_length_str = "{$reg_config['pwd_len']}";
+			if($.trim(min_length_str) != "" ){
+				var min_length = parseInt(min_length_str);	
+			}else{
+				var min_length = 5;
+			}
+			if($.trim(password) == ""){
+				is_true = 1;
+				showBox("{:lang('password_cannot_empty')}", "error");						
+				return is_true;
+			}
+			if(min_length  > 0){
+				if(password.length < min_length){
+					is_true = 1;
+					showBox("{:lang('minimum_password_length')}"+min_length, "error");						
+					return is_true;
+				}
+				
+			}
+			if(/.*[\u4e00-\u9fa5]+.*$/.test(password) ){
+				is_true = 1;
+				showBox("{:lang('password_cannot_includ_chinese_characters')}", "error");
+				return is_true;
+			}
+			var regex_str = "{$reg_config['pwd_complexity']}";
+			if($.trim(regex_str) != "" && regex_str != undefined){
+				//验证是否包含数字
+				if(regex_str.indexOf("number") >= 0){
+					var number_test =  /[0-9]/;
+					if(!number_test.test(password)){
+						is_true = 1;
+						showBox("{:lang('password_must_contain_numbers')}", "error");									
+						return is_true;
+					}
+				}
+				//验证是否包含小写字母
+				if(regex_str.indexOf("letter") >= 0){
+					var letter_test =  /[a-z]/;
+					if(!letter_test.test(password)){
+						is_true = 1;
+						showBox("{:lang('password_must_have_lowercase_letters')}", "error");								
+						return is_true;
+					}
+				}
+				//验证是否包含大写字母
+				if(regex_str.indexOf("upper_case") >= 0){
+					var upper_case_test =  /[A-Z]/;
+					if(!upper_case_test.test(password)){
+						is_true = 1;
+						showBox("{:lang('password_must_have_uppercase_letters')}", "error");					
+						return is_true;
+					}
+				}
+				//验证是否包含特殊字符
+				if(regex_str.indexOf("symbol") >= 0){
+					var symbol_test =  /[^A-Za-z0-9]/;
+					if(!symbol_test.test(password)){
+						is_true = 1;
+						showBox("{:lang('password_must_contain_symbols')}", "error");						
+						return is_true;
+					}
+				} 
+			}
+			return is_true;
+		}
+	</script>
+</body>
+</html>

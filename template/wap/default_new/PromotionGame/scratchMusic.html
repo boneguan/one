@@ -1,0 +1,108 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/scrtchMusic.css">
+{/block}
+{block name="goodsHead"}{/block}
+{block name="main"}
+<div class="container">
+	<!-- 顶部区域 -->
+	<div>
+		<div class="promotion_top">
+			<div class="promotion_info">
+				<span class="member_integral">{$member_info.point}</span>
+				<span class="game_rule" onclick="document.getElementById('shade').style.display='block';">活动规则</span>
+			</div>
+			<div class="how_many">{$gameDetail.level_name}可参与此次活动，<em id="integral">{$gameDetail.points|round}</em>积分一次</div>
+		</div>
+	</div>
+	<!-- 刮卡区域 -->
+	<div class="scratch_cards">
+		<div class="scratch_cards_area" >
+			<canvas id="scratch_card"></canvas>
+			<img src="__TEMP__/{$style}/public/images/guaguale_center_two.png" alt="" id="redux">
+		</div>
+	</div>
+	<!-- 提示信息 -->
+	{notempty name="$gameDetail['remark']"}
+	<div class="tip">
+		<span>小提示：{$gameDetail.remark}</span>
+	</div>
+	{/notempty}
+	<!-- 获奖记录 -->
+	{if count($WinningRecordsList) > 0}
+	<div class="winning_record">
+		<ul>
+			{foreach name="WinningRecordsList" item="vo"}
+			<li>
+				<span class="remark">{$vo.remark}</span>
+			</li>
+			{/foreach}
+		</ul>
+	</div>
+	{/if}
+	<input type="hidden" id="hidden_game_id" value="{$gameDetail.game_id}">
+	<!-- 当前用户所有积分 -->
+	<input type="hidden" id="hidden_member_point" value="{$member_info.point}">
+	<!-- 刮取一次所需积分 -->
+	<input type="hidden" id="hidden_need_point" value="{$gameDetail.points|round}">
+	
+	<img src="__TEMP__/{$style}/public/images/winning.png" id="hidden_winning_img" style="display: none;">
+	<img src="__TEMP__/{$style}/public/images/no_winning.png" id="hidden_no_winning_img" style="display: none;">
+</div>
+
+<!-- 游戏规则弹出层 -->
+<div class="shade" id="shade">
+	<div class="promotionGameRuleContainer">
+		<h4 class="popup_title">活动规则</h4>
+		<div class="popup_content">
+			<h5 class="project_title">【活动时间】</h5>
+			<time>{$gameDetail.start_time|date="Y年m月d日",###}-{$gameDetail.end_time|date="Y年m月d日",###}</time>
+			{if count($gameDetail["rule"]) > 0}
+			<h5 class="project_title">【活动奖品】</h5>
+			<table border="1">
+				<tr>
+					<th>奖品名称</th>
+					<th>份数</th>
+				</tr>
+				{foreach name="$gameDetail['rule']" item="vo"}
+				<tr>
+					<td>{$vo.rule_name}&nbsp; 
+						{switch name="$vo['type']"}
+							{case value="1"}{$vo.points|round}积分{/case}
+							{case value="2"}{$vo.type_value}{/case}
+							{case value="3"}{$vo.hongbao}元余额红包{/case}
+							{case value="4"}{$vo.type_value}{/case}
+						{/switch}
+					</td>
+					<td>{$vo.rule_num}</td>
+				</tr>
+				{/foreach}
+			</table>
+			{/if}
+			<h5 class="project_title">【活动规则】</h5>
+			{if $gameDetail['member_level'] == 0}
+			<p>1.本次活动所有会员都可以参与。</p>
+			{else/}
+			<p>1.本次活动仅{$gameDetail.level_name}可以参与。</p>
+			{/if}
+			<p>2.中奖积分与红包会自动发放到账户中,实物奖品需到我的奖品进行领取</p>
+		</div>
+		<span class="shade-close" onclick="document.getElementById('shade').style.display='none';"><i class="fa fa-times"></i></span>
+	</div>
+
+</div>
+
+
+{notempty name="$participationRestriction"}
+<div class="restriction">
+	<div class="tip-info-container">
+		<p class="tip-info">{$participationRestriction}</p>
+		<button onclick="location.href=__URL('APP_MAIN')">知道了</button>
+	</div>
+</div>
+{/notempty}
+
+<script src="__TEMP__/{$style}/public/js/jquery.eraser.js"></script>
+<script src="__TEMP__/{$style}/public/js/scrtchMusic.js"></script>
+{/block}
+{block name="bottom"}{/block}

@@ -1,0 +1,68 @@
+<!--
+	创建时间：2017年2月7日 12:11:41
+	功能描述： 底部，联系我们、电话 
+-->
+<style>
+img{
+	    vertical-align: top !important;
+}
+</style>
+<div class="footer">
+	<div class="dsc-service">
+		<div class="w w1200 relative">
+			<ul class="service-list">
+			{foreach name="$merchant_service_list" item="vo"}
+				<li style="width: <?php echo 100/count($merchant_service_list)-1?>%">
+					<div class="service-tit service-zheng">
+					{if condition="$vo.pic eq ''"}
+						<!-- <img src="__TEMP__/{$style}/public/images/service_moren.png"> -->
+					{else/}
+						<img src="{:__IMG($vo.pic)}" style="width:28px;height:28px;">
+					{/if}
+					</div>
+					<div class="service-txt">{$vo.title}</div>
+				</li>
+				<span style="width:1px;height:20px;border-left:1px solid #d2d2d2;display:inline-block;margin-bottom: 9px;"></span>
+			{/foreach}
+				
+			</ul>
+		</div>
+	</div>
+	<div class="dsc-help">
+		<div class="w w1200">
+			<div class="help-list">
+				{foreach name="platform_help_class" item="class_vo"}
+				<div class="help-item">
+					<h3>{$class_vo.class_name}</h3>
+					<ul>
+						{foreach name="platform_help_document" item="document_vo"} {if
+						condition="$class_vo['class_id'] eq $document_vo['class_id']"}
+						<li><a href="{:__URL('SHOP_MAIN/helpcenter/index','id='.$document_vo['id'])}"
+							title="{$document_vo.title}" target="_blank">{$document_vo.title}</a></li> {/if}
+						{/foreach}
+					</ul>
+				</div>
+				{/foreach}
+			</div>
+			<div class="help-cover">
+				<div class="help-ctn">
+					<div class="help-ctn-mt">
+						<span>{:lang('hotline')}</span> <strong>{$web_info['web_phone']}</strong>
+					</div>
+					<div class="help-ctn-mb">
+
+						<a id="IM" im_type="dsc" href="{$custom_service['value']['service_addr']}"
+							target="_blank" class="btn-ctn" title="{:lang('contact_customer_service')}"><img
+							src="__TEMP__/{$style}/public/images/icon-csu.png"
+							style="vertical-align: middle !important;">&nbsp;&nbsp;{:lang('consulting_customer_service')}</a>
+					</div>
+				</div>
+				<div class="help-scan">
+					<div class="code">
+						<img src="{:__IMG($web_info['web_qrcode'])}">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

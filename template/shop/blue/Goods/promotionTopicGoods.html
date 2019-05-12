@@ -1,0 +1,107 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<!-- 添加css、字体文件文件 -->
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_topic.css">
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_sale.css">
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_default.css">
+<style>
+/*.header{display: none;}*/
+.category-box-border{display: none;}
+.topic_goods{background:url({:__IMG($info['background_img'])}) no-repeat;
+background-size: 100% 100%;
+background-color: {$info['background_color']};
+min-height: 450px;}
+.topic_scroll{height: auto;width: 100%;}
+
+.topic_goods h3{text-align: center;font-size: 28px;font-weight: bold;line-height: 50px;color: #fff;margin: 20px 0;}
+.topic_goods .img-a{display: block;position: relative;padding: 8px;}
+.topic_goods .img-a img{    width: 100%;height: auto;position: relative;min-height: 200px;}
+{if condition="$info['is_foot'] == 0"}
+.footer{display: none;}
+.dsc-copyright{display: none;}
+{/if}
+{if condition="$info['is_head'] == 0"}
+.header{display: none;}
+.header-top{display: none;}
+{/if}
+</style>
+{/block}
+{block name="main"}
+	<div class="topic_scroll">
+		<img src="{:__IMG($info['scroll_img'])}" alt="">
+	</div>
+	<div class="topic_goods">
+		<div class="sale-container">
+			<div class="wrapper">
+				<h3>{$info['topic_name']}</h3>
+				<div class="goods_list">
+					<ul>
+						{foreach name="info['goods_list']" id="v"}
+						<li>
+							<a href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$v['goods_id'])}" class="img-a">
+								<img src="{:__IMG($default_goods_img)}" data-original="{:__IMG($v['picture_info']['pic_cover_small'])}" alt="{$v['goods_name']}" class="topic_img lazy_load">
+							</a>
+							<div class="goods_content">
+								<span class="goods_name"><a href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$v['goods_id'])}" >{$v['goods_name']}</a></span>
+								{in name="$v.point_exchange_type" value="0,2"}
+									<span class="goods_price">￥{$v['promotion_price']}</span>
+								{else/}
+									{if $v['point_exchange_type'] == 1 && $v['promotion_price'] > 0}
+										<span class="goods_price">￥{$v.promotion_price}+{$v.point_exchange}积分</span>
+									{else/}
+										<span class="goods_price">{$v.point_exchange}积分</span>
+									{/if}
+								{/in}
+							</div>
+						</li>
+						{/foreach}
+					</ul>				
+				</div>
+			</div>
+		</div>
+	</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/ns_brand.js"></script>
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/ns_index.js"></script>
+<script type="text/javascript">
+/**
+ * 计算每次偏移值
+ */
+$(function(){
+	var d_li=$('.pinpaijngxuan_pro_title li');
+	var li_count=d_li.length;
+	var d_width=d_li.width();
+	$('.brand-showcase-list>ul').css('width',li_count*d_width+'px');
+	$('.focus-next').click(function(){
+		var this_left=$('.brand-showcase-list>ul').css('left');
+		this_left=this_left=='auto' ? 0: this_left;
+		var width_len=(li_count-5)*d_width;
+		if(this_left!='0'){
+			this_left=this_left.substr(1,this_left.length-3);
+		}
+		if(this_left>=width_len)return false;
+		var left=Number(this_left)+Number(d_width);
+		$('.brand-showcase-list>ul').css('left','-'+left+'px');
+	})
+	$('.focus-prev').click(function(){
+		var this_left=$('.brand-showcase-list>ul').css('left');
+		this_left=this_left=='auto' ? 0: this_left;
+		if(this_left!='0'){
+			this_left=this_left.substr(1,this_left.length-3);
+			
+		}
+		var left=Number(this_left)-Number(d_width);
+		$('.brand-showcase-list>ul').css('left','-'+left+'px');
+	})
+})
+/* *
+ * 搜索分类下的品牌,传所选中li的id值和左偏移量 
+ */
+function categoryHref(category_id)
+{
+	var this_left=$('.brand-showcase-list>ul').css('left');
+	location.href=__URL("SHOP_MAIN/goods/brandlist?category_id="+category_id+"&left="+this_left);
+}
+</script>
+{/block}

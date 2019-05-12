@@ -1,0 +1,315 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/member_list.css" />
+<style>
+.head-portrait{
+	margin-top:15px;
+}
+</style>
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th width="20%" style="text-align: left;">
+			<button class="btn-common btn-small" onclick="add_card()" style="margin:0 5px 0 0 !important;">批量生成</button>
+			<button class="btn-common btn-small" onclick="card_allot()" style="margin:0 5px 0 0 !important;">批量分配</button>
+		</th>
+		
+		<th>
+			<input type="text" id ='search_mobile' placeholder="分配代理商手机号码" class="input-common" />
+			<input type="text" id ='search_text' placeholder="会员卡号" class="input-common" />
+			<input type="button" onclick="searchData()" value="搜索" class="btn-common" />
+			<input type="button" onclick="dataExcel()" value="导出数据" class="btn-common" />	
+		</th>
+	</tr>
+</table>
+<table class="table-class">
+	<thead>
+		<tr align="center">
+			<th><input type="checkbox" onclick="CheckAll(this)"></th>
+			<th>编号</th><th>会员卡号</th>
+            <th>商品名称</th> 
+			<th>分配代理商</th>
+			<th>使用会员</th>
+			<th style="width: 220px;">添加时间</th>
+			<th style="width: 220px;">使用时间</th>
+		</tr>
+	</thead>
+	<tbody id="productTbody"></tbody>
+</table>
+
+<!-- 批量生产 -->
+<div class="modal fade hide" id="add_card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>批量生成会员卡</h3>
+			</div>
+			<div class="modal-body">
+				<div class="modal-infp-style">
+					<table class="modal-tab">
+						<tr>
+							<td style="width:20%;"><span class="required">*</span>商品编码</td>
+							<td colspan='3'>
+								<input type="text" id="txtProductCodeA" class="input-common" />
+								<span id="txtProductCodeAyz"></span>
+								<input type="hidden" value="不存在" id="isset_txtProductCodeA" class="input-common" />
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required">*</span>数量</td>
+							<td colspan='3'><input type="text" id="numCount" onpropertychange="replaceNotNumber(this)" oninput="replaceNotNumber(this)" class="input-common"/></td>
+						</tr>
+
+					</table>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="addCard()">批量生成</button>
+				<button class="btn" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- 批量分配-->
+<div class="modal fade hide" id="card_allot" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>批量分配会员卡</h3>
+			</div>
+			<div class="modal-body">
+				<div class="modal-infp-style">
+					<table class="modal-tab">
+						<tr>
+							<td style="width:30%;"><span class="required">*</span>商品编码</td>
+							<td colspan='3'>
+								<input type="text" id="allotProduct" class="input-common" />
+								<span id="allotProductCodeAyz"></span>
+								<input type="hidden" value="不存在" id="isset_allotProductCode" class="input-common" />
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required">*</span>代理商手机号码</td>
+							<td colspan='3'><input type="text" id="allotMobile" onpropertychange="replaceNotNumber(this)" oninput="replaceNotNumber(this)" class="input-common"/></td>
+						</tr>
+						<tr>
+							<td><span class="required">*</span>数量</td>
+							<td colspan='3'><input type="text" id="allotNumCount" onpropertychange="replaceNotNumber(this)" oninput="replaceNotNumber(this)" class="input-common"/></td>
+						</tr>
+
+					</table>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="allotCard()">批量分配</button>
+				<button class="btn" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+{/block}
+{block name="script"}
+<script type="text/javascript">
+function LoadingInfo(page_index) {
+	var search_text = $("#search_text").val();
+	var search_mobile = $("#search_mobile").val();
+	var levelid = $("#level_name").val();
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/member/membercard')}",
+		data : {
+			"page_index" : page_index, "page_size" : $("#showNumber").val(), "search_text" : search_text,"search_mobile":search_mobile
+		},
+		success : function(data) {
+			var html = '';
+			if (data["data"].length > 0) {
+				for (var i = 0; i < data["data"].length; i++) {
+					html += '<tr align="center">';
+					html += '<td><input name="sub" type="checkbox" value="'+ data["data"][i]["card_id"]+'" ></td>';
+                    html += '<td>'+ data["data"][i]["card_id"] +'</td>';
+                    html += '<td>'+ data["data"][i]["number"] +'</td>';
+                    html += '<td>' + data["data"][i]["goods_name"] + '</td>';
+                    if(data["data"][i]["leader_nick_name"]==null || data["data"][i]["leader_nick_name"]=='undefined'){
+                        html += '<td>--</td>';
+                    }else {
+                        html += '<td>' + data["data"][i]["leader_nick_name"] + '</td>';
+                    }
+                    if(data["data"][i]["user_nick_name"]==null || data["data"][i]["user_nick_name"]=='undefined'){
+                        html += '<td>--</td>';
+                    }else {
+                        html += '<td>' + data["data"][i]["user_nick_name"] + '</td>';
+                    }
+                    html += '<td>';
+					html += timeStampTurnTime(data["data"][i]["add_time"]);
+					html += '</td>';
+					if(data["data"][i]["used_time"]==null || data["data"][i]["used_time"]==0){
+						html += '<td>--</td>';
+					}else{
+                        html += '<td>' + timeStampTurnTime(data["data"][i]["used_time"]) + '</td>';
+					}
+
+
+					html += '</tr>';
+				}
+			} else {
+				html += '<tr align="center"><td colspan="9">暂无符合条件的数据记录</td></tr>';
+			}
+			$(".table-class tbody").html(html);
+			initPageData(data["page_count"],data['data'].length,data['total_count']);
+			$("#pageNumber").html(pagenumShow(jumpNumber,$("#page_count").val(),{$pageshow}));
+		}
+	});
+}
+	
+//全选
+function CheckAll(event){
+	var checked = event.checked;
+	$(".table-class tbody input[type = 'checkbox']").prop("checked",checked);
+}
+
+function searchData(){
+	LoadingInfo(1);
+}
+
+	
+//批量生成弹出
+function add_card(){
+	$("#add_card").modal("show");
+}
+//批量分配弹出
+function card_allot(){
+    $("#card_allot").modal("show");
+}
+
+function checkproductcode(code){
+    var flag = true;
+    $.ajax({
+        type: "GET",
+        url: "{:__URL('ADMIN_MAIN/goods/check_prodcut_code')}",
+        async : false,
+        data: {"code":code},
+        success: function(data){
+            if(data == 0){
+                flag = false;
+                $("#txtProductCodeA").css("border","1px solid red");
+                $("#txtProductCodeAyz").css("color","red").text("商品编码不存在");
+                $("#isset_txtProductCodeA").attr("value","不存在");
+            }
+        }
+    });
+    return flag;
+}
+//批量生成提交
+function addCard(){
+    var productcode = $("#txtProductCodeA").val();
+    var numcount = $("#numCount").val();
+
+    if (productcode == '') {
+        showTip('商品编码不能为空','warning');
+        return;
+    }
+
+    if(!checkproductcode(productcode)){
+        showTip('商品编码不存在','warning');
+        return;
+    }
+
+    postcard(productcode,numcount,numcount);
+}
+
+function postcard(productcode,numcount) {
+    $.ajax({
+        type : "post",
+        url : __URL("ADMIN_MAIN/member/batchUserCard"),
+        data : {
+            'productcode' : productcode,
+            'numcount' :numcount
+        },
+        success : function(data) {
+            if (data['code'] =='SUCCESS') {
+                console.log(data);
+                var num = data['data']['count'];
+                if(num < numcount ){
+                    postcard(productcode,numcount-num);
+				}else{
+                    showTip('生成成功','success');
+				}
+                $("#card_allot").modal("hide");
+                LoadingInfo(getCurrentIndex(1,'#productTbody'));
+            } else {
+                showTip(data['message'],'error');
+                flag = false;
+            }
+        }
+    });
+}
+
+//批量分配提交
+function allotCard() {
+    var allotProduct = $("#allotProduct").val();
+    var allotMobile = $("#allotMobile").val();
+    var allotNumCount = $("#allotNumCount").val();
+
+    if (allotProduct == '') {
+        showTip('商品编码不能为空','warning');
+        return;
+    }
+
+    if(!checkproductcode(allotProduct)){
+        showTip('商品编码不存在','warning');
+        return;
+    }
+
+    //批量分配提交
+    $.ajax({
+        type : "post",
+        url : __URL("ADMIN_MAIN/member/memberCardAllot"),
+        data : {
+            'allotProduct' : allotProduct,
+            'allotMobile' :allotMobile,
+            'allotNumCount' :allotNumCount
+        },
+        success : function(data) {
+            if (data['code'] =='SUCCESS') {
+                showTip('生成成功','success');
+                $("#add_card").modal("hide");
+                LoadingInfo(getCurrentIndex(1,'#productTbody'));
+            } else {
+                showTip(data['message'],'error');
+                flag = false;
+            }
+        }
+    });
+
+}
+
+function replaceNotNumber(num)
+{
+    var pattern = /[^0-9]/g;
+    if(pattern.test(num.value))
+    {
+        num.value = num.value.replace(pattern,"");
+    }
+}
+/**
+ * 会员数据导出
+ */
+function dataExcel(){
+    var search_text = $("#search_text").val();
+    var search_mobile = $("#search_mobile").val();
+	window.location.href=__URL("ADMIN_MAIN/member/cardDataExcel?search_text="+search_text+"&search_mobile="+search_mobile);
+}
+</script>
+{/block}

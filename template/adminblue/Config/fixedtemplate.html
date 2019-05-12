@@ -1,0 +1,188 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/wap_template.css">
+<style>
+.mlr15{margin:0;}
+.goodsRecommend{width:660px;display:inline-block;}
+.panel-heading{height:40px;line-height:40px;margin-top:15px;background:#F9F9F9;padding:0 15px;color:#00C0FF;}
+.handle{display:inline-block;background:#FB6B5B;padding:0 8px;font-size:12px;color:#fff;margin:7px;line-height:25px;float:right;}
+.td{width:20%;text-align:center;}
+.borderclass{font-size: 12px;line-height: 32px;vertical-align: top;letter-spacing: normal;word-spacing: normal;display: inline-block;width: 78%;padding-left: 7px;}
+.set-style dl dd input[type="text"]{font: 12px/20px Arial;color: #777;background-color: #FFF;vertical-align: top;display: inline-block;height:24px;line-height:24px;padding: 4px;border: 1px solid #CCC;outline: 0 none;width: 400px;margin:0;}
+.set-style dl dd textarea{font: 12px/20px Arial;color: #777;background-color: #FFF;vertical-align: top;display: inline-block;height: 60px;padding: 4px;border: solid 1px #CCC;outline: 0 none;width: 400px;margin:0;}
+.hint{font-size: 12px;line-height: 16px;color: #BBB;margin-top: 10px;}
+.set-style dl dd p img{border: medium none;vertical-align: middle;}
+.info{width:405px;color: #c09853;background-color: #fcf8e3;border-color: #faebcc;padding: 8px;border: 1px solid transparent;border-radius: 4px;}
+.alert-goods-info{padding:5px;width:80px;height:110px;background:#D9EDF7;border:1px solid #BCE8F1;float:left;margin-right:2px;}
+.alert-goods-info img{display:block;margin:20px auto 0 auto;}
+.goods-name{display:block;white-space:nowrap;overflow:hidden; text-overflow:ellipsis;text-align:center;margin-top:3px;}
+.search-goods-info{padding:5px;width:80px;height:110px;border:1px dashed #ddd;float:left;margin:5px 5px 0 0;cursor:pointer;}
+.tip-box{width: 975px;line-height: 150px;text-align: center;}
+.table tr .td img{width:100px;display:inline-block;}
+.goods-logo-class{width:100%;}
+.goods-logo-class ul{overflow:hidden;margin: 0px;}
+.goods-logo-class ul li{float:left;width:20%;cursor:pointer;}
+.imglogo{width:90%;margin:0 auto;}
+.app-template{padding:0px;}
+.app-template li{width:220px;}
+.edit_button{margin: 12px auto;padding: 3px 10px;border: 0;background: #126AE4;color: #fff;width:100px;height:35px;}
+.btn-submit{text-align:center;}
+.classified-display-mode label{display: inline-block;margin:0 10px;}
+.ns-main{margin-top:0px;}
+</style>
+{/block}
+{block name="main"}
+<div class="set-style">
+	<!-- <dl>
+		<dt><span style="color:red;margin-right:10px;"></span>用户通知：</dt>
+		<dd class="borderclass">
+			<textarea rows="2" id="notice_message" class="textarea w400 input-common" maxlength="50">{$info.notice_message}</textarea>
+		</dd>
+	</dl>
+	<dl>
+		<dt>是否启用用户通知：</dt>
+		<dd class="borderclass">
+			<p>
+				<input id="is_enable" type="checkbox" class="checkbox" {if condition="$info.is_enable==1"} checked="checked"{/if}/>
+			</p>
+		</dd>
+	</dl> -->
+	<dl>
+		<dt>分类显示方式：</dt>
+		<dd class="borderclass classified-display-mode">
+				<label class="radio inline normal">
+					<i class="radio-common {if condition="$classified_display_mode==1"}selected{/if}"><input type="radio" name="input-classified-display-mode" value="1"{if condition="$classified_display_mode==1"} checked="checked"{/if}/></i>
+					<span>缩略图模式</span>
+				</label>
+				<label class="radio inline normal">
+					<i class="radio-common {if condition="$classified_display_mode==2"}selected{/if}"><input type="radio" name="input-classified-display-mode" value="2"{if condition="$classified_display_mode==2"} checked="checked"{/if}/></i>
+					<span>列表模式</span>
+				</label>
+		</dd>
+	</dl>
+	<dl class="hide">
+		<dt>首页商品分类显示：</dt>
+		<dd class="borderclass">
+			<p>
+				<input id="is_category" type="checkbox" class="checkbox" {if condition="$lists['value']['is_category'] eq 1"}checked="checked"{/if} onchange="chagecategoryblock();"/>
+			</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>模板列表：</dt>
+		<dd class="borderclass">
+			<div class="app-template">
+				<ul>
+					{foreach name="$template_list" item="template" key="k"}
+					<li {if condition="$template['folder']==$use_template"}class="selected"{/if} data-folder="{$template['folder']}"
+						{if condition="$k>0 &&($k+1)%5==0"}style="margin-right:0;"{/if}>
+						<div class="img">
+							<img width="170" height="353" alt="template" src="__TEMP__/wap/{$template['folder']}/{$template['preview']}">
+						</div>
+						<div class="introduce">{$template['introduce']}</div>
+						<div class="theme">{$template['theme']}</div>
+					</li>
+					{/foreach}
+				</ul>
+			</div>
+		</dd>
+	</dl>
+	<dl >
+		<dt></dt>
+		<dd class="borderclass">
+			<button class="btn-common btn-big" onclick="setConfigAjax();" >保存</button>
+		</dd>
+	</dl>
+</div>
+<div id="bottom_div"></div>
+{/block}
+{block name="script"}
+<script>
+$(function() {
+	var width = $(".btn-submit").width();
+	$(window).scroll(function() {
+		var left = $(".ns-main").offset().left;
+		if($(window).height()+$(window).scrollTop()<$("#bottom_div").offset().top){
+			$(".btn-submit").css({
+				'position': 'fixed',
+				'bottom': 0,
+				'left': left,
+				'z-index':10000,
+				'width':width-30,
+				"background-color":"rgba(204,204,204,0.7)",
+				"margin":0,
+				"padding":"0 15px"
+			});
+		}else{
+			$(".btn-submit").removeAttr("style");
+		}
+	});
+});
+
+function chagecategoryblock(){
+	var is_category = 0;
+	if($("#is_category").prop("checked")){
+		is_category = 1;
+	}
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/config/iscategory')}",
+		data : { 'is_category' : is_category },
+		success : function(data) {
+			if (data['code'] > 0) {
+			} else {
+				showTip("提交失败",'error');
+			}
+		}
+	});
+}
+
+/**
+ * 模版切换
+ * 修改时间：2017年9月12日 14:32:38 王永杰
+ */
+$(".app-template li").click(function(){
+	$(this).siblings("li").removeClass("selected");
+	$(this).addClass("selected");
+	$.ajax({
+		type : "post",
+		url :  "{:__URL('ADMIN_MAIN/Config/updateTemplateUse')}",
+		data : { 'type' : "wap", 'folder' : $(this).attr("data-folder") },
+		success : function(res){
+			if(res.code>0){
+				showTip("操作成功","success");
+			}else{
+				showTip("操作失败","error");
+			}
+		}
+	});
+});
+
+function setConfigAjax(){
+	var notice_message = $("#notice_message").val();
+	var is_enable = 0;
+	if($("#is_enable").prop("checked")){
+		is_enable = 1;
+	}
+	var is_category = 0;
+	if($("#is_category").prop("checked")){
+		is_category = 1;
+	}
+	var classified_display_mode = $("input[name='input-classified-display-mode']:checked").val();
+	$.ajax({
+		type:"post",
+		url:"{:__URL('ADMIN_MAIN/config/updateWapBasicInformation')}",
+		data:{ 'notice_message' : notice_message, 'is_enable' : is_enable,'classified_display_mode' : classified_display_mode },
+		success:function (data) {
+			if (data["code"] > 0) {
+				showTip(data["message"],"success");
+				location.href = "{:__URL('ADMIN_MAIN/config/fixedtemplate')}";
+			}else{
+				showTip(data["message"],"error");
+			}
+		}
+	});
+}
+</script>
+{/block}

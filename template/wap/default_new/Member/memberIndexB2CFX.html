@@ -1,0 +1,408 @@
+{extend name="wap/default_new/base" /}
+{block name="goodsHead"}{/block}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/member_index.css">
+<style>
+.head{border-bottom:0;}
+.member{width: 64%;float: right;margin-top: 26px;color:#fff;}
+.img{width:100%;margin: 5px 0;}
+.code{background: #fff;overflow: hidden;}
+.rec{height: 17px;padding: 10px 20px 10px 10px;border-bottom: 1px solid #E2E1E1;line-height:17px;}
+.module-icon.memberCoupon {
+background:url(__TEMP__/{$style}/public/images/Coupon.png) no-repeat;width: 22px;height: 22px;float: left;margin-top: 9px;margin-right: 10px;display: inline-block;background-size:100% 100%;}
+.member-info{background: rgba(255,79,79, 0.8);float:left;width:33%;color: #fff;text-align: center;line-height:41px;}
+.vertical-bar{border-left: 1px solid rgba(250,250,250,0.6);height: 32px;vertical-align: middle;display: inline-block;margin-top:5px;}
+.namer{position: absolute;left: 103px;top: 30px;}
+.signin{border-radius: 3px;font-size: 10px;line-height: 14px;padding: 2px 9px;float: left;position: absolute;left: 20px;top: 5px;}
+.no{color: #F93F40;background: yellow;border: 1px solid yellow;}
+.yes{color: yellow;border: 1px solid yellow;}
+.last a{position: relative;}
+.tips{width: 16px;height: 16px;background: #F93F40;border:1px solid #F93F40;border-radius: 50%;font-size: 12px;line-height: 16px;text-align: center;color: #fff;position: absolute;z-index: 10;right: -10px;top: -6px;}
+.member_foot{width: 100%;height: 20px;background: url("__TEMP__/{$style}/public/images/member_foot.png") center no-repeat;background-size: 100% 20px;}
+.promoter-list-style ul{background:0 0;background-color:#fff;margin:0;padding:0;font-size:14px;overflow:hidden;margin-top:10px}
+.promoter-list-style ul li{background:#fff;position:relative;padding-left:10px;color:#000;border-bottom:1px solid #e6e3e3;height:40px;line-height:40px}
+.promoter-list-style ul li>a{display:inline-block;width:100%}
+.promoter-list-style>ul>a>li .module-icon>img{max-width:100%;height:auto;float:left;margin-top:8px}
+.promoter-list-style ul li>span{margin-left:5px;float:left}
+.jiantou{display:inline-block;position:absolute;top:15px;right:15px;width:8px;height:8px;border-top:1px solid #ccc;border-right:1px solid #ccc;transform:rotate(45deg);-o-transform:rotate(45deg);-webkit-transform:rotate(45deg);-moz-transform:rotate(4deg)}
+/* 头部标题 */
+.logoheader{
+	width: 100%;
+	height: 40px;
+	height: 40px;
+	background: #fff;
+	border-bottom: 1px solid #ebebeb;
+}
+.logoheader img{
+	margin-left: 10px;
+	margin-top: 7px;
+}
+/* 显示会员头像 */
+.memberhead{
+	height: 90px;
+	line-height: 90px;
+	background: #fff;
+	position: relative;
+}
+.memberhead img{
+	width: 50px;
+	height:50px;
+	margin-top: 20px;
+	margin-left: 20px;
+}
+.memberhead .title{
+	margin-left: 10px;
+	margin-top: 25px;
+	font-size: 16px;
+	color: #333;
+	display: inline-block;
+	line-height: 20px;
+	font-size: 14px;
+}
+.memberhead .jiantou{
+	top: 41px;
+	border-top: 1px solid #999;
+    border-right: 1px solid #999;
+}
+/* 收益信息 */
+.profit{
+	list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+	margin-bottom: 10px;
+    background: #fff;
+}
+.profit ul{
+	width: 100%;
+    background-color: #fff;
+    margin: 0;
+    font-size: 14px;
+    overflow: hidden;
+}
+.profit ul li{
+	width: 33%;
+    float: left;
+    position: relative;
+    text-align: center;
+    padding-bottom: 10px;
+}
+.profit ul li a{
+	display: block;
+    margin: 0 auto;
+}
+.profit ul li a span{
+	font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    padding: 0 5px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.profit ul li a i{
+	display: block;
+    margin: 0 auto;
+    background: url("__TEMP__/{$style}/public/images/navimg/discount.png") no-repeat;
+    width: 40%;
+    padding: 20% 0;
+}
+
+.profit ul li a i.fans{
+	background: url(__TEMP__/{$style}/public/images/member_icon/fans.png) no-repeat center;
+    background-size: 60% 60%;
+}
+
+.profit ul li a i.money{
+	background: url(__TEMP__/{$style}/public/images/member_icon/money.png) no-repeat center;
+    background-size: 60% 60%;
+}
+
+.profit ul li a i.person{
+	background: url(__TEMP__/{$style}/public/images/member_icon/person.png) no-repeat center;
+    background-size: 60% 60%;
+}
+/* 底层图标样式 */
+.member_list{
+	margin-bottom: 20px;
+}
+.logoInfo{
+	text-align: center;
+	margin-bottom: 60px;
+}
+</style>
+{/block}
+{block name="main"}
+{niu:memberinfo name="member_info"}
+<!-- <div class="logoheader">
+	<img src="__TEMP__/{$style}/public/images/logo.png" alt="">
+</div> -->
+
+<div class="memberhead">
+	<a href="{:__URL('APP_MAIN/member/personaldata?shop_id='.$shop_id)}">
+		{if condition="$member_info['user_info']['user_headimg'] eq ''"}
+		<img src="{:__IMG($default_headimg)}" />
+		{else/}
+			<img src="{:__IMG($default_headimg)}" class="lazy_load" data-original="{:__IMG($member_info['user_info']['user_headimg'])}"/>
+		{/if}
+		<span class="title">
+			{$member_info["user_info"]['nick_name']}<br/>
+			等级
+		</span>	
+		<span class="jiantou"></span>
+	</a>
+</div>
+
+<!-- <div class="code">
+	<a href="{:__URL('APP_MAIN/'.$promoter_center)}">
+		<div class="rec" style="position: relative;">
+			<span>{:lang('promotion_center')}</span>
+			<span class="jiantou"></span>
+		</div>
+	</a>
+	
+	{if condition="$promoter_info != null"}
+	<a href="{:__URL('APP_MAIN/distribution/teamlist?promoter_id='.$promoter_info['promoter_id'])}">
+		<div style="width:49%;float:left;padding:10px 0;">
+			<img src="__TEMP__/{$style}/public/images/team.png" style="width:45px;height:45px; margin: 0 8px 0 20px;float:left;"/>
+			<span>
+				<span>{$counts}人</span>
+				<br/>
+				<span style="font-size:12px;color: #7B7B7B;">{:lang('my_corporate')}</span>
+			</span>
+		</div>
+	</a>
+	<a href="{:__URL('APP_MAIN/distribution/usershopcommission?shop_id='.$shop_id)}">
+		<div style="width:50%;float:right;padding:10px 0;">
+			<img src="__TEMP__/{$style}/public/images/yongjin.png" style="width:45px;height:45px; margin: 0 8px 0 17px;float:left;"/>
+			<span>
+				<span>{$commission_cash}</span>
+				<br/>
+				<span style="font-size:12px;color: #7B7B7B">{:lang('my_commission')}</span>
+			</span>
+		</div>
+	</a>
+	{else/}
+		{if condition="$apply_promoter_menu !=null"}
+		<div class='promoter-list-style' style='margin-bottom:0;'>
+			<ul style="margin-top:0;">
+				<li>
+					<a href="{:__URL('APP_MAIN/'.$apply_promoter_menu['url'])}">
+						<i class=" module-icon {$apply_promoter_menu.class}" ></i>
+						<span >{$apply_promoter_menu.title}</span>
+						<span class='jiantou'></span>
+					</a>
+				</li> 
+			</ul>
+		</div>
+		{/if}
+	{/if}
+</div> -->
+
+
+<!-- 收益信息 -->
+<div class="profit" >
+	<ul>
+		<li>
+			<a href="javascript:void(0)">
+				<i class="member-icon icon_personal fans"></i>
+				<span>我的粉丝</span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0)">
+				<i class="member-icon icon_personal money"></i>
+				<span>我的收益</span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0)">
+				<i class="member-icon icon_personal person"></i>
+				<span>我的推荐人</span>
+			</a>
+		</li>
+	</ul>
+</div>
+
+<div class="control">
+		<div class="control_l">
+			<span class="control_l_content selected" data-flag="regular-orders">{:lang('regular_orders')}</span>
+		</div>
+		<div class="control_r"><a href="{:__URL('APP_MAIN/order/myorderlist?shop_id='.$shop_id)}" class="right_href">{:lang('member_view_all_orders')}</a></div>
+	</div>
+<div class="panel member-nav js-regular-orders">
+	<ul class="fu clear" >
+		<li class="last" >
+			<a href="{:__URL('APP_MAIN/order/myorderlist?status=0&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/member_icon/pay.png">
+				
+				{niu:ordernumbyorderstatu name="unpaidOrder" where="order_status=0 and order_type in(1,3) and buyer_id=$uid"}
+				{if condition="$unpaidOrder neq 0"}
+					<div class="tips">{$unpaidOrder}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('member_pending_payment')}</p>
+			</a>
+		</li>
+		<li class="last">
+			<a href="{:__URL('APP_MAIN/order/myorderlist?status=1&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/member_icon/send.png">
+				{niu:ordernumbyorderstatu name="shipmentPendingOrder" where="order_status=1 and order_type in(1,3) and buyer_id=$uid"}
+				{if condition="$shipmentPendingOrder neq 0"}
+				<div class="tips">{$shipmentPendingOrder}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('member_shipment_pending')}</p>
+			</a>
+		</li>
+		<li class="last">
+			<a href="{:__URL('APP_MAIN/order/myorderlist?status=2&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/member_icon/recieve.png">
+				{niu:ordernumbyorderstatu name="goodsNotReceivedOrder" where="order_status=2 and order_type in(1,3) and buyer_id=$uid"}
+				{if condition="$goodsNotReceivedOrder neq 0"}
+				<div class="tips">{$goodsNotReceivedOrder}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('member_goods_received')}</p>
+			</a>
+		</li>
+		<li class="last">
+			<a href="{:__URL('APP_MAIN/order/myorderlist?status=3&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/member_icon/received.png">
+				<p>{:lang('member_received_goods')}</p>
+			</a>
+		</li>
+		<li class="last">
+			<a href="{:__URL('APP_MAIN/order/myorderlist?status=4&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/member_icon/reback.png"/>
+				{niu:ordernumbyorderstatu name="refundOrder" where="order_status in(-1,-2) and order_type in(1,3) and buyer_id=$uid"}
+				{if condition="$refundOrder neq 0"}
+				<div class="tips">{$refundOrder}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('refund_after_sale')}</p>
+			</a>
+		</li>
+	</ul>
+</div>
+{if condition="$is_open_virtual_goods"}
+<div class="panel member-nav js-virtual-orders" style="display:none;">
+	<ul class="fu clear" style="background: #ffffff;">
+		<li class="last" >
+			<a href="{:__URL('APP_MAIN/order/myvirtualorderlist?status=0&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/pay.png">
+				{niu:ordernumbyorderstatu name="unpaidOrder" where="order_status=0 and order_type=2 and buyer_id=$uid"}
+				{if condition="$unpaidOrder neq 0"}
+					<div class="tips">{$unpaidOrder}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('member_pending_payment')}</p>
+			</a>
+		</li>
+		<li class="last">
+			<a href="{:__URL('APP_MAIN/order/myvirtualorderlist?status=5&shop_id='.$shop_id)}">
+				<img src="__TEMP__/{$style}/public/images/recieved.png">
+				{niu:ordernumbyorderstatu name="virtual_wait_evaluate" where="order_status in(3,4) and order_type=2 and buyer_id=$uid and is_evaluate=0"}
+				{if condition="$virtual_wait_evaluate neq 0"}
+					<div class="tips">{$virtual_wait_evaluate}</div>
+				{/if}
+				{/niu:ordernumbyorderstatu}
+				<p>{:lang('member_pending_evaluation')}</p>
+			</a>
+		</li>
+	</ul>
+</div>
+{/if} 
+
+<!-- <div class="member_menu_list">
+	<ul>
+		<a href="{:__URL('APP_MAIN/PresellOrder/myPresellOrderList')}">
+			<li class="menu_icon_yushou_orders"> 
+				<span class="menu-title">{:lang('presell_my_order')}</span>
+				<i class="icon-more"></i>
+			</li>
+		</a>
+		{if condition="$is_support_pintuan == 1"}
+		<a href="{:__URL('APP_MAIN/pintuanOrder/myOrderList')}">
+			<li class="menu_icon_pintuan_orders"> 
+				<span class="menu-title">{:lang('spell_group_order')}</span>
+				<i class="icon-more"></i>
+			</li>
+		</a>
+		{/if}
+		{if condition="$is_open_virtual_goods > 0"}
+		<a href="{:__URL('APP_MAIN/order/myvirtualorderlist')}">
+			<li class="menu_virtual_order"> 
+				<span class="menu-title">{:lang('virtual_orders')}</span>
+				<i class="icon-more"></i>
+			</li>
+		</a>
+		{/if}
+		{if condition="$is_bargain > 0"}
+		<a href="{:__URL('APP_MAIN/order/mybargainorderlist')}">
+			<li class="menu_bargain_order"> 
+				<span class="menu-title">砍价订单</span>
+				<i class="icon-more"></i>
+			</li>
+		</a>
+		{/if}
+	</ul>
+</div> -->
+
+
+
+<div class='member_list'>
+{volist name="menu_arr" id="arr_item" }
+	<ul>
+		{volist name="arr_item" id="vo"}
+			{notempty name="$vo['url']"}
+			<li>
+				<a href="{:__URL('APP_MAIN/'.$vo['url'])}">
+					<i class="member-icon icon_{$vo.class}"></i>
+					<span >{$vo.title}</span>
+				</a>
+			</li>
+			{/notempty}
+		{/volist} 
+	</ul>
+{/volist}
+</div>
+
+<div class="logoInfo">
+	<img src="__TEMP__/{$style}/public/images/logoAn.png" alt="">
+</div>
+
+{/niu:memberinfo}
+<script type="text/javascript">
+$(function(){
+	bottomActive('#bottom_member');
+	//$("#wchat_binding").css("display":"none;");
+
+	$(".control_l_content").click(function(){
+		var flag = $(this).attr("data-flag");
+		$(".js-regular-orders").hide();
+		$(".js-virtual-orders").hide();
+		$(".js-" + flag).show();
+		$(".control_l_content").removeClass("selected");
+		$(this).addClass("selected");
+		if(flag == "regular-orders"){
+			$(".right_href").attr("href","{:__URL('APP_MAIN/order/myorderlist?shop_id='.$shop_id)}");
+		}else{
+			$(".right_href").attr("href","{:__URL('APP_MAIN/order/myvirtualorderlist?shop_id='.$shop_id)}");
+		}
+	});
+})	
+function signIn(){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('APP_MAIN/member/signIn')}",
+		data : { "sign" : true },
+		success : function(data){
+			if(data['code']>0){
+				$(".signin").not(":hidden").removeClass("no").addClass("yes").text("已签到");
+				location.href="{:__URL('APP_MAIN/member/index')}";
+			}
+		}
+	})
+}
+</script>
+{/block}

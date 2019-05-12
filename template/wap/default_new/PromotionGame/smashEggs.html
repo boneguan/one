@@ -1,0 +1,105 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/smashEggs.css">
+{/block}
+{block name="goodsHead"}{/block}
+{block name="main"}
+<!-- 砸金蛋游戏背景 -->
+<div class="game-bg">
+	<img src="__TEMP__/{$style}/public/images/smash-eggs-bg.png" class="smash-eggs-bg" />
+</div>
+<div class="game-content">
+	<!-- 游戏互动区 -->
+	<div class="egg clear">
+		<ul class="eggList clear">
+			<p class="hammer" id="hammer">锤子</p>
+			<p class="resultTip" id="resultTip"><b id="result"></b></p>
+			<li><span>1</span><sup></sup></li>
+			<li><span>2</span><sup></sup></li>
+			<li><span>3</span><sup></sup></li>
+		</ul>
+	</div>
+	<!-- 活动规则 -->
+	<div class="active-rule">
+		<img src="__TEMP__/{$style}/public/images/active-rule-eggs.png" class="title" />
+		<ul class="rule-desc">
+			<li>
+				<div class="item-title">【活动时间】</div>
+				<div class="item-desc">{$gameDetail.start_time|date="Y年m月d日",###}-{$gameDetail.end_time|date="Y年m月d日",###}</div>
+			</li>
+			<li>
+				<div class="item-title">【活动奖品】</div>
+				<table border="1" class="rule-table">
+					<tr>
+						<th align="center">奖品名称</th>
+						<th align="center">份数</th>
+					</tr>
+					{foreach name="$gameDetail['rule']" item="vo"}
+					<tr>
+						<td class="left">{$vo.rule_name}&nbsp; 
+							{switch name="$vo['type']"}
+								{case value="1"}{$vo.points|round}积分{/case}
+								{case value="2"}{$vo.type_value}{/case}
+								{case value="3"}{$vo.hongbao}元余额红包{/case}
+								{case value="4"}{$vo.type_value}{/case}
+							{/switch}
+						</td>
+						<td align="center">{$vo.rule_num}</td>
+					</tr>
+					{/foreach}
+				</table>
+			</li>
+			<li>
+				<div class="item-title">【活动规则】</div>
+				<div class="item-desc">
+					{if $gameDetail['member_level'] == 0}
+					<p>1.本次活动所有会员都可以参与，{$gameDetail.points|round}积分一次</p>
+					{else/}
+					<p>1.本次活动仅{$gameDetail.level_name}可以参与，{$gameDetail.points|round}积分一次</p>
+					{/if}
+					<p>2.中奖积分与红包会自动发放到账户中,实物奖品需到我的奖品进行领取</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- 中奖名单 -->
+	{if condition="$WinningRecordsList"}
+	<div class="name-list">
+		<img src="__TEMP__/{$style}/public/images/name-list-eggs.png" class="title" />
+		<div class="list-desc">
+			<ul >
+				{foreach name="WinningRecordsList" item="vo"}
+				<li>
+					<span class="remark">{$vo.remark}</span>
+				</li>
+				{/foreach}
+			</ul>
+		</div>
+	</div>
+	{/if}
+</div>
+<input type="hidden" id="game_id" value='{$gameDetail.game_id}'/>
+
+{notempty name="$participationRestriction"}
+<div class="restriction">
+	<div class="tip-info-container">
+		<p class="tip-info">{$participationRestriction}</p>
+		<button onclick="location.href=__URL('APP_MAIN')">知道了</button>
+	</div>
+</div>
+{/notempty}
+
+{/block}
+{block name="javascript"}
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/smashEggs.js"></script>
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/myScroll.js"></script>
+<script>
+$(function(){
+	$('.list-desc').myScroll({
+		speed: 40, //数值越大，速度越慢
+		rowHeight: 26 //li的高度
+	});
+});
+</script>
+{/block}
+{block name="bottom"}{/block}

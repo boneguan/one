@@ -1,0 +1,88 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/search.css">
+{/block}
+
+{block name="goodsHead"}
+{/block}
+
+{block name="main"}
+<div class="search-wrapper">
+	<div class="search-header">
+		<div class="search-box-button">
+			<input type="text" name="" placeholder="请搜索商品名称" class="input"> 
+			<i class="gphicon sear icon-search"></i>
+		</div> 
+		<a href="javascript:;" class="search">搜索</a>
+	</div> 
+
+	<div class="search-container">
+		<div class="com-bscroll-wrapper">
+			<div class="bscroll-y" style="transition-property: transform; transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1); transition-duration: 0ms; transform: translate(0px, 0px) scale(1) translateZ(0px);">
+				{notempty name="hot_keys"}
+				<div class="search-card-head" style="pointer-events: auto;">热门搜索</div> 
+				<div class="search-list-hot" style="pointer-events: auto;">
+					{foreach name="$hot_keys" item="vo"}
+						<a href="{:__URL('APP_MAIN/goods/goodssearchlist?search_name='.$vo.'&shop_id='.$shop_id)}">{$vo}</a>
+					{/foreach}
+				</div> 
+				{/notempty}
+				<div class="search-card-head" style="pointer-events: auto;">历史搜索</div> 
+				<div class="search-list-history" style="pointer-events: auto;"> 
+					{notempty name="searchRecord"}
+						{foreach name="$searchRecord" item="so"}
+							<a href="{:__URL('APP_MAIN/goods/goodssearchlist?search_name='.$so.'&shop_id='.$shop_id)}" class="item">{$so}</a>
+						{/foreach}
+						<p class="item center clear-search-list"><i class="gphicon icon-delete"></i> 清空搜索记录</p>
+					{else/}
+						<p class="item center">您还没有搜索记录</p>
+					{/notempty}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" value="{$shop_id}" id="hidden_shop_id"/>
+{/block}
+
+{block name="bottom"}
+{/block}
+
+{block name="javascript"}
+<script src="__TEMP__/{$style}/public/js/jquery.cookie.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.search').click(function(){
+		var search = $('.input').val();
+		var shop_id = $('#hidden_shop_id').val();
+		search = search.replace(/</g,"&lt;").replace(/>/g,"&gt;")
+
+		if(search.length > 0){
+			if($.cookie("searchRecordWap") != undefined){
+				var arr = eval($.cookie("searchRecordWap"));
+			}else{
+				var arr = new Array();
+			}
+
+			if(arr.length >0 ){
+				if($.inArray(search,arr)< 0){
+					arr.push(search);
+				}
+			}else{
+				arr.push(search);
+			}
+			$.cookie("searchRecordWap",JSON.stringify(arr));
+
+			location.href= __URL(APPMAIN+"/goods/goodssearchlist?search_name="+search+"&shop_id="+shop_id);
+		}
+	})
+
+	$(".clear-search-list").click(function(){
+		$(".search-list-history").html('<p class="item center">您还没有搜索记录</p>');
+		$.removeCookie('searchRecordWap');
+	})
+})
+</script>
+{/block}
+
+

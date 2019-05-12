@@ -1,0 +1,56 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<style type="text/css">
+.group-child{left:0;}
+body{background: #ffffff;}
+.main_content{margin-top: 45px;}
+h3{line-height: 30px;text-align: center;font-size: 16px;padding: 10px 0;}
+p.fu_title{padding-left: 10px;}
+#html_content{padding: 0 10px;}
+#html_content img{width: 100% !important;}
+.location_other_article{
+	padding:0 10px;
+	margin-top: 30px;
+}
+.next{
+	float:right
+}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="{:__URL('APP_MAIN/articlecenter')}"><i class="icon-back"></i></a>
+	<div class="head-title" style="margin-left: 11%;">{:lang('article_content')}{include file="wap/default_new/controGroup" /}</div>
+</section>
+{/block}
+{block name="main"}
+{include file='wap/default_new/share'/}
+<div class="main_content">
+	<h3>{$article_info.title}</h3>
+	<p class="fu_title">{:lang('author')}：{$article_info.author}</p>
+	<p class="fu_title">{:lang('position_posted_on')}：{$article_info.public_time|getTimeStampTurnTime}</p>
+	<div id="html_content">{$article_info.content}</div>
+	<div class="location_other_article">
+		{notempty name="prev_info"}
+		<a href="{:__URL('APP_MAIN/articlecenter/articlecontent', 'article_id='.$prev_info.article_id)}" class="prev">上一篇：{$prev_info.title}</a>
+		{/notempty}
+		{notempty name="next_info"}
+		<a href="{:__URL('APP_MAIN/articlecenter/articlecontent', 'article_id='.$next_info.article_id)}" class="next">下一篇：{$next_info.title}</a>
+		{/notempty}
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	//分享
+	$.ajax({
+		type:"post",
+		data : {"shop_id" : "{$shop_id}" , "flag" : "cms" , "article_id" : "{$article_info.article_id}"},
+		url : "{:__URL('APP_MAIN/goods/getShareContents')}",
+		success : function(data){
+			{include file='wap/default_new/shareContents'/}
+		}
+	});
+})
+</script>
+{/block}
+{block name="bottom"}{/block}

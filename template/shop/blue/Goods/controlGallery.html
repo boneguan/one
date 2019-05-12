@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="__TEMP__/{$style}/public/css/gallery/gallery.css">
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/gallery/gallery.js"></script>
+<link rel="stylesheet" href="__TEMP__/{$style}/public/css/plyr.css">
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/plyr.js"></script>
+<style>
+.magnifying-glass{position: absolute;bottom: 0;right: 0;cursor:pointer;z-index:999;}
+</style>
+
+<div id="MagnifierWrap">
+	<div class="MagnifierMain">
+		{notempty name="$goods_info['sku_picture_list']"}
+		<img class="MagTargetImg" src="" data_big_img=""/>
+		{else/}
+		<img class="MagTargetImg" src="{:__IMG($default_gallery_img)}" data_big_img="{:__IMG($default_gallery_img)}"/>
+		{/notempty}
+		{if condition="!empty($goods_info['goods_video_address'])"}
+		<i class="goods-video-pause" onclick="goods_video_pause()"></i>
+		<i class="goods-video-play" onclick="goods_video_play()"></i>
+		<div class="goods-video-box">
+			<video preload controls loop>
+				<source src="{:__IMG($goods_info.goods_video_address)}" type="video/mp4" />
+			</video>
+		</div>
+		<input id="video-is-play" value="1" type="hidden"/>
+		{else/}
+		<input id="video-is-play" value="0" type="hidden"/>
+		{/if}
+		{include file="shop/blue/Goods/controlVideo"}
+	</div>
+	<span class="spe_leftBtn on">&lt;</span>
+	<span class="spe_rightBtn on">&gt;</span>
+	<div class="spec-items">
+		<ul>
+		<!-- 如果sku组图存在则显示sku组图 -->
+		{notempty name="$goods_info['sku_picture_list']"}
+			<input type="hidden" id="hide_spec_id" value="{$goods_info['sku_picture_list'][0]['spec_id']}">
+			{foreach name="$goods_info.sku_picture_list" item ="img" }
+				{foreach name="$img['album_picture_list']" item="p" key = "k"}
+					{if condition="$k==0"}
+						<li class="on" style="display: none;" id="sku_pic_{$img.spec_value_id}">
+					{else/}
+						<li style="display: none;" id="sku_pic_{$img.spec_value_id}">
+					{/if}
+							<img src="{:__IMG($p['pic_cover_micro'])}" data_big_img="{:__IMG($p['pic_cover_big'])}" data-picture-id="{$p['pic_id']}" data-pic-cover="{:__IMG($p['pic_cover'])}"/>
+						</li>
+				{/foreach}
+			{/foreach}
+		{else /}
+		<!-- 否则显示商品组图 -->
+			{foreach name="$goods_info.img_list" item ="img" key = "k"}
+				{if condition="$k==0"}
+				<li class="on">
+				{else/}
+				<li>
+				{/if}
+					<img src="{:__IMG($img['pic_cover_micro'])}" data_big_img="{:__IMG($img['pic_cover_big'])}" data-picture-id="{$img['pic_id']}" data-pic-cover="{:__IMG($img['pic_cover'])}" />
+				</li>
+			{/foreach}
+		{/notempty}
+		</ul>
+	</div>
+</div>

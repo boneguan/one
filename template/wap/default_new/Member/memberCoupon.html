@@ -1,0 +1,153 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+    <link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/member_common.css">
+    <style>
+.coupon-price {
+    position: absolute;
+    top: 35%;
+    left: 10%;
+    font-size: 25px;
+    color: #fff;
+}
+.coupon-lose{
+    position: absolute;
+    top: 67%;
+    left: 10%;
+    font-size: 14px;
+    color: #fff;
+}
+.due-img{
+	display: block;
+    position: absolute;
+    top: 40%;
+    bottom: 10%;
+    left: 50%;
+    right: 22%;
+    background: url(__TEMP__/{$style}/public/images/stamp-due.png) no-repeat;
+    background-size: auto 100%;
+}
+.com_content li {
+    width: 100%;
+    position: relative;
+    float: left;
+    margin-top: 10px;
+	background: #fff;
+    padding: 5px;
+	list-style: none;
+}
+.title{
+	font-weight:bold;
+	color:#707070;
+	font-size: 1rem;
+}
+.clearfloat{
+	content: '';
+    display: inline-block;
+    clear: both;
+    width: 100%;
+}
+ul{
+	
+}
+div.p-r{
+	border-radius: 10px;
+}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+		<a class="head_back" id="backoutapp" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+		<div class="head-title">{:lang('member_my_coupon')}</div>
+	</section>
+{/block}
+
+{block name="main"}
+ 
+  <div class="cf-container" data-reactid="2">
+   		<div class="cf-edge" data-reactid="3"></div>
+		<ul class="cf-content" data-reactid="4">
+   			<li class="cf-tab-item select" data-index="1" data-reactid="7"><a href="javascript:getMemberCounponList(1);">{:lang('unused')}</a></li>
+			<li class="cf-tab-item" data-index="1" data-reactid="7"><a href="javascript:getMemberCounponList(2);">{:lang('used')}</a></li>
+			<li class="cf-tab-item" data-index="1" data-reactid="7"><a href="javascript:getMemberCounponList(3);">{:lang('expire')}</a></li>
+			
+    	</ul>
+	</div>
+  
+    <div class="com_content">
+    	<div class="coupon-contianer">
+    		
+    	</div>
+    </div>
+<script type="text/javascript">
+	$(function(){
+		$('.cf-container .cf-tab-item').click(function(){
+       		$('.cf-container .cf-tab-item').removeClass('select');
+       		$(this).addClass('select');
+       	})
+		getMemberCounponList(1);
+	})
+	function getMemberCounponList(type){
+		$.ajax({
+			type:'post',
+			async:true,
+			url:'{:__URL('APP_MAIN/member/membercoupon')}',
+			data:{'type':type },
+			dataType:'json',
+			success:function(data){
+				var listhtml='';
+				if(data.length>0){
+					for(var i=0;i<data.length;i++){
+						var money = data[i]['money'] != null ? data[i]['money'] : "";
+						var coupon_code = data[i]['coupon_code'] != null ? data[i]['coupon_code'] : "";
+						var coupon_name = data[i]['coupon_name'] != null ? data[i]['coupon_name'] : "";
+						var start_time = data[i]['start_time'] != null ? data[i]['start_time'] : "";
+						var end_time = data[i]['end_time'] != null ? data[i]['end_time'] : "";
+						var at_least = data[i]['at_least'];
+						if(type != 1){
+							listhtml += '<div class="coupon-item used">';
+						}else{
+							listhtml += '<div class="coupon-item">';
+						}
+							listhtml += '<div class="coupon-type">';
+							listhtml += '</div>';
+							listhtml += '<section>';
+								listhtml += '<div class="coupon-title"><i>￥</i><em>'+ money +'</em></div>';
+								listhtml += '<div class="coupon-time">'+start_time+' 至 '+end_time+'</div>';
+							listhtml += '</section>';
+						listhtml += '</div>';
+						listhtml += '<div class="coupon-desc">';
+							listhtml += '满'+at_least+'元可用';
+						listhtml += '</div>';
+					}
+				}else{
+					listhtml += '<div class="coupon-empty">';
+						listhtml += '<p>您还没有';
+						switch(type){
+							case 1:
+								listhtml += "{:lang('unused')}";
+							break;
+							case 2:
+								listhtml += "{:lang('used')}";
+							break;
+							case 3:
+								listhtml += "{:lang('expire')}";
+							break;
+						}
+						listhtml += '优惠券</p>';
+					listhtml += '</div>';
+				}
+				$('.com_content .coupon-contianer').html(listhtml);
+			}
+		})
+	}
+
+    $("#backoutapp").click(function (){
+        var json ={
+        		"center" : "1",
+            }
+        window.webkit.messageHandlers.center.postMessage(json);
+    })
+</script>
+
+{/block}
+{block name="bottom"}{/block}

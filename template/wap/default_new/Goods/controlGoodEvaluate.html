@@ -1,0 +1,220 @@
+<!-- 功能介绍：商品评价 -->
+<input type="hidden" name="" value="1" id="evaluation_page">
+<input type="hidden" name="" value="1" id="evaluation_total_page">
+
+{if $evaluates_count['evaluate_count'] > 0}
+	<div class="evaluation-container">
+		<div class="evaluation-title">商品评价 (<em>{$evaluates_count['evaluate_count']}</em>) </div>
+
+		<ul class="evaluation-type js-product-evaluation">
+			<li>{:lang('whole')}<em>({$evaluates_count['evaluate_count']})</em></li>
+			<li>{:lang('goods_picture')} <em>({$evaluates_count['imgs_count']})</em></li>
+			<li>{:lang('goods_praise')} <em>({$evaluates_count['praise_count']})</em></li>
+			<li>{:lang('goods_comments')} <em>({$evaluates_count['center_count']})</em></li>
+			<li>{:lang('goods_bad')} <em>({$evaluates_count['bad_count']})</em></li>
+		</ul>
+		
+		<div class="evaluation-comments">
+			<!-- 评价人信息 -->
+			<div class="evaluation-userinfo">
+				{notempty name="goodsEvaluation.user_img"}
+				<img src="{:__IMG($goodsEvaluation.user_img)}" alt="" data-origina="{$goodsEvaluation.user_img}" class="headimg lazy_load">
+				{else/}
+				<img src="{:__IMG($default_headimg)}" alt="" class="headimg">
+				{/notempty}
+				{if $goodsEvaluation.is_anonymous eq 1}
+					<span class="nickname">{$goodsEvaluation.member_name|cover_up_username}</span>
+				{else/}
+					<span class="nickname">{$goodsEvaluation.member_name}</span>
+				{/if}
+				<time class="evaluation-time">{$goodsEvaluation.addtime|date="Y-m-d",###}</time>
+			</div>
+			<!-- 初次评价 -->
+			<div class="evaluation-content">
+				{$goodsEvaluation.content}
+			</div>
+			{notempty name="$goodsEvaluation['explain_first']"}
+				<div class="evaluation-reply">
+					{:lang("goods_shopkeeper_replies")}:{$goodsEvaluation.explain_first}
+				</div>
+			{/notempty}
+			<!-- 评价图片 -->
+			{notempty name="$goodsEvaluation['image']"}
+			<ul class="evaluation-pics">
+				{php}$image = explode(',', $goodsEvaluation['image']);{/php}
+				{foreach name="$image" item="vo" key="k"}
+					<li><img src="{:__IMG($vo)}" class="comment-pic" onclick="showImgSlider(this);" data-index="{$k}"></li>
+				{/foreach}
+			</ul>
+			{/notempty}
+			<!-- 追评 -->
+			{notempty name="$goodsEvaluation['again_content']"}
+				<p class="review-evaluation">追加评价<time class="review-time">{$goodsEvaluation.again_addtime|date="Y-m-d",###}</time></p>
+				<div class="evaluation-content review">
+					{$goodsEvaluation.again_content}
+				</div>
+				{notempty name="$goodsEvaluation['again_explain']"}
+					<div class="evaluation-reply">
+						{:lang("goods_shopkeeper_replies")}:{$goodsEvaluation.again_explain}
+					</div>
+				{/notempty}
+				
+				{notempty name="$goodsEvaluation['again_image']"}
+					<ul class="evaluation-pics">
+						{php}$again_image = explode(',', $goodsEvaluation['again_image']);{/php}
+						{foreach name="$again_image" item="vo" key="k"}
+						<li><img src="{:__IMG($vo)}" class="comment-pic" onclick="showImgSlider(this);" data-index="{$k}"></li>
+						{/foreach}
+					</ul>
+				{/notempty}
+			{/notempty}
+		</div>
+		{if $evaluates_count['evaluate_count'] > 1}
+		<div class="check-more">
+			<button>查看更多评价</button>
+		</div>
+		{/if}
+	</div>
+	<hr class="divider-line">	
+{/if}
+<!-- 更多评价遮罩 -->
+<div class="evaluation-shade">
+	<section class="head">
+		<a class="head_back" href="javascript:void(0)"><i class="icon-back"></i></a>
+		<div class="head-title">评价</div>
+	</section>
+
+	<div class="body">
+		<div class="evaluation-container">
+			<ul class="evaluation-type js-mask-layer-evaluation-type">
+				<li data-type="0" class="current">{:lang('whole')}<em>({$evaluates_count['evaluate_count']})</em></li>
+				<li data-type="4">{:lang('goods_picture')} <em>({$evaluates_count['imgs_count']})</em></li>
+				<li data-type="1">{:lang('goods_praise')} <em>({$evaluates_count['praise_count']})</em></li>
+				<li data-type="2">{:lang('goods_comments')} <em>({$evaluates_count['center_count']})</em></li>
+				<li data-type="3">{:lang('goods_bad')} <em>({$evaluates_count['bad_count']})</em></li>
+			</ul>
+
+			<ul class="evaluation-list"></ul>
+
+		</div>
+	</div>
+</div>
+
+<script>
+// 加载评价列表
+var is_load = true;
+
+function getGoodsCommentsList(page){
+	var commentsType = $(".evaluation-shade .body .evaluation-type li.current").attr('data-type');
+	$("#evaluation_page").val(page);
+	is_load = false;
+	$.ajax({
+		type:"post",
+		url:"{:__URL('APP_MAIN/Goods/getGoodsComments')}",
+		data:{'comments_type' : commentsType, "goods_id" : $("#goods_id").val(), "page" : page },
+		dataType:'json',
+		success:function(data){
+			$("#evaluation_total_page").val(data['page_count']);//总页数
+			if(page == 1){
+				var html = "";
+			}else if(page > 1){
+				var html = $('.evaluation-shade .body .evaluation-list').html();
+			}
+			if(data['data'].length > 0){
+				for(var i = 0; i < data['data'].length; i ++){
+					var dataitem = data['data'][i];
+					var member_name = dataitem['member_name'];
+						member_name = dataitem['is_anonymous'] == 1? member_name.replace(member_name.substring(1,member_name.length),'***')+'({:lang("anonymous")})':member_name;
+					html += '<li class="item">';
+						html += '<div class="evaluation-comments">';
+							//评价人信息
+							html += '<div class="evaluation-userinfo">';
+								if(dataitem["user_img"] != "" && dataitem['user_img'] != undefined && dataitem['user_img'] != 0){
+									html += '<img src="'+__IMG(dataitem['user_img'])+'"  class="headimg lazy_load" data-original="'+__IMG(dataitem['user_img'])+'" >';
+								}else{
+									html += '<img src="{:__IMG($default_headimg)}" alt="" class="headimg">';
+								}
+								html += '<span class="nickname">'+ member_name +'</span>';
+								html += '<time class="evaluation-time">'+timeStampTurnTime(dataitem['addtime'])+'</time>';
+							html += ' </div>';
+							//初次评价
+							html += ' <div class="evaluation-content">'+dataitem['content'];
+							html += ' </div>';
+							//店家回复
+							if(dataitem['explain_first']!=''){
+								html += ' <div class="evaluation-reply">{:lang("goods_shopkeeper_replies")}:'+dataitem['explain_first'];
+								html += ' </div>';
+							}
+							//评价图片
+							if(dataitem['image']!=''){
+								var imgs_arr = dataitem['image'].split(',');
+								html += '<ul class="evaluation-pics">';
+									for(var key in imgs_arr){
+										html += '<li><img src="'+__IMG(imgs_arr[key])+'" alt="" class="comment-pic" onclick="showImgSlider(this);" data-index="' + key + '"></li>';
+									}
+								html += '</ul>';
+							}
+							//追评
+							if(dataitem['again_content']!=''){
+								html += '<p class="review-evaluation">追加评价<time class="review-time">'+timeStampTurnTime(dataitem['again_addtime'])+'</time></p>';
+								html += '<div class="evaluation-content review">'+dataitem['again_content'];
+								html += '</div>';
+								if(dataitem['again_explain']!=''){
+									html += ' <div class="evaluation-reply">{:lang("goods_shopkeeper_replies")}:'+dataitem['again_explain'];
+									html += ' </div>';
+								}
+								if(dataitem['again_image'] !=''){
+									var imgs_arr=dataitem['again_image'].split(',');
+									html += '<ul class="evaluation-pics">';
+									for(var key in imgs_arr){
+										html += '<li><img src="'+__IMG(imgs_arr[key])+'" alt="" onclick="showImgSlider(this);" data-index="' + key + '" class="comment-pic"></li>';
+									}
+									html += '</ul>';
+								}
+							}
+						html += '</div>';
+					html += '</li>';
+				}	
+			}else{
+				html += '<li class="item empty">该商品暂无评论！</li>';
+			}
+			$(".evaluation-shade .body .evaluation-list").html(html);
+			is_load = true;
+			img_lazyload();
+		}
+	})
+}
+
+$(".check-more button,.js-product-evaluation").click(function(){
+	getGoodsCommentsList(1);
+	$("body").css({"height":"100%","overflow-y":"hidden"});
+	$(".evaluation-shade").animate({"left":"0"},200);
+});
+
+$(".evaluation-shade .head .head_back").click(function(){
+	$("body").css({"height":"auto","overflow-y":"auto"});
+	$(".evaluation-shade").animate({"left":"100%"},200);
+});
+
+$(".js-mask-layer-evaluation-type li").click(function(){
+	$(".js-mask-layer-evaluation-type li").removeClass("current");
+	$(this).addClass("current");
+	getGoodsCommentsList(1);
+});
+
+$(".body").scroll(function(){
+	var total_height = $(".body").scrollTop() + $(window).height();
+	var _contentHeight = $(".body .evaluation-container").innerHeight();
+	if(total_height - _contentHeight >= 30){
+		if(is_load){
+			var page = parseInt($("#evaluation_page").val()) + 1;//页数
+			var total_page_count = $("#evaluation_total_page").val(); // 总页数
+			if(page > total_page_count){
+				return false;
+			}else{
+				getGoodsCommentsList(page);
+			}
+		}
+	}
+})
+</script>

@@ -1,0 +1,134 @@
+<!-- 商品分类 -->
+<style>
+.custom-class-box{background-color:#FFF;}
+.control-goods-classify{overflow:hidden;background-color:#FFF;border-top:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5;}
+.control-goods-classify aside {width: 29.6%;height: 370px;overflow: auto;border-right: 1px solid #e5e5e5;}
+.control-goods-classify aside, .control-goods-classify section {float: left;}
+.control-goods-classify  aside{display: block;background-color:#FFF;}
+.control-goods-classify aside li.contro-class-selected {color: #126AE4;}
+.control-goods-classify aside li {padding: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+li{line-height: 20px;}
+.custom-main {background: #F8F8F8;min-height: 325px;border-top: 0;position: relative;padding-bottom: 75px;}
+.control-goods-classify section {width: 70%;background-color:#FFF;}
+.control-goods-classify aside, .control-goods-classify section {float: left;}
+.control-goods-classify  session{display:block;background-color:#FFF;}
+.control-goods-classify section li {margin: 10px 0 10px 10px;overflow: hidden;border-bottom: 1px solid #e5e5e5;padding-bottom: 10px;}
+.control-goods-classify section li:last-child {border-bottom: none;}
+.control-goods-classify section li>div:first-child {color: #ffffff;float: left;width: 30%;text-align: center;font-size: 12px;}
+.blue-bg {background: #81D5FA;}
+.control-goods-classify section li>div:last-child {float: left;height: 70px;margin-left: 10px;width: 65%;position: relative;}
+.control-goods-classify section li>div:last-child span {display: block;padding: 10px 0;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.control-goods-classify section li>div:last-child em {font-style: normal;color: #ff6600;font-weight: bold;font-size: 14px;}
+.control-goods-classify section li>div:last-child button {position: absolute;right: 10px;bottom: 0;}
+
+.control-goods-buy-style-cart{border: 0;float: right;height: 30px;width: 40px;outline: none;padding: 0;background: transparent;}
+.control-goods-buy-style-cart img{display: inline-block;vertical-align: middle;max-width: 100%;max-height: 100%;height: auto;}
+.custo-not-goods{width:50%;margin-top:40px;}
+
+/*商品标签，包邮*/
+i.goods-tab {font-style: normal;font-size: 12px;background: #f44;color: #fff;padding: 1px 3px;margin-right: 2px;border-radius: 2px;font-weight: normal;}
+i.shipping-fee{font-style: normal;font-size: 12px;background: #fff;color: #f44;padding: 1px 3px;margin-left: 5px;border-radius: 2px;border: 1px solid #f44;display: inline-block;line-height: 1;font-weight: normal;}
+</style>
+{if condition="!empty($custom_template_v.style_data['goods_classify'])"}
+<div class="control-goods-classify">
+	<aside class="contro-goods-class-box">
+		<ul>
+			{foreach $custom_template_v['style_data']['goods_classify'] as $class_key=>$class_v}
+				{if condition = "$class_key eq 0" }
+				<li class="contro-class-selected" onclick="selectCategoryGoodsList(this, {$class_v['id']});">{$class_v["name"]}</li>
+				{else/}
+				<li onclick="selectCategoryGoodsList(this,{$class_v['id']});">{$class_v["name"]}</li>
+				{/if}
+			{/foreach}
+		</ul>
+	</aside>
+	<section class="contro-goods-list-box">
+		{foreach $custom_template_v['style_data']['goods_classify'] as $class_k=>$class_val}
+			{if condition="!empty($class_val['goods_list'])"}
+				{if condition = "$class_k eq 0" }
+				<ul class="goods-list-{$class_val['id']} class-contro-list-style">
+				{else/}
+				<ul class="goods-list-{$class_val['id']} class-contro-list-style" style="display:none;">
+				{/if}
+				{foreach $class_val["goods_list"] as $goods_key=>$goods_info}
+					<li>
+						<div>
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$goods_info['goods_id'])}">
+							<img src="{:__IMG($goods_info['pic_cover_small'])}" style="width:100%;"/>
+							</a>
+						</div>
+						<div>
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$goods_info['goods_id'])}">
+								<span>
+								{if condition="count($goods_info.gorup_list)>0"}
+								{if condition="$goods_info.gorup_list[0]->group_name"}
+								<i class="goods-tab">{$goods_info.gorup_list[0]->group_name}</i>
+								{/if}
+								{/if}
+								{$goods_info['goods_name']}</span>
+								<em>￥{$goods_info['promotion_price']}
+								{if condition="$goods_info.shipping_fee==0"}
+								<i class="shipping-fee">包邮</i>
+								{/if}
+								</em>
+							</a>
+							{if condition="$class_val.goods_show_buy_button == 1"}
+							
+							{if condition="$goods_info.goods_type == 1"}
+							<button class="control-goods-buy-style-cart" onclick="CartGoodsInfo({$goods_info['goods_id']}, {$goods_info['state']})">
+								<img src="{:__IMG($class_val.goods_buy_button_src)}">
+							</button>
+							{/if}
+							
+							{/if}
+						</div>
+					</li>
+				{/foreach}
+			</ul>
+			{else/}
+				
+			<div {if condition = "$class_k ==0" }style="text-align:center;"{else/} style="display:none;text-align:center;" {/if} class="goods-list-{$class_val['id']} class-contro-list-style">
+				<img src="__TEMP__/{$style}/public/images/wap_nodata.png" class="custo-not-goods"/>
+				<div>{:lang('no_goods_under_current_merchandise_classification')}...{$class_k}</div>
+			</div>
+			{/if}
+		{/foreach}
+	</section>
+</div>
+<script>
+var class_height = 0;
+
+$(function(){
+	class_height = $(".contro-goods-class-box").height();
+	var list_height = $(".contro-goods-list-box").height();
+	if(list_height >= class_height){
+		var height = list_height;
+	}else{
+		var height = class_height;
+	}
+	$(".contro-goods-class-box").height(height); 
+})
+function selectCategoryGoodsList(obj, id){
+	$(".contro-goods-list-box .class-contro-list-style").hide();
+	$(".goods-list-"+id).show();
+	$(".control-goods-classify aside ul li").removeClass("contro-class-selected");
+	$(obj).addClass("contro-class-selected");
+	var list_height = $(".contro-goods-list-box").height();
+	if(list_height >= class_height){
+		var height = list_height;
+	}else{
+		var height = class_height;
+	}
+	$(".contro-goods-class-box").height(height); 
+}
+//新加的
+//判断规格是否全部选择
+function judge_is_all_selected(){
+	var is_all_selected = true;
+	if($("#specification li.JS-spec").length > 0 && $("#specification li.JS-spec.selected").length != $("#specification li.JS-spec").length){
+		is_all_selected = false;
+	}
+	return is_all_selected;
+}
+</script>
+{/if}

@@ -1,0 +1,25 @@
+<!-- 底部菜单 -->
+<style>
+.control-footer{border-top:1px solid #e5e5e5;}
+.control-footer ul li{float: left;text-align: center;cursor: pointer;padding:5px 0;background: #ffffff;font-family: "微软雅黑", "Helvetica Neue", "Helvetica", Helvetica, Arial,sans-serif;}
+.control-footer ul li img {width: 25px;}
+.control-footer ul li label {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;margin: 2px 0 0;display: block;font-size:12px;}
+</style>
+<div class="fixed bottom control-footer js-base-footer">
+	<ul>
+		{foreach $custom_footer as $k=>$footer_val}
+		<li style="width: <?php echo 1/count($custom_footer)*100; ?>%" onclick="location.href='{$footer_val['href']}'">
+			{if condition="$footer_val['img_src'] !=''"}
+			{if condition="$k==$select_footer_index"}
+			<img src="{:__IMG($footer_val['img_src_hover'])}"/>
+			{else/}
+			<img src="{:__IMG($footer_val['img_src'])}"/>
+			{/if}
+			{/if}
+			{if condition="$footer_val['menu_name'] !=''"}
+			<label style="color:{$footer_val['color']};">{$footer_val['menu_name']}</label>
+			{/if}
+		</li>
+		{/foreach}
+	</ul>
+</div>

@@ -1,0 +1,93 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/components.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/group_goods_list.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/category.css">
+<style>
+.selected{color:red;}
+.brand{width: 100%;height: 280px;overflow: hidden;position: relative;margin-top: 10px;}
+.brand_img{display: inline-block;vertical-align: middle;width: 100%;height: auto;}
+.topic-list-grid{margin-top: 15px;    padding: 0 10px;}
+.topic-list-grid .tablelist-append ul li{width: 100%;height: auto;margin-bottom: 15px;position: relative;}
+.topic_img{width: 100%;}
+.topic_name{    position: absolute;top: 50%;left: 50%;color: #fff; font-size: 18px;transform: translate(-50%,-50%);}
+.block{display: block;}
+.topic_detail{position: absolute;bottom: 0px;background: #333;opacity: 0.8;width: 100%;height: auto;overflow: hidden;}
+.topic_desc{font-size: 18px;color: #fff;height: 20px;line-height: 20px;padding:0 5px;}
+.topic_introduce{font-size: 14px;color: #fff;padding:2px 5px;height: 20px;}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="javascript:window.history.go(-1)"><i class="icon-back"></i></a>
+	<div class="head-title"><span style="margin-left: 40px;">专题活动</span>{include file="wap/default_new/controGroup" /}</div>
+</section>
+<div style="height: 45px;"></div>
+{if condition="$topic_adv['is_use'] eq 1"}
+    {if condition="$topic_adv['adv_list'][0]['adv_image'] neq ''"}
+<div class="slick">
+	<a href="{:__URL($topic_adv['adv_list'][0]['adv_url'])}">
+		<img src="{:__IMG($topic_adv['adv_list'][0]['adv_image'])}" style="width:100%;">
+		<!-- style="height:{$brand_adv.ap_height}px;" -->
+	</a>
+</div>
+   {/if}
+{/if}
+
+{/block}
+
+{block name="main"}
+
+<div class="topic-list-grid">
+	<div class="blank-div"></div>
+	<div id="topic_list">
+		<div class="tablelist-append clearfix" style="overflow: hidden;">
+			<ul>
+				{foreach name="info['data']" id="v"}
+				<li>
+					<a href="{:__URL('APP_MAIN/goods/promotionTopicGoods','topic_id='.$v['topic_id'])}"><img src="{:__IMG($v['picture_img'])}" alt="" class="topic_img"><span class="topic_name">{$v['topic_name']}</span>
+						<div class="topic_detail">
+							{if condition="$v['desc'] != ''"}
+							<span class="topic_desc block">{$v['desc']}</span>
+							{/if}
+							{if condition="$v['introduce'] != ''"}
+								<span class="topic_introduce block">{$v['introduce']}</span>
+							{/if}
+						</div>
+					</a>
+				</li>
+				{/foreach}
+			</ul>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="page_count"><!-- 总页数 -->
+<input type="hidden" id="page" value="1"><!-- 当前页数 -->
+<input type="hidden" id="brand_id" >
+
+<script src="__TEMP__/{$style}/public/js/public_assembly.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	$('.defaualt').eq(0).click();
+})
+var is_load = false;
+//滑动到底部加载
+$(window).scroll(function(){
+	var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
+	var content_box_height = parseFloat($(".tablelist-append").height());
+	if(totalheight - content_box_height >= 100 && content_box_height > 0){
+		if(!is_load){
+			var page = parseInt($("#page").val()) + 1;//页数
+			var total_page_count = $("#page_count").val(); // 总页数
+			var brand_id = $("#brand_id").val();
+			if(page > total_page_count){
+				return false;
+			}else{
+				showCategorySecond(brand_id,null,page);
+			}
+		}
+	}
+})
+</script>
+{/block}
+{block name="bottom"}{/block}

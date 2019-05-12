@@ -1,0 +1,5 @@
+<!-- 标题 -->
+<div class="contro-title" style="padding:{$custom_template_v.style_data.title.padding}px 5px;background:url({:__IMG($custom_template_v.style_data.title.bg_img)}) 50% / 100% no-repeat {$custom_template_v.style_data.title.bg_color};color:{$custom_template_v.style_data.title.text_color};" onclick="location.href='{$custom_template_v['style_data']['title']['href']}'">
+	<h2 class="contro-title-h" style="padding:0 0 5px;font-size:16px;{if condition="$custom_template_v['style_data']['title']['whether_bold']==2"}font-weight:normal;{/if}text-align:{if condition="$custom_template_v['style_data']['title']['text_align']  eq 1"} left {elseif condition="$custom_template_v['style_data']['title']['text_align']  eq 2"}center{else/}right{/if};">{$custom_template_v.style_data.title.title_name}</h2>
+	<p class="contro-title-h"style="font-size:14px;text-align:{if condition="$custom_template_v['style_data']['title']['text_align']  eq 1"} left {elseif condition="$custom_template_v['style_data']['title']['text_align']  eq 2"}center{else/}right{/if};">{$custom_template_v.style_data.title.subtitle_name}</p>
+</div>

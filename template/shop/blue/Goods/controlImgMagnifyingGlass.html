@@ -1,0 +1,122 @@
+<link rel="stylesheet" href="__TEMP__/{$style}/public/js/dist/photoswipe.css">
+<link rel="stylesheet" href="__TEMP__/{$style}/public/js/dist/default-skin/default-skin.css">
+<script src="__TEMP__/{$style}/public/js/dist/photoswipe.js"></script>
+<script src="__TEMP__/{$style}/public/js/dist/photoswipe-ui-default.js"></script>
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+	<div class="pswp__bg"></div>
+
+	<div class="pswp__scroll-wrap">
+
+		<div class="pswp__container">
+			<div class="pswp__item"></div>
+			<div class="pswp__item"></div>
+			<div class="pswp__item"></div>
+		</div>
+
+		<div class="pswp__ui pswp__ui--hidden">
+
+			<div class="pswp__top-bar">
+
+				<div class="pswp__counter"></div>
+
+				<!--关闭窗口-->
+				<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+				<!--分享-->
+				<!-- <button class="pswp__button pswp__button--share" title="Share"></button> -->
+
+				<!--全屏-->
+				<button class="pswp__button pswp__button--fs"
+					title="Toggle fullscreen"></button>
+
+				<!--放大缩小-->
+				<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+				<!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+				<!-- element will get class pswp__preloader--active when preloader is running -->
+				<div class="pswp__preloader">
+					<div class="pswp__preloader__icn">
+						<div class="pswp__preloader__cut">
+							<div class="pswp__preloader__donut"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+				<div class="pswp__share-tooltip"></div>
+			</div>
+
+			<button class="pswp__button pswp__button--arrow--left"
+				title="Previous (arrow left)"></button>
+
+			<button class="pswp__button pswp__button--arrow--right"
+				title="Next (arrow right)"></button>
+
+			<div class="pswp__caption">
+				<div class="pswp__caption__center"></div>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+<script>
+//显示图片集合
+var indexArr = new Array();
+var gallery = null;
+function initData(index){
+	indexArr = new Array();
+	var items = new Array();
+	if(index == undefined){
+		index = 0;
+	}
+	var pswpElement = document.querySelectorAll('.pswp')[0];
+	
+	$("#MagnifierWrap .spec-items li img").not(":hidden").each(function(i, e) {
+		var theImage = new Image();
+		theImage.src = $(e).attr("data-pic-cover");
+		var info = {
+			"src" : $(e).attr("data-pic-cover"),
+			"w" : theImage.width,
+			"h" : theImage.height
+		};
+		items.push(info);
+		indexArr.push($(this).parent().index());
+	});
+	var options = {
+		history : false,
+		focus : false,
+		showAnimationDuration : 0,
+		hideAnimationDuration : 0,
+		index : index,
+		closeOnScroll : false
+	};
+
+	gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items,options);
+	gallery.init();
+// 	if(gallery == null){
+// 	}else{
+// 		console.log("goto");
+// 		gallery.goTo(index);
+// 	}
+	
+// 	gallery.init();
+}
+
+function showPhotoSwipe(){
+	var curr = $("#MagnifierWrap .spec-items li:visible.on").index();
+	var index = 0;
+	for(var i=0;i<indexArr.length;i++){
+		if(indexArr[i] == curr){
+			index = i;
+			break;
+		}
+	}
+	initData(index);
+}
+</script>

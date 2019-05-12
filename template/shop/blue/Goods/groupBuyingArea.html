@@ -1,0 +1,114 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_sale.css">
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_default.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/ns_shop_common.css">
+<style type="text/css">
+.goods-tag{
+   	padding: 1px 2px;
+    color: #fff;
+    background: #ff0000;
+    display: inline-block;
+    margin: 0;
+    line-height: normal;
+    font-size: 12px;
+    font-style: normal;
+    float: left;
+}
+.original-price{
+	color: #999;
+	margin-left: 5px;
+}
+
+</style>
+{/block}
+{block name="main"}
+
+	{niu:advkeyword name="list" keyword="groupBuyArea"}
+		{notempty name="$list['adv_list']"}
+		<div class="banner">
+			<ul class="full-screen-slides" id="fullScreenSlides" >
+				{foreach name="$list['adv_list']" item="vo" key="k"}
+					{if $k eq 0}
+						<li style="background:{$vo['background']} url({:__IMG($vo['adv_image'])}) no-repeat 50% 50%;"><a href="{:__URL($vo['adv_url'])}" target="_blank" title="">&nbsp;</a></li>
+					{else/}
+						<li style="display: none;background:{$vo['background']} url({:__IMG($vo['adv_image'])}) no-repeat 50% 50% ;"><a href="{:__URL($vo['adv_url'])}" target="_blank" title="">&nbsp;</a> </li>
+					{/if}
+				{/foreach}
+			</ul>
+			<ul class="full-screen-slides-pagination" style="height:0px;">
+				{volist name="$list['adv_list']" id="vo" key="k"}
+					{if $k eq 1}
+						<li class="current"><a href="javascript:void(0);">{$k}</a></li>
+					{else/}
+						<li><a href="javascript:void(0);">{$k}</a></li>
+					{/if}
+				{/volist}
+			</ul>
+		</div>
+		{/notempty}
+	{/niu:advkeyword}
+	<div class="w1210">
+		<div class="sale-container">
+			<!-- 团购商品列表 -->
+			<div class="wrapper">
+				{notempty name="group_goods_list['data']"}
+				<ul class="list-grid clearfix js-list-grid">
+					{foreach name="group_goods_list['data']" item="goods" key="k"}
+					<li class="item {if condition='$k neq 0 && ($k+1)%5==0'}last{/if}">
+						<div class="item-con">
+							<div class="item-pic">
+								<a href="{:__URL('SHOP_MAIN/goods/grouppurchase','goodsid='.$goods['goods_id'])}" title="{$goods.goods_name}" target="_blank">
+									<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($goods['picture']['pic_cover_mid'])}">
+								</a>
+							</div>
+							<div class="item-info">
+								<div class="item-price"><span class="goods-tag">团购价</span><em class="sale-price money-color">￥{$goods.group_price}</em>
+									<s class="original-price">￥{$goods.promotion_price}</s></div>
+								<div class="item-name"><a href="{:__URL('SHOP_MAIN/goods/grouppurchase','goodsid='.$goods['goods_id'])}" target="_blank" title="{$goods.goods_name}">{$goods.goods_name}</a></div>
+								<div class="item-con-info">
+									<div class="fr" style="float: left;margin-right: 5px;">
+										<div class="item-add-cart">
+											<!-- 团购商品，没有加入购物车 -->
+											<a href="{:__URL('SHOP_MAIN/goods/grouppurchase','goodsid='.$goods['goods_id'])}" target="_blank" class="add-cart" title="{:lang('view_details')}">{:lang('view_details')}</a>
+										</div>
+									</div>
+									<div class="fl">
+										<div class="item-operate {if condition="$goods.is_favorite>0"}is_favorite{/if}">
+												<a href="javascript:;" class="operate-btn collet-btn  goods-collect" onclick="collectionGoods({$goods.goods_id},'goods','{$goods.goods_name}',this,false)">
+												<i {if condition="$goods.is_favorite>0"}style="background-position:-107px -11px;"{/if} data-log-id="{$goods.is_favorite}"></i>
+												<span style="display: inline;"> {if condition="$goods.is_favorite>0"}{:lang('goods_collected')}
+							 							{else/}{:lang('goods_collection')}{/if}
+							 					</span>
+											</a>
+										</div>
+									</div>
+									{if condition="$custom_service['value']['service_addr'] != '' "}
+									<a href="{$custom_service['value']['service_addr']}" title="{:lang('contact_customer_service')}" target="_blank" class="customerService">
+										<i class="kefu"></i>
+									</a>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</li>
+					{/foreach}
+
+
+				</ul>
+				{else/}
+				<div class="tip-box" style="position: static;margin:0 auto;">
+					<i class="tip-icon"></i>
+					<div class="tip-text">{:lang('sorry')}！{:lang('no_result_you_want')}……</div>
+				</div>
+				{/notempty}
+			</div>
+				{include file='shop/blue/controlCommonPage'/}
+		</div>
+		{include file='shop/blue/controlLoveOrHistory' /}
+	</div>
+	{include file='shop/blue/Goods/controlPopUpGoodsSkuAttribute'/}
+{/block}
+{block name="javascript"}
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/ns_index.js"></script>
+{/block}

@@ -1,0 +1,31 @@
+<!--
+	创建人：王永杰
+	创建时间：2017年2月7日 12:05:24
+	功能描述： 首页导航栏、 菜单栏、、商品分类、轮播图（目前只有首页才拥有这个组件）
+-->
+{niu:adv name="list" id="[ap_id]"}
+	{notempty name="$list"}
+	<ul id="fullScreenSlides" class="full-screen-slides">
+		{foreach name="$list['adv_list']" item="vo" key="k"}
+			{if $vo['adv_image'] == ''}
+				<li style="display: list-item;background: url(__TEMP__/{$style}/public/images/style_blue_banner.png) no-repeat center;background-size: auto"><a href="javascript:;" target="_blank">&nbsp;</a> </li>
+			{else/}
+				{if $k eq 0}
+					<li style="display: list-item;background: url({:__IMG($vo['adv_image'])}) no-repeat center;background-color:{$vo['background']};background-size: auto"><a href="{:__URL($vo['adv_url'])}" target="_blank" >&nbsp;</a> </li>
+				{else/}
+					<li style="display: none;background: url({:__IMG($vo['adv_image'])}) no-repeat center;background-color:{$vo['background']};background-size: auto"><a href="{:__URL($vo['adv_url'])}" target="_blank" >&nbsp;</a> </li>
+				{/if}
+			{/if}
+		{/foreach}
+	</ul>
+	<ul class="full-screen-slides-pagination">
+		{volist name="$list['adv_list']" id="vo" key="k"}
+			{if $k eq 1}
+				<li class="current"><a href="javascript:void(0);">{$k}</a></li>
+			{else/}
+				<li><a href="javascript:void(0);">{$k}</a></li>
+			{/if}
+		{/volist}
+	</ul>
+	{/notempty}
+{/niu:adv}

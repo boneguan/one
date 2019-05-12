@@ -1,0 +1,151 @@
+<script type="text/javascript">
+	var sku_list = [],
+		price_section_arr = [];
+
+	$(function(){
+		// 初始化获取sku列表数据	
+		if($("#specification input[type='hidden'][class='sku-array']").length > 0){
+			$("#specification input[type='hidden'][class='sku-array']").each(function(){
+				sku_list.push($(this).val());
+				var promotion_price = $(this).attr("promotion_price"),
+					member_price = $(this).attr("member_price"),
+					price = promotion_price < member_price ? promotion_price : member_price;
+					price_section_arr.push(price);
+			})
+			price_section_arr.sort();
+		}
+
+		// 规格选择
+		$("#specification div[name='specvals'] button").click(function() {
+			if($(this).hasClass('disabled')) return;
+			if($(this).hasClass('current')){
+				$(this).removeClass('current').siblings().removeClass('current');
+			}else{
+				$(this).addClass('current').siblings().removeClass('current');
+			}
+
+			$("#specification li").each(function(){
+				if($(this).find('button.current').length > 0){
+					$(this).addClass('selected')
+				}else{
+					$(this).removeClass('selected')
+				}
+			})
+
+			var not_exit_spec = get_not_exit_spec(get_selected_arr());
+			$("#specification li:not('.selected')").each(function(){
+				set_sku_item_disabled($(this), not_exit_spec);
+			})
+			
+			$("#specification li").each(function(){
+				update_same_level($(this));
+			})
+
+			sku_click_action($(this));
+		});
+
+		// 获取已经选中的规格
+		function get_selected_arr(){
+			var spec_value_arr = new Array();
+			if($("#specification div[name='specvals'] button.current").length > 0){
+				$("#specification div[name='specvals'] button.current").each(function(){
+					spec_value_arr.push($(this).attr("id"));
+				})
+			}
+			return spec_value_arr;
+		}
+
+		function get_not_exit_spec(selected_arr, not_select_arr){
+			// 选取出可供继续匹配的sku数组
+			var matching_arr = get_matching_arr(selected_arr);
+			var new_arr = [];	
+			for(i in matching_arr){
+				new_arr = new_arr.concat(matching_arr[i].split(';'));
+			}
+			return new_arr;
+		}
+
+		// 获取全部符合选中项的sku
+		function get_matching_arr(arr){
+			var new_arr = new Array();
+			for(i in sku_list){
+				var _is_add = true;
+				for(j in arr){
+					if(sku_list[i].indexOf(arr[j]) == -1){
+						_is_add = false;
+						break;
+					}
+				}
+				if(_is_add) new_arr.push(sku_list[i]);
+			}
+			return new_arr;
+		}
+
+		// 设置规格是否可选
+		function set_sku_item_disabled(goods_spec, not_exit_spec){
+			goods_spec.find("button.select").each(function(){
+				var spec_id = $(this).attr("id");
+				if(not_exit_spec.indexOf(spec_id) == -1){
+					$(this).addClass("disabled");
+				}else{
+					$(this).removeClass("disabled");
+				}
+			})
+		}
+
+		// 设置同级是否可选
+		function update_same_level(goods_spec){
+			var selected_arr = get_selected_arr();
+			var select_id = goods_spec.find("button.current").attr("id");
+			var selected_arr_new = del_array_val(selected_arr, select_id);
+			var not_exit_spec = get_not_exit_spec(selected_arr_new);
+			set_sku_item_disabled(goods_spec, not_exit_spec);
+		}
+
+		function del_array_val(arr,val){
+			//去除 数组 arr中的 val ，返回一个新数组
+		    var new_arr = [];
+		    for(k in arr){
+		        if(arr[k] != val){
+		            new_arr.push(arr[k]);
+		        }
+		    }
+		    return new_arr;
+		}
+
+		function skuDefaultSelect(){
+			$("#specification li.JS-spec:not('.selected')").each(function(){
+				$(this).find('button').each(function(){
+					var not_exit_spec = get_not_exit_spec(get_selected_arr());
+					var spec_id = $(this).attr("id");
+					if($.inArray(spec_id, not_exit_spec) != -1){
+						$(this).trigger('click');
+						return false;
+					}
+				})
+				$(this).addClass('selected');
+			})
+		}
+
+		// sku默认选中
+		skuDefaultSelect();
+
+		function sku_click_action(obj){
+			//判断是否有SKU主图
+			if(parseInt($(obj).attr("data-picture-id")) !=0){
+				$("#default_img").val($(obj).attr("data-picture-id"));
+				$(".js-thumbnail").attr("src",$("#spec_picture_id" + $(obj).attr("data-picture-id")).val());
+			}
+			echoSpecData();
+		}
+	})	
+
+	// 判断规格是否全部选择
+	function judge_is_all_selected(){
+		var is_all_selected = true;
+		if($("#specification li.JS-spec").length > 0 && $("#specification li.JS-spec.selected").length != $("#specification li.JS-spec").length){
+			is_all_selected = false;
+		}
+		return is_all_selected;
+	}
+</script>

@@ -1,0 +1,91 @@
+<!-- 橱窗 -->
+<style>
+.pink-bg {background: #FF7EC4;}
+.green-bg {background: #8BC34A;}
+/*2列*/
+.show-case-default {overflow: hidden;background: #ffffff}
+.show-case-default li {color: #ffffff;position: relative;}
+.show-case-default li.big {width: 60%;padding: 112px 0;font-size: 16px;float: left;}
+.show-case-default li div {text-align: center;}
+.show-case-default li p {position: absolute;width: 100%;background: rgba(0, 0, 0, 0.5);bottom: 0;font-size: 12px;margin: 0;max-height: 40px;min-height: 20px;text-indent: 10px;}
+.show-case-default li.small:NTH-CHILD(2) {margin-bottom: 1%;}
+.show-case-default li.small {width: 39%;float: right;padding: 50.3px 0;}
+.show-case-default li.small.clear {width: 40%;padding: 51px 0;}
+.show-case-default li.small.clear:NTH-CHILD(2) {margin-bottom: 0;}
+
+/*3列*/
+.show-case-multiple-columns {overflow: hidden;background: #ffffff;}
+.show-case-multiple-columns li {float: left;width: 32.6%;color: #ffffff;position: relative;margin: 0 1% 0 0;}
+.show-case-multiple-columns li div {padding: 80px 0;font-size: 16px;text-align: center;}
+.show-case-multiple-columns li p {position: absolute;width: 100%;background: rgba(0, 0, 0, 0.5);bottom: 0;font-size: 12px;margin: 0;max-height: 40px;min-height: 20px;text-indent: 10px;}
+.show-case-multiple-columns li.clear {margin: 0;width: 33.3%;}
+.show-case-multiple-columns li:NTH-CHILD(3) {margin-right: 0;}
+</style>
+
+{if condition="$custom_template_v.style_data.show_case.layout == 2"}
+<div class="show-case-default" style="padding: {$custom_template_v.style_data.show_case.padding}px 0;">
+	<ul>
+		<li class="big blue-bg" style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][0]['src'])}) 50% 50% / 100% no-repeat;" 
+		{if condition="$custom_template_v.style_data['show_case']['itemList'][0]['href'] != ''"}
+		onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][0]['href']}'"
+		{/if}>
+			<div style="visibility:hidden;">橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][0]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][0]['text']}</p>
+			{/if}
+		</li>
+		
+		<li class="small pink-bg {if condition="$custom_template_v.style_data['show_case']['clearance'] == 0"}clear{/if}" style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][1]['src'])}) 50% 50% / 100% no-repeat;"
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][1]['href'] != ''"}
+			onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][1]['href']}'"
+			{/if}>
+			<div style="visibility:hidden;">橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][1]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][1]['text']}</p>
+			{/if}
+		</li>
+		
+		<li class="small green-bg {if condition="$custom_template_v.style_data['show_case']['clearance'] == 0"}clear{/if}" style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][2]['src'])}) 50% 50% / 100% no-repeat;"
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][2]['href'] != ''"}
+			onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][2]['href']}'"
+			{/if}>
+			<div style="visibility:hidden;">橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][2]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][2]['text']}</p>
+			{/if}
+		</li>
+	</ul>
+</div>
+{elseif condition="$custom_template_v.style_data.show_case.layout == 3" /}
+<div class="show-case-multiple-columns">
+	<ul>
+		<li {if condition="$custom_template_v.style_data['show_case']['clearance'] == 0"}class="clear"{/if} style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][0]['src'])}) 50% 50% / 100% no-repeat;"
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][0]['href'] != ''"}
+			onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][0]['href']}'"
+			{/if}>
+			<div style="visibility: hidden;">多列橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][0]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][0]['text']}</p>
+			{/if}
+		</li>
+		<li {if condition="$custom_template_v.style_data['show_case']['clearance'] == 0"}class="clear"{/if} style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][1]['src'])}) 50% 50% / 100% no-repeat;"
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][1]['href'] != ''"}
+			onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][1]['href']}'"
+			{/if}>
+			<div style="visibility: hidden;">多列橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][1]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][1]['text']}</p>
+			{/if}
+		</li>
+		<li {if condition="$custom_template_v.style_data['show_case']['clearance'] == 0"}class="clear"{/if} style="background: url({:__IMG($custom_template_v.style_data['show_case']['itemList'][2]['src'])}) 50% 50% / 100% no-repeat;"
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][2]['href'] != ''"}
+			onclick="location.href='{$custom_template_v.style_data['show_case']['itemList'][2]['href']}'"
+			{/if}>
+			<div style="visibility: hidden;">多列橱窗</div>
+			{if condition="$custom_template_v.style_data['show_case']['itemList'][2]['show_text'] == 1"}
+			<p>{$custom_template_v.style_data['show_case']['itemList'][2]['text']}</p>
+			{/if}
+		</li>
+	</ul>
+</div>
+{/if}

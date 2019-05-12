@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta charset="UTF-8">
+	<title>{:lang('choose_payment_method')}-{$title}</title>
+		<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/pay/pcPay.css">
+		<script src="__TEMP__/{$style}/public/js/jquery.js"></script>
+		<script src="__TEMP__/{$style}/public/js/pcPay.js"></script>
+		<script src="__STATIC__/js/load_bottom.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			var APPMAIN = 'APP_MAIN';
+			var STATIC = "__STATIC__";
+		</script>
+	</head>
+	<body class="body">
+		<div class="header">
+			<div class="container">
+				<div class="logo fl">
+					<img alt="{$web_info.title}{:lang('cashier_desk')}" src="{:__IMG($web_info.logo)}" />
+				</div>
+			</div>
+		</div>
+		<div class="pay-body">
+			<div class="payment-wrap">
+
+				<div class="payment-top clear">
+					<div class="payment-left">
+						<div class="payment-tit">
+							<span>交易对象：</span>
+							<em>{$title}</em>
+						</div>
+					</div>
+					<div class="payment-right">
+						<div class="cost">
+                            <span class="tit">应付:</span>
+							<span class="price">
+								<span class="unit-icon">¥</span>
+								<em>{$pay_value.pay_money}</em>
+							</span>
+                        </div>
+					</div>
+				</div>
+
+				<div class="payment-mod clear">
+                    <div class="payment-left">
+                        <label>
+                            <input type="checkbox" class="payment-checkbox" checked="checked" id="is_use_balance">
+                            <span>使用余额</span>
+                        </label>
+                        <span class="payment-balance-num">(可用余额{$member_balance}元)</span>
+                    </div>
+                    <div class="payment-right">
+                        <div class="cost pay_balance_show">
+                            <span class="tit">支付:</span>
+							<span class="price">
+								<span class="unit-icon">¥</span>
+								<em class="pay_balance_value" style="font-weight:bold;">{$member_balance}</em>
+							</span>
+                        </div>
+                    </div>
+                </div>
+				
+				<div class="payment-mod clear">
+					<div class="clear">
+						<div class="payment-left">
+	                        <label>
+	                            <input type="checkbox" class="payment-checkbox" disabled checked>
+	                            <span>使用其他支付方式</span>
+	                        </label>
+	                        <span class="payment-balance-num">(点击“立即支付”后您可在新开页面选择其中任意一种渠道进行支付。)</span>
+	                    </div>
+	                    <div class="payment-right">
+	                        <div class="cost">
+	                            <span class="tit">支付:</span>
+								<span class="price">
+									<span class="unit-icon">¥</span>
+									<em class="pay_balance_value surplus_need_pay_money" style="font-weight:bold;">{$need_pay_money}</em>
+								</span>
+	                        </div>
+	                    </div>
+                    </div>
+                    <!-- 其他支付方式 -->
+                    {if condition="$pay_config['wchat_pay_config']['is_use'] ==1 || $pay_config['ali_pay_config']['is_use'] == 1 || $pay_config['union_pay_config']['is_use'] == 1"}
+                    <div class="payment-icon-list">
+                    	<ul>
+                    		{if condition="$pay_config['wchat_pay_config']['is_use']==1"}
+                    		<li><img src="__TEMP__/{$style}/public/images/pay/wechat_qr.png"></li>
+                    		{/if}
+                    		{if condition="$pay_config['ali_pay_config']['is_use']==1"}
+                    		<li><img src="__TEMP__/{$style}/public/images/pay/alipay.png"></li>
+                    		{/if}
+							{if condition="$pay_config['union_pay_config']['is_use']==1"}
+                    		<li><img src="__TEMP__/{$style}/public/images/pay/unionpay_card.png"></li>
+							{/if}
+                    	</ul>
+                    	<p class="payment-icon-txt">当余额不足时，请选择上方的任一支付方式支付不足的部分</p>
+                    </div>
+                    {/if}
+				</div>
+				
+				<a href="javascript:;" class="payment-btn pay">立即支付</a>
+			</div>
+			<input type="hidden" name="" id="hidden_member_balance" value="{$member_balance}">
+			<input type="hidden" name="" id="hidden_need_pay_money" value="{$need_pay_money}">
+			<input type="hidden" name="" id="hidden_pay_money" value="{$pay_value.pay_money}">
+			<input type="hidden" name="" id="hidden_out_trade_no" value="{$pay_value.out_trade_no}">
+		</div>
+	
+		{include file='wap/default_new/urlModel'/}
+	</body>
+</html>

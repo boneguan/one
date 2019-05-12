@@ -1,0 +1,42 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link href="__TEMP__/{$style}/public/css/team_list.css"  rel="stylesheet" type="text/css" />
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="javascript:window.history.go(-1)"><i class="icon-back"></i></a>
+	<div class="head-title">我的团队</div>
+</section>
+{/block}
+{block name="main"}
+<article class="team">
+{if condition="count($team_list) >0"}
+	{foreach name="team_list" item="vo" key="key"}
+		{if condition="count($vo) >0"}
+			{switch name="key"}
+				{case value="array_one"}<div class="team-title">下级会员</div>{/case}
+				{case value="array_two"}<div class="team-title">下下级会员</div>{/case}
+				{case value="array_three"}<div class="team-title">下下下级会员</div>{/case}
+			{/switch}
+			{foreach name="vo" item="team"}
+			<div class="team-item">
+				<img src="{:__IMG($default_headimg)}" class="lazy_load" data-original="{$team['user_info']['user_headimg']}"/>
+				<div class="team-info">
+					<strong>{$team["user_info"]["nick_name"]}</strong>
+					<strong class="role_name">({$team["role_name"]})</strong><br>
+					{notempty name="$team['recommender_name']"}
+					<strong class="role_user">推荐人：{$team["recommender_name"]}</strong><br>
+					{/notempty}
+					<time>注册时间：{:getTimeStampTurnTime($team["user_info"]["reg_time"])}</time>
+				</div>
+			</div>
+			{/foreach}
+		{/if}
+	{/foreach}
+{else/}
+	<p style="text-align: center;padding:50px;">您当前还没有团队哦</p>
+{/if}
+</article>
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}{/block}

@@ -1,0 +1,219 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+    <link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/member_common.css">
+	 <style>
+
+
+	@media screen and (min-width:640px){
+		.coupon-price {
+	    height: 70px !important;
+	    top: 30px !important;
+	    left: 29px !important;
+	    font-size: 16px !important;
+	    padding-left: 85px !important;
+	    max-width: 540px !important;
+		}
+		.coupon-price p {
+		    padding-top: 15px !important;
+		}
+		.coupon-price i {
+			width: 60px !important;
+			height: 60px  !important;
+			left: 20px !important;
+		}
+		.coupon-price-right{
+			top: 50px !important;
+			right: 20px !important; 
+			font-size: 14px !important;
+		}
+		.coupon-price-right p:last-child{
+			margin-top: 35px !important;
+			font-size:20px !important;
+		}	
+		
+	.coupon-lose {
+	    font-size: 16px !important;
+	}
+		
+		
+		
+	}
+	.coupon-price {
+	    position: absolute;
+		width:65vw;
+		height:20vw;
+	    top: 4vw;
+	    left: 5vw;
+	    font-size: 4vw;
+	    color: #fff;
+		padding-left: 15vw;
+		vertical-align: middle;	
+	}
+	.coupon-price p {
+	    padding-top: 3vw;
+	}
+	.coupon-price i {
+		width: 12vw;
+		height: 12vw;
+		display:block;
+		border-radius:50%;
+		background: #ffffff;
+		position: absolute;
+		left: 0;
+	}
+	.coupon-price i img {
+	    vertical-align: middle;
+	    max-width: 100%;
+	    max-height: 100%;
+		height: auto;
+		border-radius:50%;
+	}
+	
+	.coupon-price-right{
+		position:absolute;
+		color: #fff;
+		top: 7vw;
+		right: 5vw; 
+		width:20vw;
+		padding-left: 0;
+		text-align: center;
+		font-size: 4vw;
+	}
+	.coupon-price-right p:last-child{
+		margin-top: 2vw;
+		font-size:6vw;
+	
+	}
+	
+	.coupon-lose {
+	    position: absolute;
+	    top: 67%;
+	    left: 10%;
+	    font-size: 3.5vw;
+	    color: #fff;
+	}
+	
+	
+	.due-img{
+		display: block;
+	    position: absolute;
+	    top: 40%;
+	    bottom: 10%;
+	    left: 50%;
+	    right: 22%;
+	    background: url(__TEMP__/{$style}/public/images/stamp-due.png) no-repeat;
+	    background-size: auto 100%;
+	}
+	
+	.uneless-imgs {
+	    background: url(__TEMP__/{$style}/public/images/stamp-useless.png) no-repeat;
+		background-size: auto 100%;
+	}	
+
+	.com_content li {
+	    width: 100%;
+	    position: relative;
+	    float: left;
+	    margin-top: 10px;
+		background: #fff;
+	    padding: 5px;
+		list-style: none;
+	}
+	
+	</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+		<a class="head_back" id="backoutapp" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+		<div class="head-title">{:lang('member_my_virtual_code')}</div>
+	</section>
+{/block}
+
+{block name="main"}
+ 
+  <div class="cf-container" data-reactid="2">
+   		<div class="cf-edge" data-reactid="3"></div>
+		<ul class="cf-content" data-reactid="4">
+   			<li class="cf-tab-item select" data-index="1" data-reactid="7"><a href="javascript:getMemberVirtualList(0);">{:lang('unused')}</a></li>
+			<li class="cf-tab-item" data-index="1" data-reactid="7"><a href="javascript:getMemberVirtualList(1);">{:lang('used')}</a></li>
+			<li class="cf-tab-item" data-index="1" data-reactid="7"><a href="javascript:getMemberVirtualList(-1);">{:lang('expire')}</a></li>
+    	</ul>
+	</div>
+  
+    <div class="com_content">
+    	
+    </div>
+<script type="text/javascript">
+	$(function(){
+		$('.cf-container .cf-tab-item').click(function(){
+       		$('.cf-container .cf-tab-item').removeClass('select');
+       		$(this).addClass('select');
+       	})
+
+		getMemberVirtualList(0);
+		
+	})
+	function getMemberVirtualList(type){
+		$.ajax({
+			type:'post',
+			async:true,
+			url:'{:__URL('APP_MAIN/member/myVirtualCode')}',
+			data:{'type':type },
+			dataType:'json',
+			success:function(data){
+				var listhtml='<ul id="not_use">';
+				if(data.length>0){
+					$('.null_default').hide();
+					for(var i=0;i<data.length;i++){
+						if(data[i]['picture_info'] != ''){
+							var img = __IMG(data[i]['picture_info']);
+						}else{
+							var img = "__TEMP__/{$style}/public/images/error_img.png";
+						}
+						var number = parseInt(data[i]['confine_use_number'])-parseInt(data[i]['use_number']);
+						
+						if(type==0){
+							listhtml+='<li><a class="not_use" href="'+__URL(APPMAIN+'/Verification/VerificationOrderDetail?	vg_id='+data[i]['virtual_goods_id'])+'">';
+						}else{
+							listhtml+='<li><a class="already-use" href="javascript:;">';
+						}			
+						if(data[i]['use_status'] == 0){
+							listhtml+='<img src="__TEMP__/{$style}/public/images/virtual_member.png" style="width:100%;"/>';
+						}else if(data[i]['use_status'] == 1){
+							listhtml+='<img src="__TEMP__/{$style}/public/images/virtual_member_ing.png" style="width:100%;"/>';
+						}else{
+							listhtml+='<img src="__TEMP__/{$style}/public/images/virtual_member_ed.png" style="width:100%;"/>';
+						}
+						listhtml+='<div class="coupon-price"><i><img src="'+ img +'" /></i><p>'+data[i]['virtual_goods_name']+'</p></div>';
+						listhtml+='<div class="coupon-lose">有效期至:<span>'+data[i]['end_time']+'</span></div>';
+						if(data[i]['confine_use_number'] == 0){
+							listhtml+='<div class="coupon-price-right"><p>可用次数</p><p style ="font-size:12px;">不限次数</p></div>';
+						}else{
+							listhtml+='<div class="coupon-price-right"><p>可用次数</p><p  style ="font-size:12px;">'+number+'</p></div>';
+						}
+	
+						if(type==1){
+							listhtml+='<span class="due-img uneless-imgs"></span></a></li>';	
+						}else if(type==-1){
+							listhtml+='<span class="due-img"></span></a></li>';
+						}else{
+							listhtml+='</a></li>';
+						}
+					}
+					listhtml+='</ul>';
+				}else{
+					listhtml='<div class="null_default"><i class="icon-nocontent-youhuiquan"></i><span class="nulltext">{:lang("you_do_not_have_any_coupons_yet")}！</span></div>';
+				}
+				
+				$('.com_content').html(listhtml);
+			}
+		})
+	}
+    $("#backoutapp").click(function (){
+        var json ={"center" : "1",}
+        window.webkit.messageHandlers.center.postMessage(json);
+    })
+</script>
+
+{/block}
+{block name="bottom"}{/block}

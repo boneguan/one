@@ -1,0 +1,32 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/VerificationOrder.css">
+<style type="text/css">
+    body{background: #fff;}
+    .share-box-middle{padding-top:30px;}
+    .share-box-top{padding-top: 10px;}
+</style>
+{/block}
+
+{block name="goodsHead"}
+
+{/block}
+{block name="main"}
+<section class="head">
+    <a class="head_back" id="backoutapp" href="{:__URL('APP_MAIN/member/index')}"><i class="icon-back"></i></a>
+	<div class="head-title">订单自提</div>
+</section>
+<div class="share-box">
+	<div class="share-box-middle">
+		<div class="share-box-middle-qrcode">
+    		<img src="{:__IMG($qrcode_path)}"/>
+		</div>
+	</div>
+    <div class="share-box-top">
+        请将该提货码出示给门店审核人员进行提货
+    </div>
+</div>
+		
+{/block}
+{block name="bottom"}{/block}
+

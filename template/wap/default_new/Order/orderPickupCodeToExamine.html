@@ -1,0 +1,95 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/person-v4.4.css">
+<style type="text/css">
+.list-myorder{padding-top: 0;margin: 0;border-bottom:none;}
+.list-myorder .ul-product{margin: 0 15px;}
+.list-myorder .pro-name {color: #333;font-size: 14px;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 2;-webkit-box-orient: vertical;display: -webkit-box;}
+.pickedup-info{padding: 10px 15px;background: #fff;}
+.pickedup-info dl dt,.pickedup-info dl dd{display: inline-block;font-size: 14px;}
+.confirm-pick-up{width: 100%;height: 50px;color: #fff;text-align: center;line-height: 50px;background: red;position: fixed;bottom: 0;}
+</style>
+{/block}
+
+{block name="goodsHead"}{/block}
+
+{block name="main"}
+<section class="head">
+    <a class="head_back" id="backoutapp" href="{:__URL('APP_MAIN/member/index')}"><i class="icon-back"></i></a>
+	<div class="head-title">提货信息</div>
+</section>
+<div style="height: 45px;"></div>
+<section>
+	<div class="list-myorder">
+		<ul class="ul-product">
+			{foreach name="$order['order_goods']" item="vo"}
+			<li>
+				<a href="http://localhost/niushop_b2c_flagship/index.php?s=/wap/PresellOrder/orderdetail&amp;orderId=153">
+					<span class="pic">
+						<img src="{:__IMG($vo.picture_info.pic_cover_micro)}">
+					</span>
+					<div class="text">
+						<span class="pro-name" style="font-size: 12px;">{$vo.goods_name}</span>
+						<div class="pro-pric" style="margin-top: 0px;">
+								<span style="font-size: 12px;">价格:</span>
+								<b style="font-size:12px;font-weight:normal;">￥{$vo.price}</b>
+						</div>
+						<div class="pro-pric" style="margin-top: 0px;">
+							<span style="font-size: 12px;">规格:</span>
+							<b style="font-size:12px;font-weight:normal;">{$vo.sku_name} </b>
+						</div>
+						<div class="pro-pric" style="margin-top: 0px;">
+							<span style="font-size: 12px;">数量:</span>
+							<b style="font-size:12px;font-weight:normal;">{$vo.num}件</b>
+						</div>
+					</div>
+				</a>
+			</li>
+			{/foreach}
+		</ul>
+	</div>
+	<div class="pickedup-info">
+		<dl>
+			<dt>订单状态：</dt>
+			<dd>{$order.status_name}</dd>
+		</dl>
+		<dl>
+			<dt>提货人：</dt>
+			<dd>{$order.receiver_name}</dd>
+		</dl>
+		<dl>
+			<dt>联系方式：</dt>
+			<dd>{$order.receiver_mobile}</dd>
+		</dl>
+	</div>
+	<a href="javascript:;" class="confirm-pick-up" onclick="confirmPickUp({$order.order_id});">确认提货</a>
+</section>
+
+<script type="text/javascript">
+var is_click = false;
+function confirmPickUp(order_id){
+	if(!is_click){
+		is_click = true;
+		$.ajax({
+			type : "post",
+			url : "{:__URL('APP_MAIN/Order/pickedUpAuditorConfirmPickup')}",
+			data : {
+				"order_id" : order_id,
+				"auditor_id" : '{$uid}',
+				"buyer_name" : '{$order.receiver_name}',
+				"buyer_phone" : '{$order.receiver_mobile}'	
+			},
+			success : function(data){
+				if(data['code'] > 0){
+					showBox("确认成功","success","{:__URL('APP_MAIN/member/index')}");
+				}else{
+					showBox(data['message'],"error",location.href);
+				}
+			}
+		})
+	}
+}
+</script>
+{/block}
+
+{block name="bottom"}{/block}

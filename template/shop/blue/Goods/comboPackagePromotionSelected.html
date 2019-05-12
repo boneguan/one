@@ -1,0 +1,277 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/goods.css">
+<style>
+body{background:#fafafa;}
+.container{background: #fafafa;padding:20px 0 0;}
+.container>ul{width: 1210px;margin: 0 auto;background: #ffffff;}
+.container>ul>li{border:1px solid #e0e0e0;padding: 10px;border-bottom:0;overflow: hidden;}
+.container>ul>li:LAST-CHILD{border-bottom:1px solid #e0e0e0;padding:30px 25px 30px 16px;}
+.goods-preview{width:150px;height:150px;line-height: 150px;float:left;background: #ffffff;padding:0;text-align: center;border:1px solid #eee;overflow: hidden;}
+.detail-info{min-height: 148px;}
+.detail-info h1.goods-name{font-size:14px;font-weight: normal;}
+.detail-info .attribute{font-size:14px;padding:0 0 5px;}
+.detail-info .attribute span{width:45px;display: inline-block;}
+.detail-info .attribute strong{font-weight: normal;}
+.choose{padding: 5px 0;}
+.choose dl.attr{display: block;overflow: hidden;}
+.choose dl dd{width: initial;margin-top:1px;}
+.choose dl.attr dt{padding-left:0;}
+.rside {float: right;}
+.rside .lside {float: left;margin-right: 22px;overflow: hidden;clear: both;}
+.btn-jiesuan,.btn-jiesuan-disabled {display: block;width: 120px;height: 42px;background-color: #0689e1;border-radius: 0;text-align: center;color: #fff;line-height: 42px;font-size: 18px;float: right;}
+.btn-jiesuan:hover{background: #0D84D4;color: #ffffff;}
+.btn-jiesuan-disabled{background: #ddd;}
+.btn-jiesuan-disabled:hover{color: #fff;}
+.slivergrey {display: inline-block;color: #828282;text-align: right;width: 60px;font-size: 14px;}
+span.big {font-size: 18px;}
+.orange-bold {color: #ff4000;}
+</style>
+{/block}
+{block name="main"}
+<div class="container">
+	<ul>
+		{foreach name="$combo_package.goods_list" item="goods_info" key="k"}
+		<li data-goods-id="{$goods_info.goods_id}">
+			{notempty name="$goods_info['sku_picture_list']"}
+				{foreach name="$goods_info.sku_picture_list" item ="img" }
+					<input type="hidden" data-spec-value-id="sku-pic-{$img.spec_value_id}" data-big-img="{:__IMG($img['album_picture_list'][0]['pic_cover_big'])}" data-picture-id="{$img['album_picture_list'][0]['pic_id']}" />
+				{/foreach}
+			{else /}
+				{foreach name="$goods_info.img_list" item ="img" key = "k"}
+					<input type="hidden" data-big-img="{:__IMG($img['pic_cover_big'])}" data-picture-id="{$img['pic_id']}" />
+				{/foreach}
+			{/notempty}
+			<div class="goods-info">
+				<div class="goods-preview">
+					<a href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$goods_info['goods_id'])}" target="_blank">
+						<img src="{:__IMG($goods_info.default_gallery_img)}" id="goods_img">
+					</a>
+				</div>
+				
+				<div class="detail-info">
+					<h1 class="goods-name js-goods-name">
+						<a href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$goods_info['goods_id'])}" target="_blank">{$goods_info.goods_name}</a>
+					</h1>
+					<div class="attribute">
+						<span>库存：</span>
+						<strong id="goods_stock">{$goods_info.stock}件</strong>
+					</div>
+				
+					<div class="choose js-skulist">
+						{foreach name="goods_info['sku_list']" item="pro_skus" key="k"}
+						<input type="hidden" id="goods_sku{$k}" value="{$pro_skus.attr_value_items};" stock="{$pro_skus.stock}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" price="{$pro_skus.price}"/>
+						{/foreach}
+						
+						{foreach name="goods_info['spec_list']" item="spec" key="k"}
+						<dl class="attr">
+							<dt class="dt">{$spec.spec_name}</dt>
+							<dd class="dd">
+								<ul>
+								{foreach name="spec.value" item="spec_value" key="key"}
+								{if condition="$spec_value['spec_id'] eq $spec['spec_id']"}
+									<li class="goods-spec-item{if condition="$key==0"} selected{/if}" data-goods-id="{$goods_info['goods_id']}">
+										{switch name="$spec_value.spec_show_type"}
+												{case value="1"}
+												<a href="javascript:;" title="{$spec_value.spec_value_name}">
+													<span class="value-label" id="{$spec.spec_id}:{$spec_value.spec_value_id}">{$spec_value.spec_value_name}</span>
+													{if condition='$key==0'}
+													<i></i><!-- 第一个选中 -->
+													{/if}
+												</a>
+												{/case}
+												{case value="2"}
+												<!-- 颜色 -->
+												<a href="javascript:;" title="{$spec_value.spec_value_name}">
+													
+													{if condition="$spec_value.spec_value_data == ''"}
+													<span class="value-label" id="{$spec.spec_id}:{$spec_value.spec_value_id}">{$spec_value.spec_value_name}</span>
+													{else/}
+													<span id="{$spec.spec_id}:{$spec_value.spec_value_id}">
+														<b style="background: {$spec_value.spec_value_data};"></b>
+														{$spec_value.spec_value_name}
+													</span>
+													{/if}
+													
+													{if condition='$key==0'}
+													<i></i><!-- 第一个选中 -->
+													{/if}
+												</a>
+												{/case}
+												{case value="3"}
+												<a href="javascript:;" title="{$spec_value.spec_value_name}">
+													{if condition="$spec_value.spec_value_data == ''"}
+													<span class="value-label" id="{$spec.spec_id}:{$spec_value.spec_value_id}">{$spec_value.spec_value_name}</span>
+													{else/}
+													<img src="{:__IMG($spec_value.spec_value_data)}">
+													<span class="value-label" id="{$spec.spec_id}:{$spec_value.spec_value_id}" data-show-big-pic="{:__IMG($spec_value.spec_value_data_big_src)}" data-picture-id="{$spec_value.picture_id}">{$spec_value.spec_value_name}</span>
+													{/if}
+													
+													{if condition='$key==0'}
+													<i></i><!-- 第一个选中 -->
+													{/if}
+												</a>
+												{/case}
+											
+										{/switch}
+									</li>
+									{/if}
+								{/foreach}
+								</ul>
+							</dd>
+						</dl>
+						{/foreach}
+					</div>
+				</div>
+			</div>
+		</li>
+		{/foreach}
+		<li>
+			<div class="rside">
+				<div class="lside">
+					<p>
+						<span class="slivergrey">套餐价：</span>
+						<span class="orange-bold big">￥<b id="realprice">{$combo_package.combo_package_price}</b></span>
+					</p>
+					<p>
+						<span class="slivergrey">原价：</span>
+						<span style="text-decoration: line-through;font-size: 14px;" id="original_price">&nbsp;￥{$combo_package.original_price}</span>
+					</p>
+				</div>
+				<a href="javascript:void(0);" class="btn-jiesuan" id="js-immediate-purchase">立即购买</a>
+			</div>
+			<div class="rside" style="line-height: 40px;margin-right: 30px;">
+				<span style="color: #828282;">购买</span>
+				<input type="number" value="1" id="buy_num" style="width: 50px;height: 28px;border: 1px solid #ddd;padding: 0 10px;"  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				<span style="color: #828282;">套</span>
+				<b class="orange-bold">(已节省<span id="save_the_price">￥{$combo_package.save_the_price}</span>)</b>
+			</div>
+		</li>
+	</ul>
+</div>
+{/block}
+{block name="javascript"}
+<script>
+$(function(){
+	getData();
+	CalculatePrice();
+})
+$("#js-immediate-purchase").click(function(){
+	if($(this).attr("class") == "btn-jiesuan-disabled"){
+		return false;
+	}
+	$.ajax({
+		url : __URL(SHOPMAIN + "/member/ordercreatesession"),
+		type : "post",
+		data : { "tag" : "combination_packages", "data" : getData() , "goods_type" : 1, "combo_id" : "{$combo_id}", "buy_num" : $("#buy_num").val() },
+		success : function(res){
+			if(res > 0){
+				location.href= __URL(SHOPMAIN + "/member/paymentorder");
+			}else{
+				$.msg("购买失败");
+			}
+		}
+	});
+})
+
+//选择规格
+$(".goods-spec-item").click(function(){
+	$(".goods-spec-item").removeAttr("data-last");
+	$(this).attr("data-last",1);
+	$(this).siblings(".selected").removeClass("selected").find("i").remove();
+	$(this).addClass("selected");
+	if($(this).find("a i").length==0){
+		$(this).find("a").append("<i></i>");
+	}
+	getData();
+	showSkuPicture($(this));
+	CalculatePrice();
+})
+
+
+function showSkuPicture(event){
+	var sku_str = $(event).find(".value-label").attr("id");
+	var sku_info = sku_str.split(":");
+	var src = $(event).parents("li[data-goods-id]").find("input[data-spec-value-id='sku-pic-"+sku_info[1]+"']").attr("data-big-img");
+	if(src != undefined){
+		$(event).parents("li[data-goods-id]").find("#goods_img").attr("src", src);
+	}
+}
+
+var stock_arr = ""; //库存
+var price_arr = ""; //价格
+function getData(){
+	stock_arr = new Array();
+	price_arr = new Array();
+	var num = $("#buy_num").val();
+	var res = new Array();
+	//SKUID:NUM,SKUID:NUM
+	$(".container>ul>li[data-goods-id]").each(function(){
+
+		var li = this;
+
+		var goods_id = $(li).attr("data-goods-id");
+
+		if($(li).find(".goods-spec-item").length>0){
+
+			var temp = new Array();
+
+			$(this).find(".goods-spec-item").each(function(){
+				if($(this).hasClass("selected")) temp.push($(this).find("span").attr("id"));
+			});
+
+			//比较
+			$(".container li[data-goods-id='" + goods_id + "'] input[type='hidden'][id^='goods_sku']").each(function(){
+
+				var goods_sku_array = $(this).val().split(";");
+				var sku_count = 0;
+				var curr_sku_count = 0;
+
+				for(var i=0;i<temp.length;i++){
+					sku_count++;
+					if($.inArray(temp[i],goods_sku_array) != -1) curr_sku_count++;
+				}
+
+				if(sku_count == curr_sku_count) {
+					res.push($(this).attr("skuid") + ":" + num);
+					var stock = $(this).attr("stock");
+					var price = $(this).attr("price");
+					stock_arr.push(stock);//库存
+					price_arr.push(price);
+					$(".container li[data-goods-id='" + goods_id + "']").find("#goods_stock").text(stock+"件");
+				};
+			});
+		}else{
+			stock_arr.push($(li).find("#goods_sku0").attr("stock")); //库存
+			res.push($(li).find("#goods_sku0").attr("skuid") + ":" + num);
+			price_arr.push($(li).find("#goods_sku0").attr("price"));
+		}
+	});
+	return res.toString();
+}
+
+$("#buy_num").change(function(){
+	if($(this).val() == ""){
+		$("#buy_num").val(1);
+	}
+	var num = parseInt($(this).val());
+	for(var i = 0; i < stock_arr.length; i ++ ){
+		if(num > stock_arr[i]){	
+			$("#js-immediate-purchase").removeClass("btn-jiesuan").addClass("btn-jiesuan-disabled");
+			break;
+		}else{
+			$("#js-immediate-purchase").removeClass("btn-jiesuan-disabled").addClass("btn-jiesuan");
+		}
+	}
+	CalculatePrice();
+})
+//计算价格
+function CalculatePrice(){
+	var original_price = parseFloat(eval(price_arr.join("+"))).toFixed(2);
+	var save_the_price = parseFloat(parseFloat(original_price) - parseFloat($("#realprice").text())).toFixed(2);
+	save_the_price = save_the_price < 0 ? 0 : save_the_price;
+	$("#original_price").text(original_price);
+	$("#save_the_price").text(save_the_price);
+}
+</script>
+{/block}

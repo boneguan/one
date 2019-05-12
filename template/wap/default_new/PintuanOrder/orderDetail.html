@@ -1,0 +1,341 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/foundation.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/common-v4.4.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/person-v4.4.css">
+<script src="__TEMP__/{$style}/public/js/order.js" type="text/javascript"></script>
+<style>
+.order-detail-wating-share{padding:10px 15px;background: #ffffff;}
+.order-detail-wating-share label{font-size:14px;}
+.order-detail-wating-share .user-list{padding:20px 0 20px 20px;margin:0;}
+.order-detail-wating-share .user-list li{position: relative;margin:0px 5px 10px 0;display:inline-block;}
+.order-detail-wating-share .user-list li .boss{position:absolute;left:-6px;top:-6px;background: #FFAB33;color:#333333;border-radius:10px;font-size:12px;padding:0 5px;}
+.order-detail-wating-share .user-list li img{width:40px;max-width: 100%;max-height: 100%;vertical-align: middle;border-radius:50%;}
+.order-detail-wating-share button{background: #f44;color: #ffffff;border: 0;padding: 8px;border-radius: 3px;margin:8px auto;display:block;width:90%;height: initial;line-height: initial;font-size: 14px;}
+.order-detail-wating-share button:active{background: #e04141;}
+.spelling-success{text-align: center;color: #f44;margin: 10px 0 0;font-size: 12px;}
+.spelling-success em{font-style: normal;}
+</style>
+{/block}
+{block name="main"}
+<div class="main myorder">
+	<section class="head">
+		<a class="head_back" href="{:__URL('APP_MAIN/PintuanOrder/myorderlist')}"><i class="icon-back"></i></a>
+		<div class="head-title">{:lang('member_order_details')}</div>
+	</section>
+</div>
+<div class="order-detail mt-45">
+	<section class="order-detail-infor">
+		<div class="order-detail-sum clear">
+			<div class="sum-r order-detail-r">
+				<ul class="sum-r-ul">
+					<li><span class="status">{$order.status_name}</span></li>
+					<li><span class="label">{:lang('order_number')}：</span><span class="value">{$order.order_no}</span></li>
+					<li><span class="label">{:lang('member_order_status')}：</span><span class="value">{$order.status_name}</span></li>
+					<li><span class="label">{:lang('order_time')}：</span><span class="value">{$order.create_time | getTimeStampTurnTime}</span></li>
+					<li><span class="label">{:lang('member_payment_method')}：</span><span class="value">{$order.payment_type_name}</span></li>
+					<li><span class="label">{:lang('member_payment_status')}：</span><span class="value">{$order.pay_status_name}</span></li>
+					<li><span class="label">{:lang('member_delivery_mode')}：</span><span class="value">{$order.shipping_type_name}</span></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<section class="order-detail-address">
+		<div class="address-out clear">
+			<div class="address-l order-detail-l">
+				<i class="icon-address-small"></i>
+			</div>
+			<div class="address-r order-detail-r">
+				<ul class="address-r-ul">
+					{switch name="$order.shipping_type"}
+						{case value="1"}
+						<li class="name">
+							<span class="label">{:lang('member_delivery_address')}：</span>
+							<span class="value" style="line-height: 150%;">{$order['receiver_name']}，{$order['receiver_mobile']}，{notempty name="$order['fixed_telephone']"}{$order['fixed_telephone']}，{/notempty} {$order['address']}&nbsp;{if condition="$order['receiver_zip']!=''"}&nbsp;，{$order['receiver_zip']}{/if}</span>
+						</li>
+						{/case}
+						{case value="2"}
+						<li class="name">
+							<span class="label">{:lang('member_self_addressed_address')}：</span>
+							<span class="value">{$order['order_pickup']['province_name']}&nbsp;{$order['order_pickup']['city_name']}&nbsp;{$order['order_pickup']['district_name']}&nbsp;{$order['order_pickup']['address']}</span>
+						</li>
+						{/case}
+					{/switch}
+					{if condition="!empty($order['buyer_invoice_info'])"}
+						{if condition="!empty($order['buyer_invoice_info'][0]) && $order['buyer_invoice_info'][0] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_invoice_header')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][0]}</span>
+						</li>
+						{/if}
+						{if condition="!empty($order['buyer_invoice_info'][2]) && $order['buyer_invoice_info'][2] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_taxpayer_identification_number')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][2]}</span>
+						</li>
+						{/if}
+						{if condition="!empty($order['buyer_invoice_info'][1]) && $order['buyer_invoice_info'][1] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_invoice_content')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][1]}</span>
+						</li>
+						{/if}
+					{/if}
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	{if condition="$order['order_status'] == 6"}
+	<section class="order-detail-wating-share">
+		<i class="fa fa-user-o"></i>
+		<label>
+			<span>待分享，还差{$order['tuangou_group_info']['poor_num']}人，</span>
+			<time data-end-time="{$order['tuangou_group_info']['end_time']}">剩余0天00:00:00</time>
+		</label>
+		<ul class="user-list">
+			<?php $is_boos = 0; ?>
+			{foreach name="$order['tuangou_group_info']['user_list']" item="vo"}
+			<li>
+				{if condition="$vo.uid == $order['tuangou_group_info']['group_uid'] && $is_boos == 0"}
+				<span class="boss">拼主</span>
+				<?php $is_boos = 1; ?>
+				{/if}
+				{if condition="$vo.user_headimg"}
+				<img src="{:__IMG($default_headimg)}" class="lazy_load" data-original="{:__IMG($vo.user_headimg)}"/>
+				{else/}
+				<img src="{:__IMG($default_headimg)}"/>
+				{/if}
+			</li>
+			{/foreach}
+			{for start="0" end="$order['tuangou_group_info']['poor_num']" step="1"}
+			<li>
+				<img src="__TEMP__/{$style}/public/images/spelling_who.png"/>
+			</li>
+			{/for}
+			
+		</ul>
+		<button>邀请好友</button>
+		{if condition="$order['tuangou_group_info']['tuangou_type'] == 2"}
+			<p class="spelling-success">拼单成功后，{$order['tuangou_group_info']['group_name']}将会获得
+			{if condition="$order['tuangou_group_info']['goods_tuangou']['colonel_point']>0"}
+			<em>{$order['tuangou_group_info']['goods_tuangou']['colonel_point']}</em>个积分
+			{/if}
+			{if condition="$order['tuangou_group_info']['goods_tuangou']['colonel_commission']>0"}
+			<em>{$order['tuangou_group_info']['goods_tuangou']['colonel_commission']}</em>元余额
+			{/if}
+			</p>
+		{/if}
+	</section>
+	{/if}
+	
+	{if condition="$express_count > 0"}
+	<section class="order-detail-remark">
+		<div class="remark-out clear">
+			<div class="remark-r order-detail-r">
+				<ul class="remark-r-ul">
+					<li class="name">
+						<a href="{:__URL('APP_MAIN/order/orderexpress?orderId='.$order['order_id'])}">
+							<span class="label" style="color: rgb(245, 183, 8);">{:lang('goods_total')}{$express_count}{:lang('of_parcels')}</span>
+							<span class="label" style="color: rgb(245, 183, 8);">{$express_name}</span>
+							{if condition="$is_show_express_code"}
+							<span class="label" style="color: rgb(245, 183, 8);">{:lang('member_waybill_number')}:{$express_code}</span>
+							{/if}
+							<span style="float:right;width:7px;"><img src="__TEMP__/{$style}/public/images/goods_right.png"/></span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	{/if}
+
+	<section class="order-detail-remark">
+		<div class="remark-out clear">
+			<div class="remark-l order-detail-l">
+				<i class="icon-talks-small"></i>
+			</div>
+			<div class="remark-r order-detail-r">
+				<ul class="remark-r-ul">
+					<li class="name">
+						<span class="label">{:lang('member_buyer_message')}</span>
+					</li>
+					<li>
+						{if condition="$order['buyer_message'] !='' && $order['buyer_message'] != 0"}
+						<span class="label">{$order['buyer_message']}</span>
+						{else/}
+						<span class="label">{:lang('member_no_messages')}</span>
+						{/if}
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<div class="list-myorder">
+		<ul class="ul-product">
+			{volist name="order['order_goods']" id="goodsData"}
+			<li onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$goodsData['goods_id'])}'">
+				<span class="pic"><img src="{:__IMG($goodsData['picture_info']['pic_cover_micro'])}" /></span>
+				<div class="text">
+					<span class="pro-name">
+						<span style="color:#333333;">{$goodsData.goods_name}</span>
+						{if condition = "$goodsData['sku_name'] neq ''"}
+						<span style="color:#333333;">{$goodsData.sku_name}</span>
+						{/if}
+					</span>
+					<br/>
+					<div class="pro-pric">
+						<span>{:lang('goods_price')}:</span>
+						<span style="color:#333333;">￥{$goodsData.price}</span>
+					</div>
+					<div class="pro-pric">
+						<span class="color"></span>
+						<span>{:lang('goods_number')}:</span>
+						<span style="color:#333333;">{$goodsData.num}</span>
+					</div>
+					<div class="pro-pric">
+						<span>{:lang('adjust_price')}:</span>
+						<span style="color:#333333;">{$goodsData.adjust_money}</span>
+					</div>
+<!-- 					<div class="pro-return"></div> -->
+				</div>
+			</li>
+			{/volist}
+		</ul>
+		<div class="money-content">
+			<div class="money-row">
+				<div>
+					<span>{:lang('member_total_commodity_value')}：</span>
+					<span class="price">￥{$order['goods_money']}</span>
+				</div>
+				
+				<div>
+					<span>{:lang('goods_freight')}</span>
+					<span class="price">￥{$order['shipping_money']}</span>
+				</div>
+				
+				{if condition="$order['user_platform_money']>0"}
+				<div>
+					<span>{:lang('member_balance_payment')}：</span>
+					<span class="price">￥{$order['user_platform_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['coupon_money']>0"}
+				<div>
+					<span>{:lang('member_coupons')}：</span>
+					<span class="price">￥{$order['coupon_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['tax_money']>0"}
+				<div>
+					<span>{:lang('member_invoice_tax')}：</span>
+					<span class="price">￥{$order['tax_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['promotion_money']>0"}
+				<div>
+					{switch name="$order['promotion_type']"}
+						{case value="MANJIAN"}<span>{:lang('member_full_discount')}：</span>{/case}
+						{case value="ZUHETAOCAN"}<span>{:lang('member_taocan_discount')}：</span>{/case}
+					{/switch}
+					<span class="price">￥{$order['promotion_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['point']>0"}
+				<div>
+					<span>{:lang('member_use_integral')}：</span>
+					<span class="price">{$order['point']}</span>
+				</div>
+				{/if}
+				
+				<div>
+					<span>{:lang('member_actual_payment')}：</span>
+					<span class="price"><b style="color:#f44;">￥{$order['pay_money']}</b></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="order-tablink">
+		<div class="tablink-box">
+			<div class="tablink">
+				<a href="{$list['value']['service_addr']}"><span class="kefu">联系客服</span></a>
+			</div>
+			<div class="tablink">
+				<a href="tel:{$list['value']['web_phone']}"><span class="call">拨打电话</span></a>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="ms_time" value="{niu:currenttime/}"/>
+{if count($order['member_operation']) > 0}
+<div style="height: 55px;"></div>
+<div class="order-opcation">
+	<div class="content">
+		{volist name="$order['member_operation']" id="vo"}
+		<a href="javascript:;" onclick="operation('{$vo.no}',{$order['order_id']})" style="background: {$vo.color};border-color: {$vo.color}">{$vo.name}</a>
+		{/volist}
+	</div>
+</div>
+{/if}
+{/block}
+
+{block name="bottom"}{/block}
+
+{block name="javascript"}
+<script>
+bottomActive('#bottom_member');
+commonCountDown($(".order-detail-wating-share>label>time").attr("data-end-time"),$(".order-detail-wating-share>label>time"));
+
+//邀请好友
+$(".order-detail-wating-share button").click(function(){
+	location.href = __URL(APPMAIN + "/PintuanOrder/spellGroupShare?goods_id={$order['tuangou_group_info']['goods_id']}&group_id={$order['tuangou_group_info']['group_id']}");
+});
+
+function commonCountDown(time,obj){
+	if(null != time && "" != time){
+		var sys_second = (time-$("#ms_time").val());///1000;
+		if(sys_second>1){
+			sys_second -= 1;
+			var day = Math.floor((sys_second / 3600) / 24);
+			var hour = Math.floor((sys_second / 3600) % 24);
+			var minute = Math.floor((sys_second / 60) % 60);
+			var second = Math.floor(sys_second % 60);
+			var s_hour = hour<10?"0"+hour:hour;
+			var s_minute = minute<10?"0"+minute:minute;
+			var s_second = second<10?"0"+second:second;
+			var s_day = day > 0 ? day + "天" : "";
+			var str = s_day + s_hour + ":" + s_minute + ":" + s_second;
+			obj.text("剩余:" + str);
+		}else{
+			obj.text("拼单已结束");
+		}
+		var timer = setInterval(function(){
+			if (sys_second > 1) {
+				sys_second -= 1;
+				var day = Math.floor((sys_second / 3600) / 24);
+				var hour = Math.floor((sys_second / 3600) % 24);
+				var minute = Math.floor((sys_second / 60) % 60);
+				var second = Math.floor(sys_second % 60);
+				var s_hour = hour<10?"0"+hour:hour;
+				var s_minute = minute<10?"0"+minute:minute;
+				var s_second = second<10?"0"+second:second;
+				var s_day = day > 0 ? day + "天" : "";
+				var str = s_day + s_hour + ":" + s_minute + ":" + s_second;
+				obj.text("剩余:" + str);
+			} else { 
+				obj.text("拼单已结束");
+				clearInterval(timer);
+			}
+		}, 1000);
+	}
+}
+</script>
+{/block}

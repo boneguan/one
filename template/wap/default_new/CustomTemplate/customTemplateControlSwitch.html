@@ -1,0 +1,123 @@
+<!-- 核心 -->
+<link href="__TEMP__/{$style}/public/css/wap_custom_template.css" rel="stylesheet" />
+<!-- <script src="__ROOT__/addons/customtemplate/public/js/public_assembly.js"></script> -->
+{if condition="$custom_template"}
+	{foreach $custom_template.template_data as $k=>$custom_template_v}
+	
+		{if condition="$custom_template_v['control_name'] eq 'GoodsSearch'"}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateSearch'/}
+		
+		{elseif condition="$custom_template_v['control_name'] eq 'Notice'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateNotice'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'GoodsList'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateGoodsList'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'TextNavigation'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateTextNavigation'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'ImgAd'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateImgAd'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'AuxiliaryBlank'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateAuxiliaryBlank'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'AuxiliaryLine'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateAuxiliaryLine'/}
+		
+		{elseif condition="$custom_template_v['control_name'] eq 'RichText'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateRichText'/}
+
+		{elseif condition="$custom_template_v['control_name'] eq 'NavHyBrid'" /}
+		
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateNavHyBrid'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'Title'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateTitle'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'GoodsClassify'" /}
+			
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateGoodsClassify'/}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'Coupons'" /}
+			
+			{if condition="count($coupon_list)"}
+				{include file='wap/default_new/CustomTemplate/controlCustomTemplateCoupon'/}
+			{/if}
+			
+		{elseif condition="$custom_template_v['control_name'] eq 'Video'" /}
+		
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateVideo'/}
+		
+		{elseif condition="$custom_template_v['control_name'] eq 'ShowCase'" /}
+		
+			{include file="wap/default_new/CustomTemplate/controlCustomTemplateShowCase" /}
+		
+		{elseif condition="$custom_template_v['control_name'] eq 'Footer'" /}
+		
+			{include file='wap/default_new/CustomTemplate/controlCustomTemplateFooter'/}
+			
+		{/if}
+		
+	{/foreach}
+{/if}
+<script>
+$(function(){
+	
+	setFontSize();
+	updatNavImgMargin();
+	
+	//底部从下至上排列
+	var footer_length = $(".control-footer.js-custom").length;
+	if(footer_length>0){
+
+		$(".control-footer.js-custom").each(function(i){
+
+			var bottom = 0;
+
+			for(var j=0;j<i;j++) bottom += $(".control-footer.js-custom:eq(" + (j) + ")").height();
+
+			//分界线
+			if(bottom == 0) bottom = -1;
+			$(this).css("bottom",bottom).attr("data-index",i);
+			
+			$(".js-bottom-blank").css("height",bottom + $(".control-footer.js-custom:eq(" + (j) + ")").height()+10);
+
+		});
+		
+		//如果当前访问的是默认模板，则进行处理，//base界面已经加载过一次了，此处要删除
+		if(footer_flag == "base_footer" && footer_length>1) $(".js-base-footer").remove();
+	}
+
+})
+window.onresize = function(){
+	setFontSize();
+	updatNavImgMargin();
+	
+}
+
+function setFontSize(){
+
+	var width = $(window).width() > 440 ? 440 : $(window).width();
+	$("html").css({
+		width : "100%",
+		height : "100%",
+		fontSize : Math.floor(width/10)
+	});
+}
+
+//修改图文导航上下间距
+function updatNavImgMargin(){
+	//if($(window).width()>= 425) $(".control-nav-img ul li div").css("margin-bottom","10px");
+	//else $(".control-nav-img ul li div").css("margin-bottom","2px");
+}
+</script>

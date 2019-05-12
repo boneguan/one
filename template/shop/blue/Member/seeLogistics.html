@@ -1,0 +1,123 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/seeLogistics.css">
+{/block}
+{block name="main"}
+<div class="margin-w1210">
+	{include file='shop/blue/Member/controlLeftMenu'/}
+	<div class="member-main">
+		<div class="box">
+			<div class="tabmenu">
+				<ul class="tab">
+					<li class="active">查看物流</li>
+				</ul>
+			</div>
+			{foreach name="order['goods_packet_list']" id="vo" key="k"}
+			<div class="package-info" express-id="{$vo.express_id}">
+				<div class="tit-wrap">
+					<ul class="package">
+						<li>{$vo.packet_name}</li>
+						<span class="sepa"></span>
+						<li>物流公司：{$vo.express_name}</li>
+						<span class="sepa"></span>
+						<li>快递单号：{$vo.express_code}</li>
+						<li><a href="javascript:;" {if $k eq 0}class="open"{/if}>查看物流<i class="icon-triangle"></i></a></li>
+					</ul>
+				</div>	
+				<div class="logistics-trace" {if $k > 0} style="display:none;" {/if}>
+					<ul>
+						
+					</ul>
+				</div>
+			</div>
+			{/foreach}
+
+			<div class="order-info">
+				<div class="left-container">
+					<dl>
+						<dt>{:lang('member_order_number')}：</dt>
+						<dd>{$order.order_no}</dd>
+					</dl>
+					<dl>
+						<dt>{:lang('member_order_status')}：</dt>
+						<dd>{$order.status_name}</dd>
+					</dl>
+					<dl>
+						<dt>{:lang('member_payment_method')}：</dt>
+						<dd>{$order.payment_type_name}</dd>
+					</dl>
+					<dl>
+						<dt>{:lang('member_payment_status')}：</dt>
+						<dd>{$order.pay_status_name}</dd>
+					</dl>
+					<dl>
+						<dt>{:lang('member_delivery_mode')}：</dt>
+						<dd>{$order.shipping_type_name}&nbsp;&nbsp;{$order['shipping_company_name']}</dd>
+					</dl>
+					{switch name="$order.shipping_type"}
+						{case value="1|3"}
+						<dl>
+							<dt>{:lang('member_receiving_information')}：</dt>
+							<dd>{$order['receiver_name']}，{$order['receiver_mobile']}，{notempty name="$order['fixed_telephone']"}{$order['fixed_telephone']}，{/notempty} {$order['address']}{if condition="$order['receiver_zip']!=''"}，{$order['receiver_zip']}{/if}</dd>
+						</dl>
+						{/case}
+						{case value="2"}
+						<dl>
+							<dt>{:lang('member_self_addressed_address')}：</dt>
+							<dd>{$order['order_pickup']['province_name']}&nbsp;{$order['order_pickup']['city_name']}&nbsp;{$order['order_pickup']['district_name']}&nbsp;{$order['order_pickup']['address']}</dd>
+						</dl>
+						{/case}
+					{/switch}
+				</div>
+				<div class="right-container">
+					<p>1. 如果您不想购买此订单的商品，请在七天内联系卖家选择退货。</p>
+					<p>2、如果卖家没有解决你的上述问题，你可以在交易成功后的15天内发起售后维权，要求客服介入处理。</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(".package-info .tit-wrap ul").click(function() {
+		if($(this).find("a").hasClass('open')){
+			$(this).find("a").removeClass('open');
+			$(this).parents(".package-info").find(".logistics-trace").slideUp();
+		}else{
+			$(this).find("a").addClass('open');
+			$(this).parents(".package-info").find(".logistics-trace").slideDown();
+		}
+	});
+
+	$(function(){
+		$(".package-info").each(function(){
+			var curr = $(this),
+				express_id = $(this).attr("express-id");
+			$.ajax({
+				type : "post",
+				url : "{:__URL('SHOP_MAIN/member/getordergoodsexpressmessage')}",
+				data : {"express_id":express_id},
+				success : function(data) {
+					var html = "";
+					if (data["Success"]) {
+						for (var i = 0; i < data["Traces"].length; i++){
+							if(i==0){
+								html += '<li class="first">';
+							}else{
+								html += '<li>';
+							}
+								html += '<i class="node-icon"></i>';
+								html += '<a href="javascript:;" target="_blank">'+data["Traces"][i]["AcceptStation"]+'</a>';
+								html += '<div class="ftx-13">'+data["Traces"][i]["AcceptTime"]+'</div>';
+							html += '</li>';
+						}
+					}else{
+						html += '<div class="logistics-tip"><div class="content">'+data["Reason"]+'</div></div>';
+					}
+					curr.find('.logistics-trace ul').html(html);
+				}
+			});
+		})
+	})
+</script>
+{/block}

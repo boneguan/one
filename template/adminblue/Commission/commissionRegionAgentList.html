@@ -1,0 +1,261 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+		.panel-table{background-color:#FFF;}
+		.panel-table .btn_offline_pay{background: #FF8400;}
+		.panel-table .product-img{float:left;}
+		.panel-table .product-infor{float:left;margin-left: 10px;width:60%;}
+		.panel-table {border:1px solid #E3E3E3;} 
+		.panel-table tbody td {border-right: 1px solid #E3E3E3;} 
+		.panel-table .title-tr td input[type="checkbox"]{margin:0 0 0 7px;}
+		.panel-table .title-tr td span{margin-left:10px;}
+	</style>
+ {/block}
+{block name="right_tab"}
+<!-- <li><a class="nscs-table-handle_green" href="javascript:;" onclick="addBrand()"><i class="fa fa-plus-circle"></i>&nbsp;添加品牌</a></li> -->
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th style="line-height:33px;">
+			下单时间：
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common  middle" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			<!-- 更多搜索 -->
+			<button class="btn-common-white more-search"><i class="fa fa-chevron-down"></i></button>
+			<div class="more-search-container">
+				<dl>
+					<dt>买家名称：</dt>
+					<dd>
+						<input id="userName" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>订单编号：</dt>
+					<dd>
+						<input id="orderNo" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>订单状态：</dt>
+					<dd>
+						<select id="order_status" class="select-common middle">
+							<option value="">全部</option>
+							<option value=0>待付款</option>
+							<option value="1">待发货</option>
+							<option value="2">待收货</option>
+							<option value="3">已收货</option>
+							<option value="4">交易成功</option>
+							<option value="5">已关闭</option>
+							<option value=-1>退款中</option>
+							<option value=-2>已退款</option>
+						</select>
+					</dd>
+				</dl>
+				<dl>
+					<dt></dt>
+					<dd>
+						<button onclick="searchData()" class="btn-common">完成</button>
+					</dd>
+				</dl>
+			</div>
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>		
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 20%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 11%;">
+					<col style="width: 17%;">
+					<col style="width: 17%;">
+
+				</colgroup>
+				<thead>
+					<tr>
+						<th>订单号</th>
+						<th>订单金额</th>
+						<th>订单状态</th>
+						<th>佣金</th>
+						<th>买家</th>						
+						<th>创建时间</th>						
+						<th>完成时间</th>
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 20%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 11%;">
+					<col style="width: 17%;">
+					<col style="width: 17%;">
+				</colgroup>
+				<tbody id="tbody"></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+{include file="adminblue/openDialog" /}
+<script type="text/javascript">	
+	//查询
+	function searchData(){
+		$(".more-search-container").slideUp();
+		LoadingInfo(1);
+	}
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();
+		var user_name = $("#userName").val();
+		var order_no = $("#orderNo").val();
+		var order_status = $("#order_status").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Commission/commissionRegionAgentList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex, "start_date" : start_date, "end_date" : end_date, "user_name":user_name, "order_no":order_no, "order_status" : order_status
+			},
+			success : function(data) {
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr align="center" data-show ="1"style="cursor:pointer;" onclick=showOrHideAccordion("accordiondata'+i+'",this);>';
+						html += '<td>' + data["data"][i]["order_no"] + '</td>';
+						html += '<td>' + data["data"][i]["order_money"] + '</td>';
+						html += '<td>' + data["data"][i]["status_name"] + '</td>';
+						html += '<td>' + data["data"][i]["commission_money"] + '</td>';	
+						html += '<td>' + data["data"][i]["user_name"] + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["create_time"]) + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["finish_time"]) + '</td>';
+						html += '</tr>';
+						html +='<tr class="collapse" style="display:none;" id="accordiondata'+i+'">';
+						html +='<td colspan="8" style="padding:10px;background-color:#E0E0E0;" >';	
+						html +='<table class="panel-table table-class" ><colgroup>';
+						html +='<col style="width: 35%;">';
+						html +='<col style="width: 15%;">';
+						html +='<col style="width: 8%;">';
+						html +='<col style="width: 14%;">';
+						html +='<col style="width: 14%;">';
+						html +='<col style="width: 8%;">';
+						html +='<col style="width: 6%;">';			
+						html +='</colgroup>';					
+						html +='<tbody>';
+
+						//html +="<tr><td  colspan='8' style='border-left: 1px solid transparent;height:10px;padding:0px;border-right: 1px solid transparent;'></td></tr>";
+						html += '<tr class="title-tr">';
+						html += '<td>商品</td>';
+						html += '<td>商品清单</td>';
+						html += '<td>商品利润</td>';
+						html += '<td>商品区域代理比率</td>';
+						html += '<td>区域代理佣金比例</td>';
+						html += '<td>佣金金额</td>';
+						html += '<td>收益人</td>';
+						html += '</tr>';
+						
+						
+						//循环订单项
+						for(var j = 0; j < data["data"][i]["order_item_list"].length; j++){
+							var commission_region_agent_item = data["data"][i]["order_item_list"][j]["commission_partner_list"];
+							var row = 1;
+							if(commission_region_agent_item.length >0){
+								row = commission_region_agent_item.length+1
+							}
+							html += '<tr calss="no-rightborder"><td style="border-right:0;"rowspan="'+row+'">';
+							html += '<div class="product-img"><img src="__ROOT__/'+data["data"][i]["order_item_list"][j]["picture"]['pic_cover_micro']+'"></div>';
+							html += '<div class="product-infor">';
+							html += '<a class="name" href="'+__URL('APP_MAIN/Goods/goodsDetail?id='+data["data"][i]["order_item_list"][j]["goods_id"])+'" target="_blank">'+data["data"][i]["order_item_list"][j]["goods_name"]+'</a>';
+							html += '<p class="specification"><span>'+data["data"][i]["order_item_list"][j]["sku_name"]+'</span></p></div>';
+							html += '</div></td>';
+							html += '<td style="border-left:0px solid #fff;border-right:1px solid #E3E3E3;"rowspan="'+row+'">';//商品信息与商品清单的分割线
+							//html += '<div class="cell" style="display: inline-block;"><span>'+data["data"][i]["order_item_list"][t]["goods_name"]+'</span></div>';
+							html += '<div class="cell" style="display: inline-block;"><span>'+data["data"][i]["order_item_list"][j]["price"]+'元</span></div>';
+							html += '<div class="cell" style="display: inline-block;float:right">'+data["data"][i]["order_item_list"][j]["num"]+'件</div>';
+							if(data["data"][i]["order_item_list"][j]['adjust_money'] != 0){
+								html += '<div class="cell" style="display: inline-block;"><span>(调价：'+data["data"][i]["order_item_list"][j]["adjust_money"]+'元)</span></div>';
+							}
+// 							if((data["data"][i]["order_item_list"][j]['refund_status'] != 0) && (data["data"][i]["order_item_list"][j]['refund_operation'] != ''))
+							if(commission_region_agent_item.length >0){
+								for(t = 0; t< commission_region_agent_item.length;t++){
+									html +='</tr>';
+									html +='<tr calss="no-rightborder">';
+									html +='<td>'+parseFloat(commission_region_agent_item[t]["goods_return"]).toFixed(2)+'</td>';
+									html +='<td>'+parseFloat(commission_region_agent_item[t]["goods_commission_rate"]).toFixed(2)+'%</td>';
+									html +='<td>'+parseFloat(commission_region_agent_item[t]["commission_rate"]).toFixed(2)+'%</td>';
+									html +='<td>'+parseFloat(commission_region_agent_item[t]["commission"]).toFixed(2)+'</td>';
+									html +='<td>'+commission_region_agent_item[t]["promoter_shop_name"]+'('+'姓名:'+commission_region_agent_item[t]["real_name"]+'<br/>'+'编号:'+commission_region_agent_item[t]["promoter_no"]+')'+'</td>'; 
+								}	
+							}else{
+								html +='<td>0.00</td>';
+								html +='<td>0.00%</td>';	
+								html +='<td>0.00%</td>';
+								html +='<td>0.00</td>';	
+								html +='<td></td>';		
+							}					
+							html += '</tr>';							
+						}						
+						html +='</tbody></table>';
+						html +='</td>';
+						html +='</tr>'					
+					}
+				} else {
+					html += '<tr align="center"><td colspan="9">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	
+	function showOrHideAccordion(accordion_id,event){		
+		if($(event).data("show") == 1){			
+			$(event).data("show",0);
+			$('#'+accordion_id).show();
+		}else{
+			$(event).data("show",1);
+			$('#'+accordion_id).hide();
+		} 	
+		
+	}
+
+	// 点击显示更多搜索
+	$(".more-search").on("click", function(e){
+		$(".more-search-container").slideToggle();
+		$(document).one("click", function(){
+	        $(".more-search-container").slideUp();
+	    });
+	    e.stopPropagation();
+	})
+
+	$(".more-search-container").on("click", function(e){
+	    e.stopPropagation();
+	});
+	
+</script>
+{/block}

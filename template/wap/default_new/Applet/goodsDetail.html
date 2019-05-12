@@ -1,0 +1,21 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<script src="__TEMP__/{$style}/public/js/jquery.lazyload.js" type="text/javascript"></script>
+<style>
+.head{display:none;}
+.fixed.bottom{display:none;}
+.with-margin-l {margin-left: 10px;margin-right: 10px;border: 0;border-top: 1px solid #F0F0F0;}
+.tab-module-title {background: #FFF;font-weight: 400;height: 34px;line-height: 34px;position: relative;padding: 6px 0 0 12px;font-size: 14px;color: #666;}
+webkit,::-webkit-scrollbar{width: 0;height: 0;}
+.detail_info_wrap {position: relative;overflow: hidden;margin-bottom: -56px;padding: 10px;background: #fff;}
+</style>
+{/block}
+{block name="main"}
+<div data-exp="goodsdetail"></div>
+<!-- 商品详情 -->
+<div class="tab-module-title">{:lang('goods_commodity_details')}</div>
+<hr class="with-margin-l">
+<div class="detail_info_wrap" id="p-detail">
+	<div class="detail_list" id="content">{$goods_detail.description}</div>
+</div>
+{/block}

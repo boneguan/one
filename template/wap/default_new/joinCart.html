@@ -1,0 +1,242 @@
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/goods_detail.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/detail.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/showbox.css">
+<script src="__TEMP__/{$style}/public/js/showBox.js"></script>
+<style>
+.custom-tag-list .joinz-index{z-index: 7;}
+.s-buy{z-index: 501;}
+input{appearance:none;-moz-appearance:none;-webkit-appearance:none;outline: none;-moz-outline: none;-webkit-outline: none;}
+.number{border-radius: 0;-webkit-border-radius: 0;}
+</style>
+<div class="success-tip-line" id="success_tip_line" style="display: none;">{:lang('successfully_joined_shopping_cart')}！</div>
+<span id="addcart_way" style="display: none;"><i></i></span>
+<section class="s-buy" id="s_buy">
+	<div class="popup" id="popup" style="-webkit-border-radius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px;display: none"></div>
+	<ul class="s-buy-ul">
+		<li class="s-buy-pro">
+			<span class="pro-img">
+				<!-- 商品SKU图片 -->
+				{notempty name="$goods_detail['sku_picture_list']"}
+				
+					{foreach name="$goods_detail.sku_picture_list" item ="img" }
+					
+						{foreach name="$img['album_picture_list']" item="p" key = "k"}
+							<input type="hidden" id="spec_picture_id{$p['pic_id']}" value="{:__IMG($p['pic_cover_micro'])}" />
+						{/foreach}
+
+					{/foreach}
+
+				{/notempty}
+				<input type="hidden" id="default_img" value="{$goods_detail['img_list'][0]['pic_id']}" />
+				<img src="{:__IMG($goods_detail['img_list'][0]['pic_cover_micro'])}" class="js-thumbnail" />
+			</span>
+			<div class="pro-info">
+				<p class="name" id="itemName">{$goods_detail.goods_name}</p>
+				<p class="pro-price" id="price">￥
+				{if condition="$goods_detail.promotion_price < $goods_detail.member_price"}{$goods_detail.promotion_price}{else/}{$goods_detail.member_price}{/if}
+				{if condition="$goods_detail.point_exchange_type==1 && $goods_detail.point_exchange>0"}
+				<span style="font-size:16px;display: inline-block;vertical-align: middle;">+{$goods_detail.point_exchange}{:lang('goods_integral')}</span>
+				{/if}
+				</p>
+			</div>
+			<i class="icon-close" id="icon_close"></i>
+		</li>
+	</ul>
+	<hr class="with-margin-l" />
+	<ul class="s-buy-ul specification" id="specification">
+	
+		{foreach name="goods_detail['spec_list']" item="pro_prop" key="k"}
+		<li class="s-buy-li" >
+			<div class="left">{$pro_prop.spec_name}：</div>
+			<div class="right" name="specvals">
+			{foreach name="pro_prop['value']" item="pro_propvalue" key="key"}
+				<!--  <button class="select {if condition="$key==0"}current{/if}" name="Span{$k}" id="{$pro_prop.spec_id}:{$pro_propvalue.spec_value_id}" onclick="change(this);"  data-picture-id="{$pro_propvalue.picture}">-->
+				<button class="select {if condition="$key==0"}current{/if}" name="Span{$k}" id="{$pro_prop.spec_id}:{$pro_propvalue.spec_value_id}"   data-picture-id="{$pro_propvalue.picture}">
+				{$pro_propvalue.spec_value_name}
+				</button>
+			{/foreach}
+			</div>
+		</li>
+		<hr class="with-margin-l" />
+		{/foreach}
+		{foreach name="goods_detail['sku_list']" item="pro_skus" key="k"}
+			<input type="hidden" id="goods_sku{$k}" value="{$pro_skus.attr_value_items}" stock="{$pro_skus.stock}" {if condition="$pro_skus.promote_price < $pro_skus.member_price" }price="{$pro_skus.promote_price}" {else/}price="{$pro_skus.member_price}"{/if} promotion_price="{$pro_skus.promote_price}" member_price="{$pro_skus.member_price}" skuid="{$pro_skus.sku_id}" skuname="{$pro_skus.sku_name}" class="sku-array">
+		{/foreach}
+		<input type="hidden" id="goods_sku_num" value="100">
+		<li class="s-buy-li">
+			<div class="left" style="float:left;">{:lang('member_quantity_purchased')}：</div>
+				<div class="right">
+				<span class="reduce quantity-minus-disabled">-</span>
+				<input class="number" name="quantity" autocomplete="off" value="1" min="1" max="{$goods_detail.stock}" id="num">
+				<span class="add">+</span>
+				<input id="hiddPDetailID" type="hidden" name="name" value="{$goods_detail.goods_id}">
+				<input id="hiddSkuId" type="hidden" name="name" value="">
+				<input id="hiddSkuName" type="hidden" name="name" value="">
+				<input id="hiddSkuprice" type="hidden" name="name" value="">
+			</div>
+			<span style="display: inline-block;margin-top:5px;color:#333;" id="Stock">{:lang('left')}{$goods_detail.stock}{:lang('goods_piece')}</span>
+			{if condition ="$goods_detail['max_buy'] neq '0' AND $goods_detail['max_buy'] neq -1"}
+				<span style="display: inline-block;margin-top:5px;color:#333;">{:lang('homebuying_restrictions')}{$goods_detail['max_buy']}{:lang('goods_piece')}</span>
+			{/if}
+		</li>
+	</ul>
+	<ul class="s-buy-ul">
+		<li class="s-buy-btn">
+			<a class="btn" id="submit_ok" tag="addCart">{:lang('goods_determine')}</a>
+			<input type="hidden" id="hidden_shop_name" value="{$shopname}"/>
+			<input type="hidden" id="hidden_shop_id" value="{$goods_detail.shop_id}"/>
+			<input type="hidden" id="hidden_goods_type" value="{$goods_detail.goods_type}" />
+		</li>
+	</ul>
+</section>
+<div class="motify" style="display: none;"><div class="motify-inner">{:lang('please_select_color')}</div></div>
+<input type="hidden" id="max_buy" value="{$goods_detail.max_buy}" />
+<input type="hidden" id="min_buy" value="{$goods_detail.min_buy}">
+<div class="mask joinz-index" id="mask" style="display: block;"></div>
+<script>
+//新加的
+var goods_unit = '{$goods_detail.goods_unit}';
+
+var sku_list = [],
+price_section_arr = [];
+
+	$(function(){
+	// 初始化获取sku列表数据	
+	if($("#specification input[type='hidden'][class='sku-array']").length > 0){
+		$("#specification input[type='hidden'][class='sku-array']").each(function(){
+			sku_list.push($(this).val());
+			var promotion_price = $(this).attr("promotion_price"),
+				member_price = $(this).attr("member_price"),
+				price = promotion_price < member_price ? promotion_price : member_price;
+				price_section_arr.push(price);
+		})
+		price_section_arr.sort();
+	}
+
+	// 规格选择
+	$("#specification div[name='specvals'] button").click(function() {
+		if($(this).hasClass('disabled')) return;
+		if($(this).hasClass('current')){
+			$(this).removeClass('current').siblings().removeClass('current');
+		}else{
+			$(this).addClass('current').siblings().removeClass('current');
+		}
+	
+		$("#specification li").each(function(){
+			if($(this).find('button.current').length > 0){
+				$(this).addClass('selected')
+			}else{
+				$(this).removeClass('selected')
+			}
+		})
+	
+		var not_exit_spec = get_not_exit_spec(get_selected_arr());
+		$("#specification li:not('.selected')").each(function(){
+			set_sku_item_disabled($(this), not_exit_spec);
+		})
+		
+		$("#specification li").each(function(){
+			update_same_level($(this));
+		})
+	
+		sku_click_action($(this));
+	});
+
+// 获取已经选中的规格
+	function get_selected_arr(){
+		var spec_value_arr = new Array();
+		if($("#specification div[name='specvals'] button.current").length > 0){
+			$("#specification div[name='specvals'] button.current").each(function(){
+				spec_value_arr.push($(this).attr("id"));
+			})
+		}
+		return spec_value_arr;
+	}
+
+	function get_not_exit_spec(selected_arr, not_select_arr){
+		// 选取出可供继续匹配的sku数组
+		var matching_arr = get_matching_arr(selected_arr);
+		var new_arr = [];	
+		for(i in matching_arr){
+			new_arr = new_arr.concat(matching_arr[i].split(';'));
+		}
+		return new_arr;
+	}
+
+// 获取全部符合选中项的sku
+	function get_matching_arr(arr){
+		var new_arr = new Array();
+		for(i in sku_list){
+			var _is_add = true;
+			for(j in arr){
+				if(sku_list[i].indexOf(arr[j]) == -1){
+					_is_add = false;
+					break;
+				}
+			}
+			if(_is_add) new_arr.push(sku_list[i]);
+		}
+		return new_arr;
+	}
+
+	// 设置规格是否可选
+	function set_sku_item_disabled(goods_spec, not_exit_spec){
+		goods_spec.find("button.select").each(function(){
+			var spec_id = $(this).attr("id");
+			if(not_exit_spec.indexOf(spec_id) == -1){
+				$(this).addClass("disabled");
+			}else{
+				$(this).removeClass("disabled");
+			}
+		})
+	}
+
+// 设置同级是否可选
+	function update_same_level(goods_spec){
+		var selected_arr = get_selected_arr();
+		var select_id = goods_spec.find("button.current").attr("id");
+		var selected_arr_new = del_array_val(selected_arr, select_id);
+		var not_exit_spec = get_not_exit_spec(selected_arr_new);
+		set_sku_item_disabled(goods_spec, not_exit_spec);
+	}
+
+	function del_array_val(arr,val){
+		//去除 数组 arr中的 val ，返回一个新数组
+	    var new_arr = [];
+	    for(k in arr){
+	        if(arr[k] != val){
+	            new_arr.push(arr[k]);
+	        }
+	    }
+	    return new_arr;
+	}
+
+	function skuDefaultSelect(){
+		$("#specification li.JS-spec:not('.selected')").each(function(){
+			$(this).find('button').each(function(){
+				var not_exit_spec = get_not_exit_spec(get_selected_arr());
+				var spec_id = $(this).attr("id");
+				if($.inArray(spec_id, not_exit_spec) != -1){
+					$(this).trigger('click');
+					return false;
+				}
+			})
+			$(this).addClass('selected');
+		})
+	}
+
+	// sku默认选中
+	skuDefaultSelect();
+	
+	function sku_click_action(obj){
+		//判断是否有SKU主图
+		if(parseInt($(obj).attr("data-picture-id")) !=0){
+			$("#default_img").val($(obj).attr("data-picture-id"));
+			$(".js-thumbnail").attr("src",$("#spec_picture_id" + $(obj).attr("data-picture-id")).val());
+		}
+		echoSpecData();
+	}
+})	
+
+</script>
+<script src="__TEMP__/{$style}/public/js/goods_product.js"></script>

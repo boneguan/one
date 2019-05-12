@@ -1,0 +1,174 @@
+<script src="__TEMP__/{$style}/public/js/goodsCategoryConditions/conditions.js"></script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/font-awesome.min.css">
+<!-- 商品列表筛选 -->
+{if $max_height > 0}
+<div class="goodslist-screen-condition" style="height: {$max_height}px;">
+{else/}
+<div class="goodslist-screen-condition">
+{/if}
+	<div class="title">
+		<h4>分类<b>“{$curr_category_name}”</b>筛选结果</h4>
+	</div>
+
+	<!-- 已选条件 -->
+	{if condition="$brand_name!='' || $min_price!=''|| count($attr_array) gt 0  || count($spec_array) gt 0  " }
+	<dl class="condition-item" style="height: auto;">
+		<dt><span class="condition-type">{:lang('goods_selected_condition')}：</span></dt>
+		<dd class="screen-condition">
+			<ul class="selected-condition">		
+				<!-- 已选择的筛选属性、品牌、价格 -->
+				{if condition="$brand_name!='' "}
+				<li><a href="{:__URL('SHOP_MAIN/goods/goodslist',$url_parameter_not_brand)}" >{:lang('goods_brand')}：<b class="color">{$brand_name}</b><i>×</i></a></li>
+				{/if}
+				{if condition="$max_price!='' "}
+				<li><a href="{:__URL('SHOP_MAIN/goods/goodslist',$url_parameter_not_price)}" >{:lang('goods_price')}：<b class="color">{$min_price}-{$max_price}</b><i>×</i></a></li>
+				{/if}
+				<!-- 取消属性 -->
+				{foreach name="attr_array" item="attr_item_vo"}
+					<li><a onclick="removeAttr(this);"data-attr-value="{$attr_item_vo[0]}"data-attr-value-name="{$attr_item_vo[1]}" data-attr-value-id="{$attr_item_vo[2]}">{$attr_item_vo[0]}：<b class="color">{$attr_item_vo[1]}</b><i>×</i></a></li>
+				{/foreach}
+				<!-- 取消规格 -->
+				{foreach name="spec_array" item="spec_item_vo"}
+					<li><a onclick="removeSpec(this);"data-spec_id="{$spec_item_vo[0]}"data-spec_value_id="{$spec_item_vo[1]}">{$spec_item_vo[2]}：<b class="color">{$spec_item_vo[3]}</b><i>×</i></a></li>
+				{/foreach}
+			</ul>
+		</dd>
+	</dl>
+	{/if}
+	
+	<!-- 品牌筛选 start-->
+	{if condition="$brand_name==''&& $category_count>0  && count($category_brands) gt 0"}
+		<!-- {$curr += 1} -->
+		<dl class="condition-item brand" id="attr-group-dl-brand">
+			<dt><span class="condition-type">{:lang('goods_brand')}：</span></dt>
+			<dd class="screen-condition">
+				<ul class="brand_list" id="brand-abox">
+					{foreach name="category_brands" item="brand" key="k"}
+					<li title="{$brand.brand_name}" data-brand-id="{$brand.brand_id}" data-brand-name="{$brand.brand_name}">
+						<a href="javascript:;"  onclick="selectBrand(this,{$brand.brand_id},'{$brand.brand_name}')">
+							{if $brand['brand_pic'] != '' }
+							<img src="{:__IMG($brand.brand_pic)}" class="brand_pic">
+							{/if}
+							<span>{$brand.brand_name}</span>
+							<i></i>
+						</a>
+					</li>
+					{/foreach}
+				</ul>
+			</dd>
+			<!-- 更多 与 多选 -->
+			<div class="moreAndmulti">
+				{if condition = "count($category_brands) > 7"}
+				<span class="select-more" is-show="0" data-height="57" onclick="showMore(this);">
+					<i class="fa fa-chevron-down"></i>{:lang('goods_more')}
+				</span>
+				{/if}
+				<span class="select-multi" onclick="showDuoXuan('#attr-group-dl-brand');">
+					<i class="fa fa-plus" aria-hidden="true"></i> {:lang('goods_multiselect')}
+				</span>
+			</div>
+			<dd>
+				<div class="duoxuan-btnbox">
+					<!--当没有选中任何品牌时，确定按钮为禁用状态disabled;当选中品牌后，确定按钮添加select-button-sumbit样式-->
+					<a id="button-brand"></a>
+					<a class="select-button disabled js-brand-select-button" onclick="brandMoreSearch(this);">{:lang('goods_determine')}</a>
+					<a href="javascript:hiddenDuoXuan('#attr-group-dl-brand',this)" class="select-button">{:lang('goods_cancel')}</a>
+				</div>
+			</dd>
+		</dl>
+	{/if}
+	<!-- 品牌筛选 end-->
+	
+	<!-- 规格筛选 start-->
+	{if condition="count($goods_spec_array) > 0 "}
+		{foreach name="goods_spec_array" item="vo" key="key"}
+			<!-- {$curr += 1} -->
+			{if condition="$vo.is_screen eq 1 and $vo.spec_name neq ''"}
+			<dl class="condition-item" {if $curr > 4}style="display:none";{/if}>
+				<dt><span class="condition-type">{$vo.spec_name}：</span></dt>
+				<dd class="screen-condition">
+					<ul>
+						{foreach name="vo.values" item="value" key="k"}
+						<li title="{$value.spec_value_name}" data-spec = "spec{$key}" data-spec_value_id="{$value.spec_value_id}" data-spec_id="{$value.spec_id}" onclick="specSelect(this);"><a href="javascript:;">{$value.spec_value_name}</a></li>
+						{/foreach}
+					</ul>
+				</dd>
+				<!-- 更多 -->
+				<div class="moreAndmulti">
+					<span class="select-more" is-show="0" data-height="37" onclick="showMore(this);">
+						<i class="fa fa-chevron-down"></i>{:lang('goods_more')}
+					</span>
+				</div>
+			</dl>
+			{/if}
+		{/foreach}
+	{/if}
+	<!-- 规格筛选 end-->
+
+	<!-- 属性筛选 start -->
+	{if condition="count($attr_or_spec) > 0 "}
+		{foreach name="attr_or_spec" item="vo" key="key"}
+			{if condition="$vo.type neq 1 and $vo.value neq ''"}
+				{if condition="$vo.is_search eq '1'"}
+					<!-- {$curr += 1} -->
+					<dl class="condition-item" {if $curr > 4}style="display:none";{/if}>
+						<dt><span class="condition-type">{$vo.attr_value_name}：</span></dt>
+						<dd class="screen-condition">
+							<ul>
+								{foreach name="vo.value_items" item="value" key="k"}
+								<li title="{$value}" data-attr = "attr{$key}" data-attr_value_id ="{$vo.attr_value_id}" data-attr-value="{$vo.attr_value_name}" data-attr-value-name="{$value}" onclick="attrSelect(this);"><a href="javascript:;">{$value}</a></li>
+								{/foreach}
+							</ul>
+						</dd>
+						<!-- 更多 -->
+						<div class="moreAndmulti">
+							<span class="select-more"  is-show="0" data-height="37" onclick="showMore(this);">
+								<i class="fa fa-chevron-down"></i>{:lang('goods_more')}
+							</span>
+						</div>
+					</dl>
+				{/if}
+			{/if}
+		{/foreach}
+	{/if}
+	<!-- 属性筛选 end -->
+
+	<!--价格筛选 start-->
+	{if condition="$max_price=='' && $category_count>0 "}
+		<!-- {$curr += 1} -->
+		<dl class="condition-item" {if $curr > 4}style="display:none";{/if}>
+			<dt><span class="condition-type">{:lang('goods_price')}：</span></dt>
+			<dd class="screen-condition">
+				<ul>
+					{foreach name="$category_price_grades" item="price_grades" key="k"}
+						{if condition="$price_grades[1] != 0"}
+							<li><a href="{:__URL('SHOP_MAIN/goods/goodslist?'.$url_parameter.'&min_p_jg='.$price_grades[0].'&max_p_jg='.$price_grades[1].$attr_url)}">{$price_grades[0]}&nbsp;-&nbsp;{$price_grades[1]}</a></li>
+						{/if}
+					{/foreach}
+				</ul>
+			</dd>
+			<!-- 更多 -->
+			<div class="moreAndmulti">
+				<span class="select-more"  is-show="0" data-height="37" onclick="showMore(this);">
+					<i class="fa fa-chevron-down"></i>{:lang('goods_more')}
+				</span>
+			</div>
+		</dl>
+	{/if}
+	<!--价格筛选 end-->
+</div>
+<!-- 更多筛选条件 -->
+{if $curr > 4}
+<div class="more-screen-condition">
+	<a href="javascript:;" class="more-option" is-show="0">更多选项<i class="fa fa-angle-double-down" style="font-size: 20px;margin-top: -5px;"></i></a>
+</div>
+{/if}
+<div class="blank15"></div>
+
+<input type="hidden" id="hidden_category_id" value="{$category_id}"/>
+<input type="hidden" id="hidden_brand_id" value="{$brand_id}"/>
+<input type="hidden" id="hidden_brand_name" value="{$brand_name}"/>
+<input type="hidden" id="hidden_min_price" value="{$min_price}"/>
+<input type="hidden" id="hidden_max_price" value="{$max_price}"/>
+<input type="hidden" id="hidden_url_parameter" value="{$url_parameter}"/>
+	

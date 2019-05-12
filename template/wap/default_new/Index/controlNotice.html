@@ -1,0 +1,99 @@
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/liMarquee.css">
+<script src="__TEMP__/{$style}/public/js/jquery.liMarquee.js"></script>
+<style>
+.hot {
+	width: 100%;
+	height: 44px;
+	background: #FFF;
+	border-top: 1px solid #eee;
+}
+
+.hot .notice-img {
+	float: left;
+	width: 40px;
+	height: 40px;
+	margin: 2px 20px 2px 20px;
+	position: relative;
+}
+
+.hot .notice-img img {
+	display: block;
+	height: 25px;
+	margin:8px auto;
+}
+
+.hot .notice-img:after {
+	content: '';
+	display: block;
+	width: 1px;
+	height: 44px;
+	background-color: #eee;
+	position: absolute;
+	right: -20px;
+	top: 0;
+}
+.dowebok-block ul li{
+	padding: 0px;
+	margin: 0px;
+	line-height: 49px;
+}
+
+</style>
+<div class="hot" style="position: relative; overflow: hidden;border-bottom: 1px solid #eee;">
+	<div class="notice-img">
+		<a href="javascript:;"><img src="__TEMP__/{$style}/public/images/H.png"></a>
+	</div>
+	<div style="width:70%;overflow:hidden;font-size:13px;color: #666;">
+		<div class="dowebok dowebok-block" style="font-size: 13px;"> 
+		<ul style="position: relative;">
+		     {foreach name="notice" id="vo"}
+			 <a href="{:__URL('APP_MAIN/index/noticeContent', 'id='.$vo['id'])}"> <li> &nbsp;&nbsp;&nbsp;&nbsp;{$vo.notice_title}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li></a>
+			 {/foreach}
+		</ul>	 
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+{if condition="count($notice) gt 1"}
+	var notice_index = 0;
+	var notice_autoTimer = 0;//全局变量目的实现左右点击同步
+
+	//自动轮播
+	if($(".dowebok-block ul li").length>1){
+		$(".dowebok-block ul li:eq(0)").clone(true).appendTo($(".dowebok-block ul"));//克隆第一个放到最后(实现无缝滚动)
+		var liHeight = $(".dowebok-block li").height();//一个li的高度
+		//获取li的总高度再减去一个li的高度(再减二个Li是因为克隆了多出了一个Li的高度)
+		var li_sum = $(".dowebok-block ul li").length;
+		$(".dowebok-block ul").height(liHeight);//给ul赋值高度
+		notice_autoTimer = setInterval(function(){
+	
+			notice_index++;
+
+			if(notice_index > Number(li_sum) -1) {
+				notice_index = 0;
+			}
+			$(".dowebok-block ul").stop().animate({
+	
+				top: -notice_index * liHeight
+	
+			},500,function(){
+				if(notice_index == Number(li_sum) -1) {
+					$(".dowebok-block ul").css({top:0});
+					notice_index = 0;
+				}
+	
+			});
+	
+		},5000);
+	}
+{else/}
+	$(function(){
+	    $('.dowebok').liMarquee({
+	       hoverstop: false
+	    });
+	});
+{/if}	
+</script>

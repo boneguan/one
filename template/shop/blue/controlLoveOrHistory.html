@@ -1,0 +1,94 @@
+<link type="text/css" rel="stylesheet" href="__TEMP__/{$style}/public/css/ns_category.css">
+<div class="browse-history">
+	<div class="browse-history-tab clearfix">
+		<!--当前选中color-->
+		<span class="tab-span color">{:lang('guess_you_like')}</span>
+		<span class="tab-span">{:lang('browse_history')}</span>
+		<div class="browse-history-line bg-color" style="left: 0px; width: 104px;"></div>
+		<div class="browse-history-other">
+			<a href="javascript:change_like()" class="history-recommend-change">
+				
+				{if condition="$guess_member_likes_count gt 6"}
+					<i class="icon"></i>
+					<em class="text">{:lang('batch')}</em>
+				{/if}
+			</a>
+			<a href="javascript:clear_history();" class="clear_history none">
+				<i class="icon"></i>
+				<em id="del-history" class="text">{:lang('empty')}</em>
+			</a>
+		</div>
+	</div>
+	<div class="browse-history-con">
+		<div class="browse-history-inner">
+			<!--猜您喜欢-->
+			<ul id="user_like" class="recommend-panel">
+			{if condition="$guess_member_likes_count==0"}
+			{:lang('no_recommendation')}！
+			{else/}
+			{volist name="guess_member_likes" id="vo" key="k"}
+			
+			{if condition="$k%6 eq 1 and $k gt 1"}
+				<li style="display: none;">
+			{else /}
+				<li>
+			{/if}
+			
+				<div class="p-img">
+					<a target="_blank" title="{$vo.goods_name}" href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$vo['goods_id'])}">
+						<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($vo['pic_cover_mid'])}">
+					</a>
+					</div>
+					<div class="p-name">
+						<a target="_blank" title="{$vo.goods_name}" href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$vo['goods_id'])}">{$vo.goods_name}</a>
+					</div>
+					<div class="p-comm">
+						{in name="$vo.point_exchange_type" value="0,2"}
+							<span class="p-price second-color">￥{$vo.price}</span>
+						{else/}
+							{if $vo['point_exchange_type'] == 1 && $vo['promotion_price'] > 0}
+								<span class="p-price second-color">￥{$vo.promotion_price}+{$vo.point_exchange}积分</span>
+							{else/}
+								<span class="p-price second-color">{$vo.point_exchange}积分</span>
+							{/if}
+						{/in}
+					</div>
+				</li> 
+			{/volist}
+			{/if}
+			</ul>
+			<!--浏览历史-->
+			<ul id="history_list" class="history-panel none">
+				{if condition="$member_histrorys eq ''"}
+					{:lang('have_not_browsed_history_yet')}！
+				{else/}
+					{volist name="member_histrorys" id="vo"}
+					<li>
+						<div class="p-img">
+							<a target="_blank" title="{$vo.goods_name}" href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$vo['goods_id'])}">
+								<img alt="{$vo.goods_name}" src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($vo['pic_cover_mid'])}">
+							</a>
+						</div>
+						<div class="p-name">
+							<a target="_blank" title="{$vo.goods_name}" href="{:__URL('SHOP_MAIN/goods/goodsinfo','goodsid='.$vo['goods_id'])}">{$vo.goods_name}</a>
+						</div>
+						<div class="p-comm">
+							{in name="$vo.point_exchange_type" value="0,2"}
+								<span class="p-price money-color">￥{$vo.price}</span>
+							{else/}
+								{if $vo['point_exchange_type'] == 1 && $vo['promotion_price'] > 0}
+									<span class="p-price money-color">￥{$vo.promotion_price}+{$vo.point_exchange}积分</span>
+								{else/}
+									<span class="p-price money-color">{$vo.point_exchange}积分</span>
+								{/if}
+							{/in}
+						</div>
+					</li>
+					{/volist}
+				{/if}
+				
+			</ul>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/ns_category.js"></script>

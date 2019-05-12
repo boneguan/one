@@ -1,0 +1,247 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/foundation.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/common-v4.4.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/person-v4.4.css">
+<script src="__TEMP__/{$style}/public/js/order.js" type="text/javascript"></script>
+<style>
+	.virtual_code ul li h5{    float: left;}
+	.virtual_code .btn_show{
+	    float: right;
+	    margin-right: 20px;
+	    color: #ffffff;
+	    background: #03A9f4;
+	    font-size: 12px;
+	    padding: 2px;
+	    line-height: 16px;
+	    margin: 7px;
+	    border-radius: 2px;
+	}
+	.virtual_code ul li span.code{color: #666666;}
+</style>
+{/block}
+{block name="main"}
+<div class="main myorder">
+	<section class="head">
+		<a class="head_back" href="{:__URL('APP_MAIN/order/myvirtualorderlist')}"><i class="icon-back"></i></a>
+		<div class="head-title">{:lang('member_order_details')}</div>
+	</section>
+</div>
+<div class="order-detail mt-45">
+	<section class="order-detail-infor">
+		<div class="order-detail-sum clear">
+			<div class="sum-r order-detail-r">
+				<ul class="sum-r-ul">
+					<li><span class="status">{$order.status_name}</span></li>
+					<li><span class="label">{:lang('order_number')}：</span><span class="value">{$order.order_no}</span></li>
+					<li><span class="label">{:lang('member_order_status')}：</span><span class="value">{$order.status_name}</span></li>
+					<li><span class="label">{:lang('order_time')}：</span><span class="value">{$order.create_time | getTimeStampTurnTime}</span></li>
+					<li><span class="label">{:lang('member_payment_method')}：</span><span class="value">{$order.payment_type_name}</span></li>
+					<li><span class="label">{:lang('member_payment_status')}：</span><span class="value">{$order.pay_status_name}</span></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<section class="order-detail-address">
+		<div class="address-out clear">
+			<div class="address-r order-detail-r">
+				<ul class="address-r-ul">
+					<li class="name">
+						<span class="label">{:lang('contact_information')}：</span>
+						<span class="value">{$order['receiver_mobile']}</span>
+					</li>
+					{if condition="!empty($order['buyer_invoice_info'])"}
+						{if condition="!empty($order['buyer_invoice_info'][0]) && $order['buyer_invoice_info'][0] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_invoice_header')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][0]}</span>
+						</li>
+						{/if}
+						{if condition="!empty($order['buyer_invoice_info'][2]) && $order['buyer_invoice_info'][2] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_taxpayer_identification_number')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][2]}</span>
+						</li>
+						{/if}
+						{if condition="!empty($order['buyer_invoice_info'][1]) && $order['buyer_invoice_info'][1] neq ''"}
+						<li class="name">
+							<span class="label">{:lang('member_invoice_content')}：</span>
+							<span class="value">{$order['buyer_invoice_info'][1]}</span>
+						</li>
+						{/if}
+					{/if}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="order-detail-remark">
+		<div class="remark-out clear">
+			<div class="remark-l order-detail-l">
+				<i class="icon-talks-small"></i>
+			</div>
+			<div class="remark-r order-detail-r">
+				<ul class="remark-r-ul">
+					<li class="name">
+						<span class="label">{:lang('member_buyer_message')}</span>
+					</li>
+					<li>
+						{if condition="$order['buyer_message'] !=''"}
+						<span class="label">{$order['buyer_message']}</span>
+						{else/}
+						<span class="label">{:lang('member_no_messages')}</span>
+						{/if}
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<div class="list-myorder">
+		<ul class="ul-product">
+			{volist name="order['order_goods']" id="goodsData"}
+			<li onclick="location.href='{:__URL('APP_MAIN/goods/goodsdetail?id='.$goodsData['goods_id'])}'">
+				<span class="pic"><img src="{:__IMG($goodsData['picture_info']['pic_cover_micro'])}" /></span>
+				<div class="text">
+					<span class="pro-name">
+						<span style="color:#333333;">{$goodsData.goods_name}</span>
+						{if condition = "$goodsData['sku_name'] neq ''"}
+						<span style="color:#333333;">{$goodsData.sku_name}</span>
+						{/if}
+					</span>
+					<br/>
+					<div class="pro-pric">
+						<span>{:lang('goods_price')}:</span>
+						<span style="color:#333333;">￥{$goodsData.price}</span>
+					</div>
+					<div class="pro-pric">
+						<span class="color"></span>
+						<span>{:lang('goods_number')}:</span>
+						<span style="color:#333333;">{$goodsData.num}</span>
+					</div>
+					<div class="pro-pric">
+						<span>{:lang('adjust_price')}:</span>
+						<span style="color:#333333;">{$goodsData.adjust_money}</span>
+					</div>
+				</div>
+			</li>
+			{/volist}
+		</ul>
+		<div class="money-content">
+			<div class="money-row">
+				<div>
+					<span>{:lang('member_total_commodity_value')}：</span>
+					<span class="price">￥{$order['goods_money']}</span>
+				</div>
+				
+				{if condition="$order['user_platform_money']>0"}
+				<div>
+					<span>{:lang('member_balance_payment')}：</span>
+					<span class="price">￥{$order['user_platform_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['coupon_money']>0"}
+				<div>
+					<span>{:lang('member_coupons')}：</span>
+					<span class="price">￥{$order['coupon_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['tax_money']>0"}
+				<div>
+					<span>{:lang('member_invoice_tax')}：</span>
+					<span class="price">￥{$order['tax_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['promotion_money']>0"}
+				<div>
+					<span>{:lang('member_full_discount')}：</span>
+					<span class="price">￥{$order['promotion_money']}</span>
+				</div>
+				{/if}
+				
+				{if condition="$order['point']>0"}
+				<div>
+					<span>{:lang('member_use_integral')}：</span>
+					<span class="price">{$order['point']}</span>
+				</div>
+				{/if}
+				
+				<div>
+					<span>{:lang('member_actual_payment')}：</span>
+					<span class="price"><b style="color:#f44;">￥{$order['pay_money']}</b></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 虚拟码 -->
+
+	{notempty name="$order['virtual_goods_list']"}
+	<div class="virtual_code">
+		<ul>
+		
+		{foreach name="order.virtual_goods_list" item="vg"}
+			<li><h5>虚拟码：
+			{if $vg.remark neq ''}
+				{$vg.virtual_code}
+			{/if}
+				</h5></li>
+
+			<li>
+			{if $vg.remark eq ''}
+				<span class="code" >{$vg.virtual_code}</span>
+				{if $vg.use_status eq 0}
+					<a href="{:__URL('APP_MAIN/Verification/VerificationOrderDetail','vg_id='.$vg.virtual_goods_id)}"><span class="code-right">待使用</span></a>
+				{elseif condition="$vg.use_status eq 1"/}
+					<a href="{:__URL('APP_MAIN/Verification/VerificationOrderDetail','vg_id='.$vg.virtual_goods_id)}"><span class="code-right">已使用</span></a>
+				{else}
+					<a href="{:__URL('APP_MAIN/Verification/VerificationOrderDetail','vg_id='.$vg.virtual_goods_id)}"><span class="code-right">已过期</span></a>
+				{/if}
+				
+			{else /}
+				<span class="code">详&nbsp;&nbsp;&nbsp;情：</span>
+				<span class="code value" code-text="{$vg.remark}">********</span>
+					<a href="javascript:;" class="btn_show">显示</a>
+			{/if}
+			</li>
+			{/foreach}
+		</ul>
+	</div>
+	<script type="text/javascript">
+		$('.virtual_code .btn_show').click(function(){
+			
+			var code_value_obj = $(this).parents().children('.value');
+			code_value_obj.html(code_value_obj.attr('code-text'));
+			$(this).remove();
+		})
+	</script>
+	{/notempty}
+	
+	<div class="order-tablink">
+		<div class="tablink-box">
+			<div class="tablink">
+				<a href="{$list['value']['service_addr']}"><span class="kefu">联系客服</span></a>
+			</div>
+			<div class="tablink">
+				<a href="tel:{$list['value']['web_phone']}"><span class="call">拨打电话</span></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+{if count($order['member_operation']) > 0}
+<div style="height: 55px;"></div>
+<div class="order-opcation">
+	<div class="content">
+		{volist name="$order['member_operation']" id="vo"}
+		<a href="javascript:;" onclick="operation('{$vo.no}',{$order['order_id']})" style="background: {$vo.color};border-color: {$vo.color}">{$vo.name}</a>
+		{/volist}
+	</div>
+</div>
+{/if}
+{/block}
+{block name="bottom"}{/block}

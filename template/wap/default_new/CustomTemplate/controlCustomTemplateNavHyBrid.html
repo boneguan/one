@@ -1,0 +1,28 @@
+<!-- 图文导航 -->
+<style>
+.control-nav-img{$k},.control-nav-img ul{overflow: hidden;}
+.control-nav-img{$k} ul li {float: left;width: 25%;text-align: center;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;font-size: 12px;color: rgb(102, 102, 102);max-height: 80px;margin-bottom: 5px;}
+.control-nav-img{$k} ul li a{display: block;}
+.control-nav-img{$k} ul li.double-columns {width: 20%;}
+.control-nav-img{$k} ul li div {height: 60px;line-height: 60px;margin-bottom:2px;}
+.control-nav-img{$k} ul li div img{max-width: 100%;max-height: 100%;vertical-align: middle;}
+</style>
+<nav class="control-nav-img{$k}" style="background:{$custom_template_v.style_data.nav_hybrid.bg_color};">
+	<ul>
+		{foreach $custom_template_v.style_data.nav_hybrid.items as $k=>$v}
+		<li 
+		{if condition="$custom_template_v.style_data.nav_hybrid.type == 5 || $custom_template_v.style_data.nav_hybrid.type == 10"}class="double-columns"{/if}
+			{if condition="$custom_template_v.style_data.nav_hybrid.type == 4 || $custom_template_v.style_data.nav_hybrid.type == 5"} style="margin-bottom:0;"{/if}
+		>
+			<a href="{$v.href}">
+				{if condition="$v['src']"}
+				<div>
+					<img src="{:__IMG($v['src'])}"/>
+				</div>
+				{/if}
+				<span style="color:{$custom_template_v.style_data.nav_hybrid.text_color};">{$v.text}</span>
+			</a>
+		</li>
+		{/foreach}
+	</ul>
+</nav>

@@ -1,0 +1,289 @@
+{extend name="adminblue/base" /}
+{block name="resources"/} 
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+/*独立*/
+.status-error{
+	display:inline-block;
+	padding-left:5px;
+	padding-right:5px;	
+	padding-bottom:3px;
+	padding-top:3px;
+	color:#FFF;
+	background-color:#de533c;
+}
+/*独立*/
+.status-success{
+	display:inline-block;
+	color:#FFF;
+	padding-left:5px;
+	padding-right:5px;	
+	padding-bottom:3px;
+	padding-top:3px;
+	background-color:#5be15b;
+}
+.ns-main{
+	margin-top: 0;
+}
+</style>
+{/block}
+{block name="right_tab"}
+<!-- <li><a class="nscs-table-handle_green" href="javascript:;" onclick="addBrand()"><i class="fa fa-plus-circle"></i>&nbsp;添加品牌</a></li> -->
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th>
+			申请时间：
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			<button class="btn-common-white more-search"><i class="fa fa-chevron-down"></i></button>
+			<div class="more-search-container">
+				<dl>
+					<dt>用户昵称：</dt>
+					<dd>
+						<input id="userName" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>手机号：</dt>
+					<dd>
+						<input id="userTel" class="input-common middle" type="text" value="">
+					</dd>
+				</dl>
+				<dl>
+					<dt>状态：</dt>
+					<dd>
+						<select id="is_audit" class="select-common  middle">
+							<option value="">全部</option>
+							<option value="0">审核中</option>
+							<option value="-1">已拒绝</option>
+						</select>
+					</dd>
+				</dl>
+				<dl>
+					<dt></dt>
+					<dd>
+						<button onclick="searchData()" class="btn-common">完成</button>
+					</dd>
+				</dl>
+			</div>
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>		
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 3%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+ 					<col style="width: 10%;"> 
+					<col style="width: 17%;">
+					<col style="width: 10%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><label style="margin-left: 5px;"> <input type="checkbox"  onclick="CheckAll(this)"></label></th>
+						<th>账号</th>
+						<th>等级</th>
+						<th>店铺名称</th>
+						<th>手机号</th>
+						<th>销售总额</th>
+						<th>上级推广员</th>
+						<th>申请时间</th>
+ 						<th>状态</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+<script type="text/javascript">	
+//查询
+function searchData(){
+	$(".more-search-container").slideUp();
+	LoadingInfo(1);
+}
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var user_name = $("#userName").val();
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();
+		var user_phone = $("#userTel").val();
+		var is_audit = $("#is_audit").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/promoterList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"is_audit":is_audit,
+				"user_name":user_name,
+				"start_date" : start_date, 
+				"end_date" : end_date,
+				"user_phone":user_phone
+			},
+			success : function(data) {
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						var lock_status = "";
+						var lock_operrate = "";
+						var lock_do = 0;
+						if(data["data"][i]["is_lock"] == 1){
+							lock_status = "冻结中";
+							lock_operrate = "解冻";
+							lock_do = 0;
+						}else{
+							lock_status = "正常";
+							lock_operrate = "冻结";
+							lock_do = 1;
+						}
+						
+						var parent_realname ="";
+						if(data["data"][i]["parent_realname"] != null){
+							parent_realname = data["data"][i]["parent_realname"];
+						}
+						html += '<tr align="center">';
+						html += '<td><div class="cell"><label ><input name="sub" type="checkbox" value="'+ data["data"][i]["promoter_id"] +'" ></label></div></td>';
+						html += '<td>' + data["data"][i]["real_name"] + '</td>';
+						html += '<td>' + data["data"][i]["level_name"] + '</td>';
+						html += '<td>' + data["data"][i]["promoter_shop_name"] + '</td>';
+						html += '<td>' + data["data"][i]["user_tel"] + '</td>';
+						html += '<td>' + data["data"][i]["order_total"] + '</td>';
+						html += '<td>' + parent_realname + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["regidter_time"]) + '</td>';
+						if(data["data"][i]["is_audit"] == 0){
+							html += '<td><span class="status-success">审核中</span></td>';
+						}else if(data["data"][i]["is_audit"] == -1){
+							html += '<td><span class="status-error">已拒绝</span></td>';
+						}
+// 						html += '<td>' + lock_status + '</td>';
+						html += '<td>';
+						if(data["data"][i]["is_audit"] == 0){
+							html += '<a href="javascript:void(0);" onclick="audit('+ data["data"][i]["promoter_id"] +',1, '+ data["data"][i]["uid"] +');">通过</a>&nbsp;|&nbsp;<a href="javascript:void(0);" onclick="audit('+ data["data"][i]["promoter_id"] +',-1, '+ data["data"][i]["uid"] +');">拒绝</a>';
+						}else if(data["data"][i]["is_audit"] == -1){
+							html += '&nbsp;&nbsp;<a href="javascript:void(0);" onclick="deleteBox('+data["data"][i]["promoter_id"]+');">删除</a>';
+						}
+						html += '</td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="10">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	//推广员审核通过
+// 	function promoterAudit(promoter_id){
+// 		$( "#dialog" ).dialog({				
+//             buttons: {
+//                 "确定,#e57373": function() {
+//                 	audit(promoter_id,1);
+//                     $(this).dialog('close');
+//                 },
+//                 "取消拒绝": function() {
+//                 	audit(promoter_id,-1);
+//                     $(this).dialog('close');
+//                 }
+//             },
+//             contentText:"确定要通过此用户的推广员审核吗？",
+// 		});
+// 	}
+	function audit(promoter_id,is_audit, uid){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/promoterAudit')}",
+			async : true,
+			data : {
+				"promoter_id" : promoter_id,
+				"is_audit":is_audit,
+				"uid" : uid
+			},
+			success : function(data) {
+				if(data.code == 1){
+					location.reload();
+				}else{
+					location.reload();
+				}
+			}
+    	})
+	}
+	//删除提示
+	function deleteBox(promoter_id){
+		$( "#dialog" ).dialog({				
+            buttons: {
+                "确定,#62c462": function() {
+                	deletePromoter(promoter_id);
+                    $(this).dialog('close');
+                },
+                "取消,#e57373": function() {
+                    $(this).dialog('close');
+                }
+            },
+            contentText:"确定删除吗",
+            title:"消息提醒",
+        });
+	}
+	//删除
+	function deletePromoter(promoter_id){
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/deletePromoter')}",
+			data:{
+				'promoter_id':promoter_id
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/promoterList')}");
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+
+	// 点击显示更多搜索
+	$(".more-search").on("click", function(e){
+		$(".more-search-container").slideToggle();
+		$(document).one("click", function(){
+	        $(".more-search-container").slideUp();
+	    });
+	    e.stopPropagation();
+	})
+
+	$(".more-search-container").on("click", function(e){
+	    e.stopPropagation();
+	});
+</script>
+{/block}

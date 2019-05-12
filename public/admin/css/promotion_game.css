@@ -1,0 +1,764 @@
+@CHARSET "UTF-8";
+
+.div_main {
+	display: block;
+	background: #ffffff;
+}
+
+.div_main>div {
+	float: left;
+}
+
+.div_main .content_left {
+	overflow: hidden;
+	margin: 10px;
+}
+
+.content_right {
+	min-height: 650px;
+	padding-bottom: 20px;
+	padding: 0 20px 5px;
+	background-color: #f4f5f9;
+	border: 1px solid #e7e7eb;
+	margin: 20px 2px;
+	width: 550px;
+}
+
+.menu_form_hd {
+	padding: 6px 0;
+	border-bottom: 1px solid #e7e7eb;
+	margin-bottom:5px;
+}
+
+.menu_form_area .frm_label {
+	width: 5em;
+}
+
+.frm_label {
+	float: left;
+	width: 5em;
+	margin-top: .3em;
+	margin-right: 1em;
+	font-size: 14px;
+}
+
+.frm_controls {
+	display: table-cell;
+	vertical-align: top;
+	float: none;
+	width: auto;
+}
+
+.frm_input_box.counter_in {
+	padding-right: 60px;
+	display: inline-block;
+	position: relative;
+	height: 32px;
+	line-height: 30px;
+	vertical-align: middle;
+	width: 270px;
+	font-size: 14px;
+	padding: 0 10px;
+	border: 1px solid #e7e7eb;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	background-color: #fff;
+}
+
+.frm_input_box.counter_in.number {
+	width: 100px;
+}
+
+.frm_input_box.counter_in input {
+	border: 0px !important;
+	height: 30px;
+	width: 100%;
+	padding: 0;
+	margin:0;
+}
+
+.frm_tips {
+	color: #8d8d8d;
+}
+
+.frm_label .title {
+	font-weight: 400;
+	font-style: normal;
+}
+
+.bottom_button {
+	text-align: center;
+	width: 100%;
+	line-height: 50px;
+}
+
+.bottom_button .button_step,.bottom_button .complete {
+	padding: 5px 20px;
+	background: #126AE4;
+	color: #ffffff;
+	border-radius: 3px;
+}
+
+.frm_controls .textarea {
+	width: 278px;
+	resize: none;
+	height: 50px;
+}
+
+.frm_controls label:FIRST-CHILD {
+	margin-left: 0px;
+}
+
+.frm_controls label {
+	float: left;
+	margin-left: 20px;
+}
+
+.frm_controls label input {
+	margin-right: 2px;
+}
+
+.frm_controls .red {
+	color: red;
+	display: none;
+}
+
+.frm_control_group {
+	clear: both;
+}
+
+.menu_content {
+	background-color: #fff;
+	padding: 45px 20px 16px;
+	border: 1px solid #e7e7eb;
+	position: relative;
+}
+
+.menu_content .add {
+	position: absolute;
+	top: 10px;
+	right: 20px;
+}
+
+.game_table {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.game_table th{
+	padding: 5px 0;
+}
+
+.game_table td {
+	text-align: center;
+	border: 1px solid #eeeeee;
+	padding: 5px;
+}
+
+.game_table thead {
+	background: #eeeeee;
+	padding: 5px;
+}
+
+.rule_a {
+	background: #126AE4;
+	color: #ffffff;
+	padding: 3px 30px;
+	border-radius: 4px;
+}
+
+.rule_a:link,.rule_a:active {
+	color: #ffffff;
+}
+
+/* --------------------左侧显示------------------------------ */
+.app-preview {
+	position: relative;
+	float: left;
+	width: 320px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background: #fff;
+	margin-bottom: 0px;
+}
+
+.app-preview .app-config .app-field {
+	cursor: pointer;
+	background-color: transparent;
+}
+
+.app-preview .app-config .app-field h1 {
+	padding: 18px 60px 0 60px;
+	height: 46px;
+	line-height: 46px;
+	font-size: 16px;
+	color: #fff;
+	font-weight: bold;
+	text-align: center;
+	background: url(../images/titlebar.png) no-repeat;
+	margin-bottom: 0px;
+}
+
+.div_main .snapshot-wrap {
+	width: 320px;
+	min-height: 300px;
+}
+
+/* 刮刮卡 */
+.apps-cards-wrap {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: #126AE4;
+	padding: 10px 0 50px;
+}
+
+.apps-cards {
+	width: 288px;
+	margin: 0 auto;
+}
+
+.apps-cards .logo {
+	width: 285px;
+	height: 111px;
+	background: url(../images/logo.png) no-repeat;
+	background-size: 285px 111px;
+	margin: 17px 0px;
+}
+
+.apps-cards .scratch-area {
+	width: 260px;
+	height: 129px;
+	margin: 0 auto;
+}
+
+.apps-cards .result-area {
+	position: absolute;
+	display: table;
+	top: 9px;
+	left: 7px;
+	width: 260px;
+	height: 129px;
+	background-image: url(../images/cover.png);
+	background-size: cover;
+	line-height: 1.5em;
+	font-size: 16px;
+	color: #e03021;
+	text-align: center;
+	font-weight: bold;
+}
+
+.apps-cards .result-area .face-area {
+	position: absolute;
+	top: 27px;
+	left: 8px;
+	width: 76px;
+	height: 76px;
+	background-size: cover;
+}
+
+.apps-cards .result-area .result-content-wap {
+	display: none;
+	vertical-align: middle;
+	word-break: break-all;
+	padding: 0 20px;
+}
+
+.apps-cards .result-area .result-title {
+	font-size: 18px;
+}
+
+.apps-cards .result-area .result-content {
+	font-size: 22px;
+	margin-top: 5px;
+}
+
+.apps-cards .bottom-button-area .bottom-button:first-child {
+	margin-right: 2px;
+}
+
+.apps-cards .bottom-button-area .bottom-button {
+	cursor: pointer;
+	font-size: 14px;
+	display: inline-block;
+	background-color: #5495ec;
+	height: 40px;
+	line-height: 40px;
+	width: 159px;
+	text-align: center;
+	color: #ffffff;
+	float: left;
+}
+
+.apps-cards .scratch-wrap {
+	position: relative;
+	width: 274px;
+	height: 129px;
+	background: url(../images/bg.png) no-repeat;
+	background-size: 274px 146px;
+	padding: 9px 0;
+	margin: 20px auto 0;
+}
+
+.apps-cards .info-area {
+	padding-top: 10px;
+	width: 275px;
+	margin: 0 auto;
+}
+
+.apps-cards ul.activity-info {
+	color: #E4F3FF;
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+.apps-cards ul.activity-info li {
+	margin-bottom: 5px;
+	line-height: 1.5em;
+}
+
+.apps-cards ul.activity-info li .activity-info-content {
+	margin-left: 1em;
+	word-break: break-all;
+}
+
+.snapshot-wrap .apps-cards .bottom-button-area {
+	z-index: 0;
+}
+
+.apps-cards .bottom-button-area {
+	position: absolute;
+	z-index: 1100;
+	width: 320px;
+	height: 40px;
+	left: 50%;
+	margin-left: -160px;
+	bottom: 0;
+}
+
+/* 刮刮卡结束 */
+
+/* 幸运大抽奖 */
+.apps-wheel-wrap {
+	width: 100%;
+	height: 100%;
+	background-color: #7f2789;
+	padding: 0px 0 0px;
+}
+
+.apps-wheel .logo {
+	width: 320px;
+	height: 154px;
+	background: url(../images/games/logo.png) no-repeat;
+	background-size: 320px 154px;
+}
+
+.apps-wheel .wheel-wrap {
+	position: relative;
+	width: 280px;
+	margin: 10px auto 0;
+}
+
+.app-preview ol,.app-preview ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.apps-wheel .wheel .wheel-row:before,.apps-wheel .wheel .wheel-row:after
+	{
+	display: table;
+	content: "";
+	line-height: 0;
+}
+
+.apps-wheel .wheel .wheel-block {
+	float: left;
+	position: relative;
+	width: 69px;
+	margin: 0 1px 1px 0;
+	height: 71px;
+	background-color: #cb1573;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	z-index: 2;
+}
+
+.apps-wheel .wheel .wheel-icon {
+	position: absolute;
+	left: 18px;
+	top: 16px;
+	width: 36px;
+	height: 36px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 36px;
+}
+
+.apps-wheel .wheel .wheel-row:after {
+	clear: both;
+}
+
+.apps-wheel .wheel .prize4 .wheel-icon {
+	background-image: url(../images/games/prize_4.png);
+}
+
+.apps-wheel .wheel .wheel-block::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 5px;
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.apps-wheel .wheel .wheel-block.even {
+	background-color: #d84190;
+}
+
+.apps-wheel .wheel .prize-again .wheel-icon {
+	background-image: url(../images/games/face_smile.png);
+}
+
+.apps-wheel .wheel .prize2 .wheel-icon {
+	background-image: url(../images/games/prize_2.png);
+}
+
+.apps-wheel .wheel .prize1 .wheel-icon {
+	background-image: url(../images/games/prize_1.png);
+}
+
+.apps-wheel .wheel .prize3 .wheel-icon {
+	background-image: url(../images/games/prize_3.png);
+}
+
+.apps-wheel .wheel .prize-no .wheel-icon {
+	background-image: url(../images/games/face_normal.png);
+}
+
+.apps-wheel .wheel .wheel-sep-row .wheel-block:last-child {
+	float: right;
+}
+
+.apps-wheel .wheel-wrap .middle-button-area {
+	position: absolute;
+	top: 72px;
+	left: 70px;
+	width: 139px;
+	height: 145px;
+	background: url(../images/games/middle_button.png);
+	z-index: 1;
+}
+
+.apps-wheel .wheel-wrap .middle-button-area .middle-button {
+	position: absolute;
+	top: 25px;
+	left: 20px;
+	width: 100px;
+	height: 100px;
+	cursor: pointer;
+	border-radius: 40px;
+}
+
+.info-area {
+	padding-top: 10px;
+	width: 275px;
+	margin: 0 auto;
+}
+
+.view-prize {
+	font-size: 14px;
+	text-align: right;
+	color: #ffc73d;
+}
+
+ul.activity-info {
+	color: #e2bfe0;
+	font-size: 12px;
+	margin: 0;
+	margin-top: 5px;
+}
+
+ul.activity-info li {
+	margin-bottom: 5px;
+	line-height: 1.5em;
+}
+
+ul.activity-info li .activity-info-content {
+	margin-left: 1em;
+	word-break: break-all;
+}
+
+.apps-wheel .wheel .wheel-row {
+	
+}
+/* 幸运大抽奖结束 */
+
+/* 摇一摇 */
+.apps-shake-wrap {
+	background: #682f87;
+	background-image: url(../images/games/background.jpg);
+	background-repeat: no-repeat;
+	background-position-x: center;
+	background-size: 335px;
+	width: 320px;
+	margin: 0 auto;
+	padding-bottom: 1px;
+}
+
+.apps-shake-wrap .shake-box-container {
+	position: relative;
+	height: 443px;
+	width: 100%;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box {
+	-webkit-transform: translate3d(0, 0, 0);
+	-moz-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	width: 100%;
+	position: absolute;
+	top: 250px;
+}
+
+.apps-shake-wrap .shake-box-container .disabled .cap-animate {
+	-webkit-animation: none;
+	-moz-animation: none;
+	animation: none;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box .cap-animate {
+	-webkit-transform: rotate(-9deg);
+	-moz-transform: rotate(-9deg);
+	-ms-transform: rotate(-9deg);
+	transform: rotate(-9deg);
+	-webkit-transform-origin: 100% 90%;
+	-moz-transform-origin: 100% 90%;
+	-ms-transform-origin: 100% 90%;
+	transform-origin: 100% 90%;
+	-webkit-animation: 3s animation-shake-box-close infinite;
+	-moz-animation: 3s animation-shake-box-close infinite;
+	animation: 3s animation-shake-box-close infinite;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box .cap {
+	width: 177px;
+	height: 113px;
+	background-image: url(../images/games/cap.png);
+	background-repeat: no-repeat;
+	background-size: 177px 96px;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box div {
+	margin: auto;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box .light {
+	width: 298px;
+	height: 230px;
+	background-image: url(../images/games/light.png);
+	background-size: 298px 242px;
+	position: absolute;
+	top: -24px;
+	left: -17px;
+	z-index: -1;
+	opacity: 0;
+}
+
+.apps-shake-wrap .shake-box-container .shake-box .btm {
+	position: relative;
+	width: 172px;
+	height: 124px;
+	background-image: url(../images/games/btm.png);
+	background-repeat: no-repeat;
+	background-size: 172px 124px;
+	top: -77px;
+	z-index: -2;
+}
+
+.apps-shake-wrap .desc-container {
+	height: 55px;
+}
+
+.apps-shake-wrap .how-to-desc {
+	font-size: 20px;
+	color: #ffee22;
+}
+
+.center,.text-center {
+	text-align: center;
+}
+
+.info-area {
+	padding-top: 0px;
+	width: 275px;
+	margin: 0 auto;
+}
+
+ul.activity-info {
+	color: #e2bfe0;
+}
+
+ul.activity-info {
+	font-size: 12px;
+	margin: 0;
+	margin-top: 5px;
+}
+
+ul.activity-info li {
+	margin-bottom: 5px;
+	line-height: 1.5em;
+}
+
+ul.activity-info li .activity-info-content {
+	margin-left: 1em;
+	word-break: break-all;
+}
+/* 摇一摇结束 */
+.div_main .nav-wrap {
+	margin: 20px 10px 0px;
+	width: 76%;
+}
+
+.div_main .progress-nav {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.div_main .progress-nav .progress-nav-item {
+	position: relative;
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	-moz-box-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background: #bdcee6;
+	color: #7a91b2;
+	margin-bottom: 1px;
+}
+
+.div_main .progress-nav .progress-nav-item::after,.div_main .progress-nav .progress-nav-item::before
+	{
+	content: "";
+	position: absolute;
+	border: 15px solid transparent;
+	border-left-color: #bdcee6;
+	border-width: 15px 12px;
+	right: -23px;
+	z-index: 10;
+}
+
+.div_main .progress-nav .progress-nav-item::before {
+	right: -25px;
+	border-left-color: white;
+	z-index: 9;
+}
+
+.div_main .progress-nav .progress-nav-item.active {
+	color: white;
+	background: #5495ec;
+}
+
+.div_main .progress-nav .progress-nav-item.active::after {
+	border-left-color: #5495ec;
+}
+
+/* 活动说明 */
+.help-container-body {
+	padding: 10px 10px 60px;
+	width: 20%;
+	min-width: 200px;
+	border: 1px solid #eeeeee;
+	margin-top: 20px;
+	margin-left: 10px;
+	height: 495px;
+}
+
+.help-body-title {
+	color: #333;
+	border-left: 2px solid #3283fa;
+	padding-left: 8px;
+	padding-right: 10px;
+	line-height: 12px;
+	margin: 10px 0;
+}
+
+.help-body-content {
+	padding: 10px;
+	margin-bottom: -20px;
+}
+
+.help-body-split-line {
+	border-top: 1px solid #e5e5e5;
+	margin: 20px 10px;
+}
+
+.help-body-title {
+	color: #333;
+	border-left: 2px solid #3283fa;
+	padding-left: 8px;
+	padding-right: 10px;
+	line-height: 12px;
+	margin: 10px 0;
+}
+
+.pull-right {
+	float: right;
+}
+
+.help-container-body a {
+	color: #38f;
+	text-decoration: none;
+}
+
+.help-body-content p {
+	margin-bottom: .5em;
+	line-height: 1.8em;
+	white-space: normal;
+}
+
+.help-body-content hr {
+	border: none;
+	border-top: 1px solid #e5e5e5;
+	margin: 20px 0;
+	white-space: normal;
+}
+
+.help-body-split-line {
+	border-top: 1px solid #e5e5e5;
+	margin: 20px 10px;
+}
+
+.help-body-title {
+	color: #333;
+	border-left: 2px solid #3283fa;
+	padding-left: 8px;
+	padding-right: 10px;
+	line-height: 12px;
+	margin: 10px 0;
+}
+
+.frm_controls .join_type{
+	margin-top:5px;
+	margin-bottom: 10px;
+}
+input[type="number"].frm_input{
+	box-shadow:none;
+}
+input[type="number"].frm_input:focus{
+	border: none !important;
+	box-shadow:none;
+}

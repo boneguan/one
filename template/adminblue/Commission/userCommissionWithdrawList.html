@@ -1,0 +1,467 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<style>
+.modal-infp-style{width:90%;margin:10px auto;}
+.modal-infp-style table{width:100%;}
+.modal-infp-style table tr td{border: 1px solid #e5e5e5;padding: 10px;}
+.modal{width:614px;}
+.type-two{display: none;}
+</style>
+{/block}
+{block name="right_tab"}
+<!-- <li><a class="nscs-table-handle_green" href="javascript:;" onclick="addBrand()"><i class="fa fa-plus-circle"></i>&nbsp;添加品牌</a></li> -->
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th>
+			用户姓名：<input id="userName" class="input-common middle" type="text" value="">
+			手机号：<input id="userTel" class="input-common middle" type="text" value="">
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>		
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 7%;">
+					<col style="width: 8%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 16%;">
+					<col style="width: 9%;">
+					<col style="width: 8%;">
+					<col style="width: 15%;">
+					<col style="width: 8%;">
+					<col style="width: 12%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<!-- <th><label style="margin-left: 5px;"> <input type="checkbox"  onclick="CheckAll(this)"></label></th> -->
+						<th>推广员</th>
+						<th>手机号</th>
+						<th>提现流水号</th>
+						<th>提现银行</th>
+						<th>提现账户</th>
+						<th>账户姓名</th>						
+						<th>提现金额</th>
+						<th>提现日期</th>												
+						<th>状态</th>								
+						<th>操作</th>
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 7%;">
+					<col style="width: 8%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 16%;">
+					<col style="width: 9%;">
+					<col style="width: 8%;">
+					<col style="width: 15%;">
+					<col style="width: 8%;">
+					<col style="width: 12%;">
+				</colgroup>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 通过提现申请 -->
+<div class="modal fade hide" id="agree" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>通过提现申请</h3>
+			</div>
+			<div class="modal-body">
+				<div class="modal-infp-style">
+					<table>
+						<tr>
+							<td>转账类型</td>
+							<td>
+								<select onchange="choose()" id="choose-type" class="select-common">
+									<option value="1" >线下转账</option>
+									<option value="2" >线上转账</option>
+								</select>
+							</td>
+						</tr>
+						<tr class="type-two">
+							<td>转账方式</td>
+							<td>
+								<select id="online_type" class="select-common">
+									{if condition="$wechat['is_use'] != 1 && $alipay['is_use'] != 1"}
+										<option value="0">未开启转账方式</option>
+									{else/}
+										{if condition="$wechat['is_use'] == 1"}
+										<option value="1">微信转账</option>
+										{/if}
+										{if condition="$alipay['is_use'] == 1"}
+										<option value="2">支付宝转账</option>
+										{/if}
+									{/if}
+									
+								</select>
+							</td>
+						</tr>
+						<tr class="type-one">
+							<td>转账银行</td>
+							<td>
+								<input type="text" name="transfer_name" id="transfer_name" class="input-common"/>
+							</td>
+						</tr>
+						<tr class="type-one">
+							<td>银行账户</td>
+							<td>
+								<input type="text" name="transfer_account_no" id="transfer_account_no" class="input-common"/>
+							</td>
+						</tr>
+						<tr class="type-one">
+							<td>交易流水</td>
+							<td>
+								<input type="text" name="transfer_no" id="transfer_no" class="input-common"/>
+							</td>
+						</tr>	
+							<tr>
+								<td>转账金额</td>
+								<td><input type="text" name="transfer_money" id="transfer_money" placeholder="请输入转账金额" value="" onkeyup="this.value=this.value.replace(/[^\d+(\.\d+)?]/g,'')" class="input-common harf"/><em class="unit">元</em>	
+									<input type="hidden" name="post-id" id="post-id" value="">
+								</td>
+							</tr>
+							<tr>
+								<td>备注</td>
+								<td><textarea name="transfer_remark" id="transfer_remark" class="textarea-common"></textarea></td>
+							</tr>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-common btn-big" onclick="audit()">确定</button>
+				<button class="btn-common-white btn-big" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 拒绝提现申请 -->
+<div class="modal fade hide" id="recharge_balance" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<input type="hidden" id="balance_id">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>拒绝提现申请</h3>
+			</div>
+			<div class="modal-body">
+				<div class="modal-infp-style">
+					<table>
+						<tr>
+							<td>备注</td>
+							<td colspan='3' id="time"><textarea id="remark" class="input-common"></textarea></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="refusetrue()">确定</button>
+				<button class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 提现详情模态框（Modal） -->
+<div class="modal fade hide" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>提现详情</h3>
+			</div>
+			<div class="modal-body">
+				<div class="modal-infp-style">
+					<table>
+						<tr>
+							<td>会员</td>
+							<td colspan='4' id="real_name"></td>
+							<td>手机号</td>
+							<td colspan='4' id="mobile"></td>
+						</tr>
+						<tr>
+							<td>提现流水号</td>
+							<td colspan='4' id="withdraw_no"></td>
+							<td>提现银行</td>
+							<td colspan='4' id="bank_name"></td>
+						</tr>
+						<tr>
+							<td>提现账户</td>
+							<td colspan='4' id="account_number"></td>
+							<td>账户姓名</td>
+							<td colspan='4' id="realname"></td>
+						</tr>
+						<tr>
+							<td>提现金额</td>
+							<td colspan='4' id="cash"></td>
+							<td>提现日期</td>
+							<td colspan='4' id="ask_for_date"></td>
+						</tr>
+						<tr>
+							<td>状态</td>
+							<td colspan='4' id="status"></td>
+							<td>备注</td>
+							<td colspan='4' id="memo"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="uid"/>
+<input type="hidden" id="status"/>
+{/block}
+{block name="script"}
+<script type="text/javascript">	
+function searchData(){
+	LoadingInfo(1);
+}
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var user_name = $("#userName").val();
+		var user_phone = $("#userTel").val();
+
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Commission/userCommissionWithdrawList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"user_name":user_name,
+				"user_phone":user_phone
+			},
+			success : function(data) {
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						var status = "";
+						var lock_operrate = "";
+						var lock_do = 1;
+						if(data["data"][i]["status"] == 0){
+							status = "审核中";
+						}else if(data["data"][i]["status"] == 1){
+							status = "已通过";							
+						}else{
+							status = "已拒绝";	
+						}
+						html += '<tr align="center">';
+						//html += '<td><div class="cell"><label ><input name="sub" type="checkbox" value="'+ data["data"][i]["id"] +'" ></label></div></td>';
+						html += '<td>'+data["data"][i]["nick_name"]+'('+data["data"][i]["promoter_shop_name"]+data["data"][i]["promoter_no"]+')'+'</td>';
+						html += '<td>' + data["data"][i]["mobile"] + '</td>';
+						html += '<td>' + data["data"][i]["withdraw_no"] + '</td>';
+						html += '<td>' + data["data"][i]["bank_name"] + '</td>';
+
+						html += '<td>' + (data["data"][i]["account_number"] == "" ? "-" : data["data"][i]["account_number"]) + '</td>';
+						html += '<td>' + data["data"][i]["realname"] + '</td>';
+						html += '<td id="cash-'+ data["data"][i]["id"] +'" data-transfer-money="' + data["data"][i]["cash"] + '">' + data["data"][i]["cash"] + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["ask_for_date"]) + '</td>';
+						//html += '<td>' + data["data"][i]["payment_date"] + '</td>';
+						html += '<td>' + status + '</td>';
+						html += '<td>';
+						//html += '<a  href="javascript:void(0);" onclick="partnerAudit('+ data["data"][i]["partner_id"] +')">修改上级</a>';
+						if(data["data"][i]["status"] == 0){
+							html += '<a  href="javascript:void(0);" onclick="goNext('+ data["data"][i]["id"] +', 1);">通过</a>';
+							html += '&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="refuse('+ data["data"][i]["id"] +', -1);">拒绝</a>';
+						}else{
+							html += '&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="details('+ data["data"][i]["id"] +');">详情</a>';
+						}
+						html += '</td> ';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="10">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	function audit(id,status){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Commission/userCommissionWithdrawAudit')}",
+			async : true,
+			data : {
+				"id" : id,
+				"status":status
+			},
+			success : function(data) {	
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Commission/userCommissionWithdrawList')}");
+					location.reload();
+				}else{
+					showMessage('error', data["message"]);
+				}					
+			}
+    	})
+	}
+	
+	//通过提现弹框显示
+	function goNext(id){
+		var transfer_money = $("#cash-"+id).data("transfer-money");
+		$("#transfer_money").val(transfer_money);
+		$("#post-id").val(id);
+		$("#agree").modal("show");
+	}
+	//选择转账类型 默认线上
+	function choose(){
+		var type = $("#choose-type").val();
+		if (type == 1) {
+			$(".type-one").show();
+			$(".type-two").hide();
+		}else{
+			$(".type-one").hide();
+			$(".type-two").show();
+		}
+	}
+	
+	function audit(){
+		var id = $("#post-id").val();
+		var transfer_type = $("#choose-type").val();
+		if (transfer_type == 1) {
+			var transfer_name = $("#transfer_name").val();
+			var type_id = 0;
+		}else{
+			var online_type = $("#online_type").val();
+			if(online_type == 0){
+				showTip($("#online_type option:selected").text(),"warning");
+				return;
+			}
+			if(online_type == 1){
+				var transfer_name = '微信';
+				var type_id = 1;
+			}else{
+				var transfer_name = '支付宝';
+				var type_id = 2;
+			}
+		}
+		
+		var transfer_money = $("#transfer_money").val();
+		var transfer_remark = $("#transfer_remark").val();
+		var transfer_no = $("#transfer_no").val();
+		var transfer_account_no = $("#transfer_account_no").val();
+		
+		if(transfer_type == 2 && transfer_remark.length == 0){
+			showTip("请填写备注信息", "warning");
+			return;
+		}
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/commission/usercommissionwithdrawaudit')}",
+			data : {
+				"id" : id,
+				"status":1,
+				"transfer_type":transfer_type,
+				"transfer_name":transfer_name,
+				"transfer_money":transfer_money,
+				"transfer_remark":transfer_remark,
+				"transfer_no":transfer_no,
+				"transfer_account_no":transfer_account_no,
+				"type_id":type_id
+			},
+			success : function(data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/commission/userCommissionWithdrawList')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		})
+	}
+	
+	//拒绝提现申请
+	function refuse(id,status){
+		$("#recharge_balance").modal("show");
+		$('#uid').val(id);
+		$('#status').val(status);
+	}
+
+	function refusetrue(){
+		var uid = $('#uid').val();
+		var status = $('#status').val();
+		var remark = $('#remark').val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/commission/usercommissionwithdrawrefuse')}",
+			data : {
+				"id" : uid,
+				"status":status,
+				'remark':remark
+			},
+			success : function(data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/commission/usercommissionwithdrawlist')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+				$("#recharge_balance").modal("hide");
+			}
+		})
+	}
+	
+	//提现详情
+	function details(id){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/commission/getwithdrawalsinfo')}",
+			data : { "id" :id },
+			success : function(data) {
+				if (data) {
+					$("#real_name").html(data["real_name"]);
+					$("#mobile").html(data["mobile"]);
+					$("#withdraw_no").html(data["withdraw_no"]);
+					$("#bank_name").html(data["bank_name"]);
+					$("#account_number").html(data["account_number"]);
+					$("#realname").html(data["realname"]);
+					$("#cash").html(data["cash"]);
+					$("#ask_for_date").html(data["ask_for_date"]);
+					
+					if(data["status"] == 0){
+						status = "审核中";
+					}else if(data["status"] == 1){
+						status = "已通过";
+					}else{
+						status = "已拒绝";
+					}
+					$("#status").html(status);
+					$("#memo").html(data["memo"]);
+					if(data['status'] )
+						$("#details").modal("show");
+					}else{
+						showMessage('error', data["message"]);
+					}
+				}
+		})
+	}
+</script>
+{/block}

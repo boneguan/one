@@ -1,0 +1,12 @@
+{extend name="wap/default_new/base" /}
+{block name="main"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:;"><i class="icon-back"></i></a>
+	<div class="head-title">{$custom_template.template_name}</div>
+</section>
+<div style="height:45px;"></div>
+<script>
+var footer_flag = "footer";
+</script>
+{include file="wap/default_new/CustomTemplate/customTemplateControlSwitch" /}
+{/block}

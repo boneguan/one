@@ -1,0 +1,153 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/defau.css">
+<style>
+.table-input{
+	height:12px !important;
+	line-height:12px !important;
+	width:60px;
+	margin-bottom:0px !important;
+}
+.ns-main{
+	margin-top: 0;
+}
+</style>
+{/block}
+{block name="main"}
+<div class="options-btn">
+	{if condition="$shop_config_info.is_regional_agent eq 1 "} 
+		<a id="is_regional_agent" class="btn-common" href="javascript:openRegionalAgent(0)" >关闭区域代理(开启中)</a>
+	{else /}
+		<a id="is_regional_agent" class="btn-common-white" href="javascript:openRegionalAgent(1)" >开启区域代理(关闭中)</a>
+	{/if}
+</div>
+<div class="set-style">
+<!-- 	<dl>
+		<dt>是否开启区域代理:</dt>
+		<dd>			
+					{if condition="$shop_config_info.is_regional_agent eq 1 "} 
+					<input id="is_regional_agent" type="checkbox" class="checkbox" checked="checked" />					
+					{else /}
+					<input id="is_regional_agent" type="checkbox" class="checkbox" />
+					{/if}
+					<span class="help-inline" id="is_menuPrompt" style="display: none;"></span>
+		</dd>
+	</dl> -->	
+	<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 20%;">
+					<col style="width: 40%;">
+					<col style="width: 40%;">					
+				</colgroup>
+				<thead>
+					<tr>
+						<th>代理级别</th>						
+						<th>各级奖励比例</th>
+						<th>升级条件</th>						
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 20%;">
+					<col style="width: 40%;">
+					<col style="width: 40%;">		
+				</colgroup>
+				<tbody  id="partner_global">
+				
+				    <tr align="center" >
+						<td>省级代理</td>
+						<td>
+							<input  class="input-common harf" type="text" id="province_rate" value="{$region_agent_info.province_rate}" /><em class="unit">%</em>
+						</td>
+						<td>
+							<input  class="input-common harf"  type="text" id="application_require_province" value="{$region_agent_info.application_require_province}" /><em class="unit">元</em>
+						</td>						
+					</tr>					
+					<tr align="center" >
+						<td>市级代理</td>
+						<td>
+							<input  class="input-common harf" type="text" id="city_rate" value="{$region_agent_info.city_rate}" /><em class="unit">%</em>
+						</td>
+						<td>
+							<input  class="input-common harf"  type="text" id="application_require_city" value="{$region_agent_info.application_require_city}" /><em class="unit">元</em>
+						</td>						
+					</tr>
+					<tr align="center" >
+						<td>区级代理</td>
+						<td>
+							<input  class="input-common harf" type="text" id="district_rate" value="{$region_agent_info.district_rate}" /><em class="unit">%</em>
+						</td>
+						<td>
+							<input  class="input-common harf"  type="text" id="application_require_district" value="{$region_agent_info.application_require_district}" /><em class="unit">元</em>
+						</td>						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+</div>	
+<div class="set-style" style="padding:13px;text-align:center;">
+	<button class="btn-common btn-big" onclick="modifyShopConfigIsRegionalAgent();">提交</button>
+</div>
+</div>
+<script src="__STATIC__/js/limit_input_digit.js"></script>
+<script>		
+	function modifyShopConfigIsRegionalAgent(){
+		var province_rate=$("#province_rate").val();
+		var application_require_province=$("#application_require_province").val();
+		var city_rate=$("#city_rate").val();
+		var application_require_city=$("#application_require_city").val();
+		var district_rate=$("#district_rate").val();
+		var application_require_district=$("#application_require_district").val();
+		
+		if((parseFloat(province_rate) +parseFloat(city_rate)+ parseFloat(district_rate))>100 ){
+			showMessage('error', "佣金比率不可超过100%！");	
+			return false;
+		}
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/UpdateShopRegionAgentConfig')}",
+			data:{
+				'province_rate':province_rate,
+				'application_require_province':application_require_province,
+				'city_rate':city_rate,
+				'application_require_city':application_require_city,
+				'district_rate':district_rate,
+				'application_require_district':application_require_district
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/regionalAgent')}");
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+	/**
+	 * 开启区域代理
+	 */
+	function openRegionalAgent(is_open){
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/distribution/updatenfxshopconfigfield')}",
+			data:{
+				'fieldvalue':is_open,
+				'fieldname':'is_regional_agent'
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/regionalAgent')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+</script>
+{/block}

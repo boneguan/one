@@ -1,0 +1,29 @@
+<script>
+	
+	plyr.setup();
+	
+	function goods_video_pause(){
+		
+		$(".goods-video-pause").hide();
+		$(".goods-video-box").remove();
+		$(".goods-video-play").show();
+		$("#video-is-play").val('0');
+	}
+	
+	function goods_video_play(){
+		$(".goods-video-play").hide();
+		$(".goods-video-pause").show();
+		$("#video-is-play").val('1');
+		$(".MagnifierDrag").remove();
+		$(".MagnifierPop").remove();
+		
+		var html = '';
+		html += '<div class="goods-video-box">';
+			html += '<video autoplay controls loop >';
+			html += '<source src="{:__IMG($goods_info.goods_video_address)}" type="video/mp4" />';
+			html += '</video>';
+		html += '</div>';
+		
+		$(".MagnifierMain").append(html);
+	}
+</script>

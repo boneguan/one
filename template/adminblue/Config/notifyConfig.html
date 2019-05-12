@@ -1,0 +1,114 @@
+{extend name="adminblue/base" /}
+{block name="resources"}
+<style>
+.text{color: #fb6b5b;}
+.table-logo{display:inline-block;width:75px;float:left;}
+.table-pay{display:inline-block;width:120px;overflow:hidden;margin-top: 7px;}
+.table-desc{display:inline-block;}
+.table-lenght{display:block;width:590px;overflow:hidden;height: 1px;}
+</style>
+{/block}
+{block name="main"}
+<table class="table-class">
+	<colgroup>
+		<col width="70%">
+		<col width="10%">
+		<col width="20%">
+	</colgroup>
+	<tbody>
+		<tr class="table-title" style="background: white;z-index: 10;">
+			<th style="text-align: left;">通知类型</th>
+			<th style="text-align: center;">状态</th>
+			<th style="text-align: center;">操作</th>
+		</tr>
+	</tbody>
+	<tbody>
+		{volist name="$notify_list" id="notify_obj" key="k"}
+		<tr>
+			<td>
+				<div class="table-logo">
+					{if condition="$k eq 2"}
+					<img src="__PUBLIC__admin/images/ali.png" style="width: 56px;height: 56px;">
+					{else/}
+					<img src="__PUBLIC__admin/images/mail.png" style="width: 56px;height: 56px;">
+					{/if}
+				</div>
+				<span class="table-pay">{$notify_obj.notify_name}</span><br/>
+				{if condition="$k eq 2"}
+					<span class="table-desc">提示：使用该功能需开通阿里云短信业务</span>
+					{else/}
+					<span class="table-desc">提示：使用该功能需开启php-sockets扩展</span>
+					{/if}
+				<span class="table-lenght"></span>
+			</td>
+			{if condition="$notify_obj.is_use eq 1"}
+			<td style="text-align: center;line-height:59px;margin-left:0px;"  class="is_use_{$notify_obj.id}">
+				<img src="ADMIN_IMG/checked.png" alt="" width="18"/></td>
+			</td>
+			{else/}
+			<td style="text-align: center;line-height:59px;margin-left:0px;">
+				<img src="ADMIN_IMG/un_checked.png" alt="" width="18"/>
+			</td>
+			{/if}
+			<td style="text-align: center;">
+			
+					{if condition="$notify_obj.key eq 'EMAILMESSAGE'"}
+					<span>
+						<a href="{:__URL('ADMIN_MAIN/config/messageconfig','type=email')}">配置</a></span>
+					{else/}
+						<span><a href="{:__URL('ADMIN_MAIN/config/messageconfig','type=sms')}">配置</a></span>
+					{/if}
+					
+					{if condition="$notify_obj.key eq 'EMAILMESSAGE'"}
+					<span><a href="{:__URL('ADMIN_MAIN/config/notifytemplate','type=email')}">模板</a></span>
+					{else/}
+					<span><a href="{:__URL('ADMIN_MAIN/config/notifytemplate','type=sms')}">模板</a></span>
+					{/if}
+					
+					{if condition="$notify_obj.key eq 'EMAILMESSAGE'"}
+						{if condition="$notify_obj.is_use eq 1"}
+						<span class="is_close_{$notify_obj.id}"><a href="javascript:;" onclick="setIsUse({$notify_obj.id},0);">关闭</a></span>
+						{else/}
+						<span class="is_close_{$notify_obj.id}"><a href="javascript:;" onclick="setIsUse({$notify_obj.id},1);">开启</a></span>
+						{/if}
+					{else/}
+						{if condition="$notify_obj.is_use eq 1"}
+						 <span class="is_close_{$notify_obj.id}"><a href="javascript:;" onclick="setIsUse({$notify_obj.id},0);">关闭</a></span>
+						{else/}
+						 <span  class="is_close_{$notify_obj.id}"><a href="javascript:;" onclick="setIsUse({$notify_obj.id},1);">开启</a></span>
+						{/if}
+					{/if}
+					
+					<br/>
+					{if condition="$notify_obj.key eq 'EMAILMESSAGE'"}
+					<span><a href="{:__URL('ADMIN_MAIN/config/businessnotifytemplate','type=email')}">商家通知</a></span>
+					<span><a href="{:__URL('ADMIN_MAIN/config/notifylist','type=2')}">通知记录</a></span>
+					{else/}
+					<span><a href="{:__URL('ADMIN_MAIN/config/businessnotifytemplate','type=sms')}">商家通知</a></span>
+					<span><a href="{:__URL('ADMIN_MAIN/config/notifylist','type=1')}">通知记录</a></span>
+					{/if}
+			</td>
+		</tr>
+		{/volist}
+	</tbody>
+</table>
+<script type="text/javascript">
+function setIsUse(id,value){
+	var is_use = value;
+	$.ajax({
+		type : "post",
+		url: "{:__URL('ADMIN_MAIN/config/updatenotifyenable')}",
+		data: { "id": id, "is_use": is_use },
+		async : false, // 让它同步执行
+		success: function (data) {
+			if (data["code"] > 0) {
+				showTip('提交成功','success');
+				window.location.href=__URL("ADMIN_MAIN/config/notifyindex");
+			}else{
+				showTip('提交成功','success');
+			}
+		}
+	});
+}
+</script>
+{/block}

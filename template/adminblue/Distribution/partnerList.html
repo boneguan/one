@@ -1,0 +1,397 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<style>
+.btn.off{
+	background-color:#e26f6f;
+	color:#FFF;
+}
+.btn.sure{
+	color:#FFF;
+	background-color:#62c462;
+}
+.modal-div{
+	width:90%;
+	margin:auto;
+}
+.modal-dl{
+	overflow:hidden;
+}
+.modal-dl dt{
+	line-height:33px;
+	float:left;
+	font-weight:normal;
+}
+.modal-dl dd{
+	float:left;
+}
+.modal-dl dd span{
+	display:block;
+	color:#de533c;
+}
+.btn.off{
+	background-color:#e26f6f;
+	color:#FFF;
+}
+.btn.sure{
+	color:#FFF;
+	background-color:#62c462;
+}
+
+/*独立*/
+.status-error{
+	display:inline-block;
+	padding-left:5px;
+	padding-right:5px;	
+	padding-bottom:3px;
+	padding-top:3px;
+	color:#FFF;
+	background-color:#de533c;
+}
+/*独立*/
+.status-success{
+	display:inline-block;
+	color:#FFF;
+	padding-left:5px;
+	padding-right:5px;	
+	padding-bottom:3px;
+	padding-top:3px;
+	background-color:#5be15b;
+}
+.ns-main{
+	margin-top: 0;
+}
+</style>
+ {/block}
+{block name="right_tab"}
+<!-- <li><a class="nscs-table-handle_green" href="javascript:;" onclick="addBrand()"><i class="fa fa-plus-circle"></i>&nbsp;添加品牌</a></li> -->
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th>
+			审核状态：
+			<select id="is_audit" class="select-common middle">
+				<option value="">全部</option>
+				<option value="0">审核中</option>
+				<option value="-1">已拒绝</option>
+				<option value="1">已通过</option>
+			</select>
+			用户姓名：<input id="userName" class="input-common middle" type="text" value="">
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 5%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 12%;">
+					<col style="width: 12%;">
+ 					<col style="width: 8%;"> 
+					<col style="width: 13%;">
+					<col style="width: 25%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><label style="margin-left: 5px;"> <input type="checkbox"  onclick="CheckAll(this)"></label></th>
+						<th>推广员</th>
+						<th>股东等级</th>
+						<th>手机号</th>
+						<th>上级股东名称</th>
+	 					<th>状态</th>
+						<th>申请时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 修改股东用户等级（Modal）开始 -->
+<div class="modal hide" id="editPartnerLevel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:800px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">商品分销设定</h3>
+            </div>
+            
+            <div class="modal-body">
+            	<div class="set-style">
+            		<input type="hidden" id="uid" value=""/>
+            		<dl>
+						<dt>用户等级:</dt>
+						<dd>
+							<p>
+								<select id="level_id">
+									{foreach name="partner_level_list" item="info"}
+									<option value="{$info.level_id}">{$info.level_name}</option>
+									{/foreach}
+								</select>
+							</p>
+						</dd>
+					</dl>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn-common btn-big" onclick="modifyPartnerLevelNum();">修改</button>
+				<button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+
+
+<!-- 修改上级（Modal）开始 -->
+<div class="modal hide" id="editParent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">股东上级修改</h3>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-div">
+            		<input type="hidden"  id="partner_id"  value=''/>
+            		<input type="hidden"  id="shop_id"  value=''/>
+            		<dl class="modal-dl">
+            			<dt>上级股东编号:</dt>
+            			<dd>
+            				<input  type="text" id="parent_no"value=""/>
+            				<span id="ever_parent_promoter"></span>
+            			</dd>
+            		</dl>           		            		
+            	</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-common btn-big" onclick="modifyPromoterParent();">修改</button>
+                <button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+
+
+
+
+
+
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+<script type="text/javascript">
+//查询
+function searchData(){
+	LoadingInfo(1);
+}
+//加载数据
+function LoadingInfo(pageIndex) {
+	var user_name = $("#userName").val();
+	var is_audit = $("#is_audit").val();
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/distribution/partnerlist')}",
+		async : true,
+		data : {
+			"pageIndex" : pageIndex,
+			"user_name":user_name,
+			"is_audit":is_audit
+		},
+		success : function(data) {
+			$("#page_count").val(data["page_count"]);
+			$("#pageNumber a").remove();
+			var html = '';
+			if (data["data"].length > 0) {
+				for (var i = 0; i < data["data"].length; i++) {
+					var lock_status = "";
+					var lock_operrate = "";
+					var lock_do = 1;
+					if(data["data"][i]["is_lock"] == 1){
+						lock_status = "冻结中";
+						lock_operrate = "解冻";
+						lock_do =  0;
+					}else{
+						lock_status = "正常";
+						lock_operrate = "冻结";
+						lock_do =  1;
+					}
+					if(data["data"][i]["real_name"] == null){
+						data["data"][i]["real_name"] = ''
+					}
+					if(data["data"][i]["user_tel"] == null){
+						data["data"][i]["user_tel"] = ''
+					}
+					html += '<tr align="center">';
+					html += '<td><div class="cell"><label ><input name="sub" type="checkbox" value="'+ data["data"][i]["partner_id"] +'" ></label></div></td>';
+					html += '<td>' + data["data"][i]["real_name"] + '<br/>' + data["data"][i]["promoter_no"] + '</td>';
+					html += '<td>' + data["data"][i]["level_name"] + '</td>';
+					html += '<td>' + data["data"][i]["user_tel"] + '</td>';
+					if(data["data"][i]["parent_realname"] != null){
+						html += '<td>' + data["data"][i]["parent_realname"] + '</td>';	
+					}else{
+						html += '<td> </td>';
+					}
+					if(data["data"][i]["is_audit"] == 0){
+ 						html += '<td>审核中</td>';
+					}else if(data["data"][i]["is_audit"] == 1){
+						html += '<td>已通过</td>';
+					}else{
+						html += '<td>已拒绝</td>';
+					}
+					html += '<td>' +timeStampTurnTime(data["data"][i]["register_time"]) + '</td>';
+					html += '<td>';
+					if(data["data"][i]["is_audit"] == 0){
+						html += '&nbsp;&nbsp;<a href="javascript:void(0);" onclick="audit('+ data["data"][i]["partner_id"] +',1,'+ data["data"][i]["uid"] +');">通过</a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="audit('+ data["data"][i]["partner_id"] +',-1,'+ data["data"][i]["uid"] +');">拒绝</a>';
+					}else if(data["data"][i]["is_audit"] == 1){
+						html += '<a href="javascript:void(0);" onclick="modifyPartnerLock('+ data["data"][i]["partner_id"] +','+lock_do+')">'+lock_operrate+'</a>';
+						html += '&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="showPartnerLevelBox('+ data["data"][i]["uid"] +','+ data["data"][i]["partner_level"] +')">修改等级</a>';
+/* 						html += '&nbsp;&nbsp;<a href="javascript:void(0);"  onclick="showEditParent('+data["data"][i]["partner_id"]+',\''+data["data"][i]["parent_promoter_no"]+'\');" >修改上级</a>'; */
+// 						
+					}
+					html += '</td>';
+					html += '</tr>';
+				}
+			} else {
+				html += '<tr align="center"><td colspan="9">暂无符合条件的数据记录</td></tr>';
+			}
+			
+			$(".style0list tbody").html(html);
+			
+			var totalpage = $("#page_count").val();
+			if (totalpage == 1) {
+				changeClass("all");
+			}
+			initPageData(data["page_count"],data['data'].length,data['total_count']);
+			var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+			$("#pageNumber").append($html);
+		}
+	});
+}	
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+	}
+	function modifyPartnerLock(partner_id,is_lock){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/distribution/modifypartnerlock')}",
+			async : true,
+			data : {
+				"partner_id" : partner_id,
+				"is_lock":is_lock
+			},
+			success : function(data) {
+				console.log(data);
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/partnerlist')}");
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+
+	function audit(partner_id,is_audit, uid){
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/distribution/partneraudit')}",
+			async : true,
+			data : {
+				"partner_id" : partner_id,
+				"is_audit":is_audit,
+				"uid": uid
+			},
+			success : function(data) {
+				if(data.code > 0){
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/partnerlist')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		})
+	}
+	
+	/**
+	*弹出修改等级框
+	*/
+	function showPartnerLevelBox(uid,partner_level){
+		$("#editPartnerLevel").modal("show");
+		$("#uid").val(uid);
+		$("#level_id").val(partner_level);
+	}
+	/**
+	*修改等级
+	*/
+	function modifyPartnerLevelNum(){
+		var uid = $("#uid").val();
+		var level_id = $("#level_id").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/distribution/modifypartnerlevelnum')}",
+			async : true,
+			data : {
+				"uid" : uid,
+				"level_id":level_id
+			},
+			success : function(data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/partnerlist')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+
+	//修改上级弹出框
+	function showEditParent(partner_id, parent_no){
+		$("#partner_id").val(partner_id);
+		if(parent_no == "" ){
+			var parent_no = "此股东无上级";
+		}else{
+			var parent_no = "原上级推广员编号为:"+parent_no;
+		}
+		$("#ever_parent_promoter").html(parent_no);
+		$("#editParent").modal('show');
+	}	
+	//修改上级
+	function modifyPromoterParent(){
+		var partner_id = $("#partner_id").val();
+		var parent_no = $("#parent_no").val();
+		if(parent_no == ''){
+			showMessage('error', "上级推广员编号不可为空！");	
+			return false;
+		}
+		
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/modifyPartherParnet')}",
+			data:{
+				'partner_id':partner_id,
+				'parent_no':parent_no
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/Distribution/partnerList')}");
+					$("#editParent").modal('hide');
+				}else{
+					showMessage('error', '不可添加自己为上级或者上级编号不存在！');
+				}	
+			}
+		});
+	}	
+	
+</script>
+{/block}

@@ -1,0 +1,182 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/comboPackage.css">
+<script src="__TEMP__/{$style}/public/js/public_assembly.js"></script>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang("combo_package")}</div>
+</section>
+<div style="height: 45px;"></div>
+{/block}
+{block name="main"}
+<div class="combo_package_list">
+	{foreach name="comboPackageGoodsArray" item="vo" key="k"}
+	<div class="combo_package_content" id="combo_id_{$vo.id}">
+		<input type="hidden" class="combo_package_detail" data_package_price = "{$vo.combo_package_price}" data_original_price = "{$vo.original_price}" data_save_the_price = "{$vo.save_the_price}">
+		<div class="combo_package_name">
+			<label class="checkbox">
+				<input type="checkbox" {if condition="$k == 0"}checked{/if} value="{$vo.id}"><label for=""></label>
+				<span>{$vo.combo_package_name}</span>
+				<span style="float: right;">{:lang("package_price")}：{$vo.combo_package_price}</span>
+			</label>
+		</div>
+		<div class="goods_info">
+			<div class="goods_img">
+				<a href="{:__URL('APP_MAIN/goods/goodsdetail','id='.$vo['main_goods']['goods_id'])}">
+					<img src="{:__IMG($default_goods_img)}" class="lazy_load pic" data-original="{:__IMG($vo.main_goods.pic_cover_mid)}" alt=""  >
+				</a>
+			</div>
+			<div class="data_info">
+				<p class="goods_name">{$vo.main_goods.goods_name}</p>
+				<div class="price_share">
+					<span class="price">￥{$vo.main_goods.price}</span>
+				</div>
+				{if condition="count($vo['main_goods']['sku_list']) > 1"}
+				<p class="select_sku" onclick="selectSku({$vo.main_goods.goods_id},{$vo.id});"><span class="select_sku_{$vo.main_goods.goods_id}">{:lang("please_select_goods_sku")}</span><i class="fa fa-angle-right fa-lg"></i></p>
+				{/if}
+			</div>
+			<input type="hidden" class="goods_{$vo.main_goods.goods_id}" sku_id="{$vo['main_goods']['sku_list'][0]['sku_id']}" stock="{$vo['main_goods']['sku_list'][0]['stock']}" price="{$vo['main_goods']['sku_list'][0]['price']}" combo_id="{$vo.id}" skuname="{$vo['main_goods']['sku_list'][0]['sku_name']}">
+		</div>
+		{foreach name="$vo['goods_array']" item="to"}
+		<div class="goods_info">
+			<div class="goods_img">
+				<a href="{:__URL('APP_MAIN/goods/goodsdetail','id='.$to['goods_id'])}">
+					<img src="{:__IMG($default_goods_img)}" class="lazy_load pic" data-original="{:__IMG($to.pic_cover_mid)}" alt="">
+				</a>
+			</div>
+			<div class="data_info">
+				<p class="goods_name">{$to.goods_name}</p>
+				<div class="price_share">
+					<span class="price">￥{$to.price}</span>
+				</div>
+				{if condition="count($to['sku_list']) > 1"}
+				<p class="select_sku" onclick="selectSku({$to['goods_id']},{$vo.id});"><span class="select_sku_{$to['goods_id']}">{:lang("please_select_goods_sku")}</span><i class="fa fa-angle-right fa-lg"></i></p>
+				{/if}
+			</div>
+			<input type="hidden" class="goods_{$to.goods_id}" sku_id="{$to['sku_list'][0]['sku_id']}" stock="{$to['sku_list'][0]['stock']}" price="{$to['sku_list'][0]['price']}" combo_id="{$vo.id}" skuname="{$to['sku_list'][0]['sku_name']}">
+		</div>
+		{/foreach}
+	</div>
+	<hr class="divider-line">
+	{/foreach}
+</div>
+<div style="height: 50px;"></div>
+<div class="combo_package_buttom">
+	<div class="combo_package_info">
+		<p><span class="package_price">{:lang("package_price")}<b>￥<span id="package_price"></span></b></span></span></p>
+		<p>
+			<span class="original_price">{:lang("original_price")}
+				<s>￥<span id="original_price"></span></s>
+		   		<span class="save_the_price">{:lang("save_the_price")}￥
+		   			<span id="save_the_price"></span>
+		   		</span>
+		   	</span>
+		</p>
+	</div>
+	<div class="btn-jiesuan" id="js-immediate-purchase">{:lang("goods_buy_now")}</div>
+</div>
+{/block}
+{block name="bottom"}
+<script>
+	$(function(){
+		var combo_id = $(".combo_package_name input[type='checkbox']:checked").val();
+		ini_combo_package_price(combo_id);
+	})
+
+	var is_stock = false;
+
+	function selectSku(goods_id,combo_id){
+		var uid=$('#uid').val();
+		if(uid == undefined || uid == ''){
+			window.location.href=__URL(APPMAIN+"/login/index");
+		}else{
+			$.ajax({
+				type:"post",
+				url: __URL(APPMAIN+"/goods/comboPackageSelectSku"),
+				async:false,
+				data:{'goods_id':goods_id},
+				dataType:'html',
+				success:function(data){
+					$('#detail').html(data);
+					$("#submit_ok").attr("combo_id",combo_id);
+					$("#s_buy").slideDown(300);
+					$(".motify").css("opacity",0);
+					$(".motify").fadeIn();
+					$(".motify").fadeOut();
+				}
+			});
+		}
+	}
+
+	//选择套餐
+	$(".combo_package_content .combo_package_name").click(function(){
+		$(".combo_package_content .combo_package_name input[type='checkbox']").prop("checked",false);
+		$(this).find("input[type='checkbox']").prop("checked", true);
+		var combo_id = $(this).find("input[type='checkbox']").val();
+		ini_combo_package_price(combo_id);
+	})
+
+	//初始化套餐价格
+	function ini_combo_package_price(combo_id)
+	{
+		var package_price = $("[id='combo_id_"+ combo_id +"'] .combo_package_detail").attr("data_package_price"); //套餐价
+		var price_arr = new Array();
+		var stock_arr = new Array();
+		$("[id='combo_id_"+ combo_id +"'] input[class^='goods_']").each(function(){
+			stock_arr.push($(this).attr("stock"));
+			price_arr.push($(this).attr("price"));
+			$(this).prev(".data_info").find("span[class^='select_sku_']").text("已选规格："+$(this).attr("skuname"));
+			$(this).prev(".data_info").find("span.price").text("￥"+$(this).attr("price"));
+		})
+		var original_price = parseFloat(eval(price_arr.join("+"))).toFixed(2)  //商品原价
+		var save_the_price = parseFloat(parseFloat(original_price) - parseFloat(package_price)).toFixed(2); //节省价
+		save_the_price = save_the_price < 0 ? 0 : save_the_price;
+		$("#package_price").text(package_price);
+		$("#original_price").text(original_price);
+		$("#save_the_price").text(save_the_price);
+
+		var buy_num = 1;
+		for(var i = 0; i < stock_arr.length; i++){
+			if(stock_arr[i] < buy_num){
+				$("#js-immediate-purchase").removeClass("btn-jiesuan").addClass("btn-jiesuan-disabled");
+				is_stock = true;
+				break;
+			}else{
+				is_stock = false;
+				$("#js-immediate-purchase").removeClass("btn-jiesuan-disabled").addClass("btn-jiesuan");
+			}
+		}
+	}
+
+	$("#js-immediate-purchase").click(function(){
+		if(is_stock) showBox("库存不足","warning");
+		if($(this).attr("class") == "btn-jiesuan-disabled"){
+			return false;
+		}
+		var uid=$('#uid').val();
+		if(uid == undefined || uid == ''){
+			window.location.href=__URL(APPMAIN+"/login/index");
+		}
+		var combo_id = $(".combo_package_content .combo_package_name input[type='checkbox']:checked").val();
+		var buy_num = 1;
+		var data = new Array();
+		$("[id='combo_id_"+ combo_id +"'] input[class^='goods_']").each(function(){
+			data.push($(this).attr("sku_id") +":"+ buy_num);
+		})
+		$.ajax({
+			url : __URL(APPMAIN + "/order/ordercreatesession"),
+			type : "post",
+			data : { "tag" : "combination_packages", "data" : data.toString(), "goods_type" : 1, "combo_id" : combo_id, "buy_num" : buy_num },
+			success : function(res){
+				if(res > 0){
+					location.href= __URL(APPMAIN + "/order/paymentorder");
+				}else{
+					showBox("购买失败","error");
+				}
+			}
+		});
+	})
+</script>
+{/block}

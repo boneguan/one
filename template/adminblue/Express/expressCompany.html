@@ -1,0 +1,63 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<style>
+
+</style>
+{/block}
+{block name="main"}
+<div class="space-10"></div>
+<div class="ncsc-form-goods">
+	{include file="adminblue/Express/expressTitle"}
+	<!-- 基础设置 -->
+	<div class="mod-table">
+		<div class="mod-table-head">
+			<table class="mytable">
+				<tr>
+					<td width="50%" style="text-align: left;">
+						<button class="btn-common-delete" onclick="batchDelete()">批量删除</button>
+						<button class="btn-common" onclick="location.href='{:__URL('ADMIN_MAIN/express/addexpresscompany')}';">添加物流公司</button>
+					</td>
+					<td width="20%">
+						<input type="text" id = 'search_text' placeholder="请输入物流公司名称或编号" class="input-common"/>
+						<input type="button" onclick="searchData()" value="搜索" class="btn-common"/>
+					</td>
+				</tr>
+			</table>
+			<div class="con style0list">
+	
+				<table class="table-class">
+					<colgroup>
+						<col style="width: 2%;">
+						<col style="width: 30%;">
+						<col style="width: 25%;">
+						<col style="width: 10%;">
+						<col style="width: 7%;">
+						<col style="width: 7%;">
+						<col style="width: 4%;">
+						<col style="width: 15%;">
+					</colgroup>
+					<thead>
+						<tr align="center">
+							<th><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)"></i></th>
+							<th align="left">物流公司</th>
+							<th align="left">物流编号</th>
+							<th align="left">联系电话</th>
+							<th>是否默认</th>
+							<th>是否启用</th>
+							<th>排序</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody id="productTbody"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+{block name="script"}
+<script src="ADMIN_JS/express/express_company.js?n=1"></script>
+<script>
+var pageshow = "{$pageshow}";
+</script>
+{/block}

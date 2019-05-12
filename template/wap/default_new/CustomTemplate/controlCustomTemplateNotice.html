@@ -1,0 +1,67 @@
+<!-- 公告 -->
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/liMarquee.css">
+<script src="__TEMP__/{$style}/public/js/jquery.liMarquee.js"></script>
+<style>
+.dowebok{$k}{height:30px !important;line-height: 30px;}
+.notice-block{$k} {position: relative;width: 100%;height: 30px;margin: 0 auto;overflow: hidden;}
+.notice-block{$k} ul li {line-height: 30px;height: 30px;overflow: hidden;text-overflow: ellipsis;white-space: pre;padding:0 2px;}
+.notice-block{$k} ul{position: relative;top: 0;left: 0;width: 100%;float: right;font-size: 14px;margin-top: 1px;}
+</style>
+{if condition="$custom_template_v.style_data.notice.scroll_way != 2 "}
+<div class="dowebok{$k}" style="background:url({:__IMG($custom_template_v.style_data.notice.bg_img)}) 50% / 100% no-repeat {$custom_template_v.style_data.notice.bg_color};font-size:{$custom_template_v.style_data.notice.font_size}px;color: {$custom_template_v.style_data.notice.text_color};text-align:{if condition="$custom_template_v.style_data.notice.text_align == 1"}left{elseif condition="$custom_template_v.style_data.notice.text_align == 2"}center{elseif condition="$custom_template_v.style_data.notice.text_align == 3"}right{/if};padding: {$custom_template_v.style_data.notice.padding}px 0;" onclick="location.href='{$custom_template_v['style_data']['notice']['items'][0]['href']}';">{$custom_template_v['style_data']['notice']['items'][0]['notice']}</div>
+{else/}
+<div style="padding: {$custom_template_v.style_data.notice.padding}px 0;background:url({:__IMG($custom_template_v.style_data.notice.bg_img)}) 50% / 100% no-repeat {$custom_template_v.style_data.notice.bg_color};text-align:{if condition="$custom_template_v.style_data.notice.text_align == 1"}left{elseif condition="$custom_template_v.style_data.notice.text_align == 2"}center{elseif condition="$custom_template_v.style_data.notice.text_align == 3"}right{/if};">
+	<div class="notice-block{$k}">
+		<ul>
+			{foreach name="$custom_template_v['style_data']['notice']['items']" item="vo"}
+			<li style="font-size:{$custom_template_v.style_data.notice.font_size}px;color: {$custom_template_v.style_data.notice.text_color};" onclick="location.href='{$vo.href}';">{$vo.notice}</li>
+			{/foreach}
+		</ul>
+	</div>
+</div>
+{/if}
+<script type="text/javascript">
+$(function(){
+	{if condition="$custom_template_v.style_data.notice.scroll_way == 1"}
+
+	$('.dowebok{$k}').liMarquee({ hoverstop: false });
+	$('.dowebok{$k}').css("line-height",$('.dowebok{$k}').outerHeight()+"px");
+
+	{elseif condition="$custom_template_v.style_data.notice.scroll_way == 2"}
+
+	var notice_index{$k} = 0;
+	var notice_autoTimer{$k} = 0;//全局变量目的实现左右点击同步
+
+	//自动轮播
+	$(".notice-block{$k} ul li:eq(0)").clone(true).appendTo($(".notice-block{$k} ul"));//克隆第一个放到最后(实现无缝滚动)
+	var liHeight = $(".notice-block{$k}").height();//一个li的高度
+	//获取li的总高度再减去一个li的高度(再减一个Li是因为克隆了多出了一个Li的高度)
+	var totalHeight = ($(".notice-block{$k} ul li").length *  $(".notice-block{$k} ul li").eq(0).height()) -liHeight;
+	$(".notice-block{$k} ul").height(totalHeight);//给ul赋值高度
+
+	notice_autoTimer{$k} = setInterval(function(){
+
+		notice_index{$k}++;
+		if(notice_index{$k} > $(".notice-block{$k} ul li").length -1) {
+			notice_index{$k} = 0;
+		}
+
+		$(".notice-block{$k} ul").stop().animate({
+
+			top: -notice_index{$k} * liHeight
+
+		},500,function(){
+
+			if(notice_index{$k} == $(".notice-block{$k} ul li").length -1) {
+				$(".notice-block{$k} ul").css({top:0});
+				notice_index{$k} = 0;
+			}
+
+		});
+
+	},3000);
+
+
+	{/if}
+});
+</script>

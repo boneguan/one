@@ -1,0 +1,31 @@
+<!-- 文本导航 -->
+<style>
+.control-text-navigation{background-color:#FFF;overflow-y: auto;white-space: nowrap;}
+.control-text-navigation i{float:right;margin:3px 10px 0 0;}
+.control-text-navigation span{display: inline-block;min-width: 25%;text-overflow: ellipsis;text-align: center;}
+.control-text-navigation::-webkit-scrollbar {display: none;}
+</style>
+{if condition = "$custom_template_v.style_data.text_navigation.arrangement == 1"}
+<nav class="control-text-navigation" 
+style="background:url({:__IMG($custom_template_v.style_data.text_navigation.bg_img)}) 50% / 100% no-repeat {$custom_template_v.style_data.text_navigation.bg_color};
+font-size:{$custom_template_v['style_data']['text_navigation']['font_size']}px;padding:{$custom_template_v['style_data']['text_navigation']['padding']}px 0;
+text-align:{if condition="$custom_template_v.style_data.text_navigation.text_align == 1"}left{elseif condition="$custom_template_v.style_data.text_navigation.text_align == 2"}center{elseif condition="$custom_template_v.style_data.text_navigation.text_align == 3"}right{/if};"
+>
+	<span>
+		<a href="{$custom_template_v['style_data']['text_navigation']['items'][0]['href']}" style="color:{$custom_template_v['style_data']['text_navigation']['text_color']};">{$custom_template_v['style_data']['text_navigation']['items'][0]['text']}</a>
+	</span>
+	<i class="fa fa-angle-right"></i>
+</nav>
+{else/}
+<nav class="control-text-navigation" 
+style="background:url({:__IMG($custom_template_v.style_data.text_navigation.bg_img)}) 50% / 100% no-repeat {$custom_template_v.style_data.text_navigation.bg_color};
+font-size:{$custom_template_v['style_data']['text_navigation']['font_size']}px;padding:{$custom_template_v['style_data']['text_navigation']['padding']}px 0;
+text-align:{if condition="$custom_template_v.style_data.text_navigation.text_align == 1"}left{elseif condition="$custom_template_v.style_data.text_navigation.text_align == 2"}center{elseif condition="$custom_template_v.style_data.text_navigation.text_align == 3"}right{/if};"
+>
+	{foreach name="$custom_template_v['style_data']['text_navigation']['items']" item="vo"}
+	<span>
+		<a href="{$vo.href}" style="color:{$custom_template_v['style_data']['text_navigation']['text_color']};">{$vo.text}</a>
+	</span>
+	{/foreach}
+</nav>
+{/if}

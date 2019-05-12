@@ -1,0 +1,135 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+ <link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/member_common.css">
+<style>
+img {
+    vertical-align: middle;
+    max-width: 100%;
+    max-height: 100%;
+	height: auto;
+	}
+.com_content{
+	margin-top:44px;
+
+}
+	
+.com_content li{
+    width: 100%;
+    float: left;
+    margin-top: 10px;
+	background: #fff;
+    padding: 10px 5vw;
+}
+
+.com_content ul li .goods_pic{
+	width: 18vw;
+	height: 18vw;
+	position: absolute;
+	left: 3vw;
+}
+.com_content ul li p{
+	float:left;
+	margin-left:23vw;
+	width: 85vw;
+	height: 9vw;
+	line-height: 9vw;
+}
+
+.com_content ul li p:last-child{
+	color: #cccccc;
+	font-size:3.5vw;
+}
+
+.com_content ul li h4{
+	font-size: 4vw;
+	line-height:10vw;
+	border-bottom: 1px solid #eeeeee;
+}
+
+.com_content ul li .from{
+	line-height: 10vw;
+	height: 10vw;
+}
+
+.com_content ul li  .from input{
+	border: 0;
+	height:7vw; 
+	font-size: 12px;
+}
+
+.com_content ul li  .from button{
+	vertical-align:middle;
+	float:right;
+	margin:2vw 0 0 0;
+	border: 1px solid red;
+	background: red;
+	color: #fff;
+	border-radius: 2px;
+    font-size: 3.8vw;
+    padding: 3px 10px;
+	-webkit-tap-highlight-color: transparent;
+    outline: 0;
+}
+.com_content ul .prompt{	
+	background: transparent; color: #999999; font-size: 3.5vw;
+}
+
+
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+		<a class="head_back" id="backoutapp" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+		<div class="head-title">{:lang('member_my_virtual_code')}</div>
+	</section>
+{/block}
+
+{block name="main"}
+<div class="com_content">
+	<ul>
+		<li>
+			<div class="goods_pic">
+				{notempty name="$member['user_headimg']"}
+				<img src="__TEMP__/{$style}/public/images/default_user_portrait_0.png" alt="">
+				{else/}
+				<img src="{:__IMG($member['user_headimg'])}" onerror="this.src='__TEMP__/{$style}/public/images/default_user_portrait_0.png'" />
+				{/notempty}
+			</div>
+			<p>{$member_info.nick_name}</p>
+			<p>商品核销</p>
+		</li>
+		<li>
+			<h4>虚拟码</h4>
+			<div class="from">
+				<input type="text" id="virtual_code"  placeholder="请输入虚拟码">
+				<button onclick="chcek_virtual_code();">核 销</button>
+			</div>
+		</li>
+		<li class="prompt">或者扫买家的虚拟二维码 !</li>
+	</ul>
+	
+</div>
+<script type="text/javascript">
+	function chcek_virtual_code(){
+		var virtual_code = $("#virtual_code").val();
+		if(virtual_code.length == 0){
+			showBox("请输入虚拟码", "warning"); 
+			return false;
+		}
+		$.ajax({
+			type : "post",
+			url : "{:__URL('APP_MAIN/Verification/check_virtual_code')}",
+			data : {"virtual_code" : virtual_code},
+			success : function(data){
+				if(data == 0){
+					showBox("为获取到该虚拟码信息","warning");
+				}else{
+					location.href="{:__URL('APP_MAIN/Verification/VerificationOrderDetail','vg_id="+data+"')}";
+				}
+			}
+		})
+	}
+</script>
+
+{/block}
+{block name="bottom"}{/block}

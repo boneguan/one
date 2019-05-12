@@ -1,0 +1,118 @@
+{extend name="adminblue/base" /}
+{block name="resources"/} {/block}
+{block name="right_tab"}
+ 
+{/block}
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th>
+			用户姓名：<input id="userName" class="input-common middle" type="text" value="">
+			手机号：<input id="userTel" class="input-common middle" type="text" value="">
+			<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+		</th>		
+	</tr>
+</table>
+<div class="mod-table">
+	<div class="mod-table-head">
+		<div class="con style0list">
+			<table class="table-class">
+				<colgroup>
+					<col style="width: 8%;">
+					<col style="width: 15%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 8%;">
+					<col style="width: 10%;">
+					<col style="width: 8%;">
+					<col style="width: 18%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>股东</th>
+						<th>分红开始时间</th>
+						<th>分红结束时间</th>
+						<th>分红总金额</th>
+						<th>店铺总分值</th>
+						<th>股东分值</th>
+						<th>分红佣金比率</th>
+						<th>分红金额</th>
+						<th>创建时间</th>				
+					</tr>
+				</thead>
+				<colgroup>
+					<col style="width: 8%;">
+					<col style="width: 15%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 8%;">
+					<col style="width: 11%;">
+					<col style="width: 8%;">
+					<col style="width: 18%;">
+				</colgroup>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{/block}
+{block name="script"}
+{include file="adminblue/pageCommon" /}
+{include file="adminblue/openDialog" /}
+<script type="text/javascript">	
+//查询
+function searchData(){
+	LoadingInfo(1);
+}
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var user_name = $("#userName").val();
+		var user_phone = $("#userTel").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Commission/commissionPartnerGlobalList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"records_id":{$records_id},
+				"user_name":user_name,
+				"user_phone":user_phone
+			},
+			success : function(data) {
+				//alert(JSON.stringify(data));
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr align="center">';						
+						html += '<td>' + data["data"][i]["nick_name"] + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["start_time"]) + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["end_time"]) + '</td>';
+						html += '<td>' + data["data"][i]["yingye_money"] + '</td>';
+						html += '<td>' + data["data"][i]["shop_value"] + '</td>';
+						html += '<td>' + data["data"][i]["partner_value"] + '</td>';
+						html += '<td>' + data["data"][i]["partner_rate"] + '%</td>';
+						html += '<td>' + data["data"][i]["fenhong_money"] + '</td>';
+						html += '<td>' + timeStampTurnTime(data["data"][i]["create_time"]) + '</td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="9">暂无符合条件的数据记录</td></tr>';
+				}
+				
+				$(".style0list tbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}	
+</script>
+{/block}

@@ -1,0 +1,203 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<!-- 添加css、字体文件 -->
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/ns_shop_common.css">
+<style>
+.crumbs-arrow{font-family: simsun;font-style: normal;}
+.index{margin-right: 8px;}
+.recommend{position: absolute;width: 40px;margin-top:-5px;}
+.tip-box {
+	position: inherit;
+    width: 270px;
+    margin: auto;
+}
+.tip-box img{
+	margin-top: 120px;
+}
+.coupon-list li{
+	width:214px;
+	border:1px solid #0689e1;
+	margin-right:32.5px;
+	margin-bottom:30px;
+	float:left;
+}
+.coupon-list li:nth-child(5n){
+	margin-right:0px;
+}
+.coupon-list .list-top{
+	background-color:#0689e1;
+	text-align:center;
+    padding-top: 15px;
+}
+.coupon-list .list-top .coupon-value{
+	font-size:24px;
+	color:#fff;
+	font-weight:bold;
+	padding:6px 0 4px;
+}
+.coupon-list .list-top .coupon-condition{
+	color:#fff;
+	line-height:20px;
+}
+.coupon-list .list-top .coupon-time{
+	line-height:20px;
+	padding:4px 0 8px;
+	color:#000;
+}
+.coupon-list .list-bottom .coupon-item{
+	padding-top:8px;
+	padding-left:10px;
+}
+.coupon-list .list-bottom .coupon-btn{
+	text-align:center;
+	padding:16px 0 16px;
+}
+.coupon-list .list-bottom .coupon-btn span{
+	display:inline-block;
+	padding:4px 20px;
+	border:1px solid #0689e1;
+}
+.coupon-list .list-bottom .coupon-btn span.active{
+	cursor:pointer;
+    transition: all 0.5s;
+}
+.coupon-list .list-bottom .coupon-btn span.active:hover{
+	background-color:#0689e1;
+	color:#fff;
+}
+</style>
+{/block}
+{block name="main"}
+<div class="w1210">
+	<div class="breadcrumb clearfix">
+		<span class="last js-nav">
+<!-- 		{if condition="is_array($category_name)"} -->
+<!-- 			{foreach $category_name as $vo} -->
+<!-- 				&nbsp;<span class="crumbs-arrow">首页  ></span>&nbsp;<a href="{:__URL('SHOP_MAIN/goods/couponList','category_id='.$vo['category_id'])}">优惠券</a> -->
+<!-- 			{/foreach} -->
+<!-- 		{else /} -->
+<!-- 			&nbsp;<span class="crumbs-arrow">></span>&nbsp;{$category_name} -->
+<!-- 		{/if} -->
+			&nbsp;<span class="crumbs-arrow"><a href="{:__URL('SHOP_MAIN','category_id='.$vo['category_id'])}">首页 </a> ></span>&nbsp;<a href="{:__URL('SHOP_MAIN/goods/couponList','category_id='.$vo['category_id'])}">优惠券</a>
+		</span>	
+	</div>
+	<div class="content-wrap category-wrap clearfix">
+		<ul class="coupon-list clearfix">
+			{volist name="promotion_list['data']" id="vo"}
+			<li>
+				<div class="list-top">
+					<p class="coupon-value">¥&nbsp;{$vo['money']}</p>
+					<p class="coupon-condition">满{$vo['at_least']}元可用</p>
+					{if $vo.term_of_validity_type eq 0}
+					<p class="coupon-time">{$vo['start_time']|date='Y.m.d',###}-{$vo['end_time']|date='Y.m.d',###}</p>
+					{else/}
+					<p class="coupon-time">领取之日起{$vo.fixed_term}日内有效</p>
+					{/if}
+				</div>
+				<div class="list-bottom">
+					<p class="coupon-item">限商品：{eq name="$vo['range_type']" value="1"}全场产品使用{else/}指定产品可使用{/eq}</p>
+					<p class="coupon-item">限数量：{eq name="$vo['max_fetch']" value="0"}无领取数量限制{else/}每人最多可领取{$vo['max_fetch']}张{/eq}</p>
+					<p class="coupon-item">领取量：{if $vo['surplus_percentage'] > 0}还有<font color="red">{$vo['surplus_percentage']}%</font>未领取{else/}该优惠券已被抢光{/if}</p>
+					<p class="coupon-btn">
+						{if $vo['surplus_percentage'] > 0}
+							<!-- 如果还有优惠券 -->
+							<!-- 如果限领数为0 或者 领取数小于最大领取数 -->
+							{if $vo['max_fetch'] == 0 || $vo['received_num'] < $vo['max_fetch']}
+								<span onclick="coupon_receive(this,{$vo.coupon_type_id})" class="active">立即领取</span>
+							{else/}
+								<span>您已领取</span>
+							{/if}	
+						{else/}
+							<span>已抢光</span>
+						{/if}
+					</p>
+				</div>
+			</li>
+			{/volist}
+		</ul>
+	</div>
+	
+	{if condition="$total_count==0"}
+	<div class="tip-box" style="text-align: center;">
+		<img src="__TEMP__/{$style}/public/images/no_coupons.png"/>
+		<div class="tip-text" style="padding: 10px 0;">{:lang('no_coupons')}……</div>
+	</div>
+	{/if}
+	
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+/* 优惠券懒加载 */
+var page = 2;
+var href = '{:__URL('SHOP_MAIN/goods/couponlist.html?page=')}';
+var is_scroll = true;
+
+$(window).scroll(function () {
+	  var bottomouterHeight = $(".footer").outerHeight() + $(".dsc-copyright").outerHeight();
+	  var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
+	  var documentheight = parseFloat($(document).height());
+	  if (documentheight - totalheight <= bottomouterHeight) 
+	  {
+		  if(is_scroll)
+			{
+				is_scroll = false;
+				$.get(href+page,function(data){
+					
+					if(data.length>1)
+					{
+					  layer.load();
+			          $(".content-wrap ul").append(data);
+			          page++;
+			          layer.closeAll('loading');
+ 			          is_scroll = true;
+					}
+					else
+					{
+						return false;
+					}
+			    })
+			}
+	  }
+});
+
+
+/*领取优惠券*/
+var is_have = true;
+function coupon_receive(event,coupon_type_id){
+	
+	if(is_have){
+		is_have = false;	
+		$.ajax({
+			type:"post",
+			url : "{:__URL('SHOP_MAIN/goods/getCoupon')}",
+			async: true,
+			dataType:"json",
+			data:{ 'coupon_type_id' : coupon_type_id },
+			success : function(data){
+				if(data['code']>0){
+					$.msg("恭喜您，领取成功！");
+// 					$(event).children(".already_received").show();
+				}else if(data['code'] == -2009){
+					$('#mask-layer-login').show();
+					$('#layui-layer').show();
+				}else if(data['code']==-2010){
+					$.msg("您已领取最大上限！")
+					$(event).children(".txt").text('您已领取');
+					$(event).parents().addClass("q-opbtns_ash");
+					$(event).attr("onclick","");
+					
+				}else if(data['code']==-2011){
+					$(event).children(".txt").text('已领完');
+					$(event).parents().addClass("q-opbtns_ash");
+					$(event).attr("onclick","");	
+				}else{
+					$.msg(data['message']);
+				}
+				is_have = true;
+			}
+		})
+	}
+}
+</script>
+{/block}

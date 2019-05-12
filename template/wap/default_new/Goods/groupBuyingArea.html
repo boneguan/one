@@ -1,0 +1,178 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/common.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/components.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/category.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/group_goods_list.css">
+<script src="__TEMP__/{$style}/public/js/new_goods_list.js" type="text/javascript"></script>
+<script src="__TEMP__/{$style}/public/js/jquery.cookie.js" type="text/javascript"></script>
+<style>
+.category-content-section{
+	margin-top:-40px;
+}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" id="head_back"href="javascript:window.history.go(-1)"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang("group_buy_area")}</div>
+</section>
+{/block}
+{block name="main"}
+<div id="index_content">
+<!--列表页内容start-->
+<section class="category-content-section">
+	<!-- 商品列表 -->
+	<div class="goods-list-grid openList">
+		<div id="goods_list">
+			<div class="tablelist-append clearfix"></div>
+		</div>
+	</div>
+</section>
+</div>
+<div class="mask-div"></div>
+<!-- 总页数 -->
+<input type="hidden" id="page_count" value="">
+<!-- 当前页数 -->
+<input type="hidden" id="page" value="1">
+<input type="hidden" id='order' name="order"/>
+<input type="hidden" id='sort' name="sort"/>
+<input type="hidden" id='category_id' name='category_id' value="{$category_id}" />
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}
+<script type="text/javascript">
+$(function(){
+	getgoodlist(1);
+})
+var is_load = true;//防止重复加载
+var load_num = 0; //累计加载次数
+function getgoodlist(page){
+	$('#grouGoodsListmask').hide();
+	$('.two-list-menu').hide();
+	$('.two-list-menu li[pid]').hide();
+	var order = $("#order").val();
+	var sort = $("#sort").val();
+	var min_price = $("#min_price").val();
+	var max_price = $("#max_price").val();
+	var attr = $("#attr").val();
+	var spec = $("#spec").val();
+	var brand_id = $("#brand_id").val();
+	//展示方式
+	if($.cookie("goods_list_display_mode")!= undefined && $.cookie("goods_list_display_mode") != ""){
+		var display_mode = $.cookie("goods_list_display_mode");
+		if(display_mode == "list"){
+			$(".data-display-mode").find("i").attr("class","fa fa-list-ul fa-lg");
+		}else if(display_mode == "big_img"){
+			$(".data-display-mode").find("i").attr("class","fa fa-th-large fa-lg");
+		}
+	}else{
+		var display_mode = "big_img";
+		$(".data-display-mode").find("i").attr("class","fa fa-th-large fa-lg");
+	}
+	$("#page").val(page);
+	if(is_load){
+		is_load = false;
+		$.ajax({
+			type:"post",
+			url : "{:__URL('APP_MAIN/Goods/groupBuyingArea')}",
+			data : {
+				'category_id':'{$category_id}',
+				'brand_id':brand_id,
+				'obyzd':order,
+				'st':sort, 
+				"page" : page,
+				"mipe" : min_price,
+				"mape" : max_price,
+				"attr" : attr,
+				"spec" : spec
+			},
+			success : function(data){
+				
+				$("#page_count").val(data['page_count']);//总页数
+				if(page == 1){
+					var list_html = "";
+				}else if(page > 1){
+					var list_html = $('.tablelist-append').html();
+				}
+				if(data['data'].length >0){
+					for(var i=0;i<data['data'].length;i++){
+						var item=data['data'][i];
+						//没有取到商品数据时不进入循环
+						list_html += '<div class="product single_item info">';
+						list_html += '<li>';
+							list_html += '<div class="item">';
+								list_html += '<div class="item-tag-box">';
+								list_html += '<!--{:lang("hot_sale")}icon{:lang("position_is")}：0px 0px，{:lang("goods_new")}icon{:lang("position_is")}：0px -35px，{:lang("competitive_products")}icon{:lang("position_is")}：0px -70px-->';
+								list_html += '</div>';
+						
+								list_html += '<div class="item-pic">';
+									list_html += '<a href="'+__URL('APP_MAIN/goods/grouppurchase?id='+item.goods_id)+'">';
+										list_html += '<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="'+__IMG(item.picture.pic_cover_small)+'" alt="'+item['goods_name']+'" style="display: block;max-width:100%;max-height:100%;">';
+									list_html += '</a>';
+								list_html += '</div>';
+
+								list_html += '<dl>';
+									list_html += '<dt>';
+										list_html += '<a href="'+__URL('APP_MAIN/goods/grouppurchase?id='+item.goods_id)+'">';
+										list_html += item['goods_name'];
+										list_html += '</a>';
+									list_html += '</dt>';
+									list_html += '<dd>';
+										list_html += '<i>￥'+item.group_price+'</i>';
+										
+										list_html += '<i class="shipping_fee" style="margin-top:7px;">团购价</i>';
+										
+									list_html += '</dd>';
+								list_html += '</dl>';
+								
+							list_html += '</div>';
+
+						list_html += '</li>';
+					list_html += '</div>';
+						
+					}
+				}else if(data["data"].length == 0 && page == 1){
+					list_html+= '<p style="color:#939393;text-align:center;margin-top:100px;"><img src="__TEMP__/{$style}/public/images/wap_nodata.png" height="60" style="margin-bottom:20px;"><br>Sorry！{:lang("goods_no_goods_you_want")}…</p>';
+				}
+				is_load = true;
+				load_num ++;
+				$('.tablelist-append').html(list_html);
+				img_lazyload();	
+				var	goods_img_height = parseInt($('.goods_img').height());
+				$(".data_info").height(goods_img_height);
+			}
+		});	
+	}
+}
+
+window.onresize = function(){
+	var	goods_img_height = parseInt($('.goods_img').height());
+	$(".data_info").height(goods_img_height);
+}
+
+//滑动到底部加载
+$(window).scroll(function(){
+	var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
+	var content_box_height = parseFloat($(".tablelist-append").height()); 
+	if(totalheight - content_box_height >= 0 && content_box_height > 0){
+		if(is_load && load_num > 0){
+			var page = parseInt($("#page").val()) + 1;//页数
+			var total_page_count = $("#page_count").val(); // 总页数
+			if(page > total_page_count){
+				return false;
+			}else{
+				getgoodlist(page);
+			}
+		}
+		
+	}
+})
+</script>
+<script type="text/javascript">
+$("#head_back").click(function (){
+	var json ={ "center" : "2" };
+	window.webkit.messageHandlers.center.postMessage(json);
+});
+</script>
+{/block}

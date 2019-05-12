@@ -1,0 +1,145 @@
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/goods_list.css">
+<script src="__TEMP__/{$style}/public/js/public_assembly.js" type="text/javascript"></script>
+<style type="text/css">
+.order_div>span {width:33%;}
+.order_div>span:nth-child(3) .ico_order_state{right:20%;}
+.cart-box{overflow: hidden;height: 30px;display: block;width: 50%;float: right;position: relative;}
+.add-cart{width: 30px;height: 30px;background: url(__TEMP__/{$style}/public/images/btn_plus_normal.png) no-repeat;background-size: contain;position: absolute;right: 2px;top: 0px;z-index: 2;cursor: pointer;}
+.add-cart.virtual-increase{background: url(__TEMP__/{$style}/public/images/virtual_goods_flag.png) no-repeat;background-size: 100%;}
+.s-buy{font-family: Helvetica, "STHeiti STXihei", "Microsoft YaHei", Tohoma,Arial;}
+</style>
+<section class="filtrate-term">
+	<ul>
+		<li class="cur filtrate-sort"><a href="javascript:void(0)">默认</a></li>
+		<li class="filtrate-sort"><a href="javascript:void(0);" data-order-type="ng.sales" data-sort="asc">{:lang('goods_sales_volume')}</a><i class="fa fa-angle-up" aria-hidden="true" style="    position: relative;top: -4px;left: 3px;"></i><i class="fa fa-angle-down" aria-hidden="true" style="position: relative;bottom: -3px;left: -6px;"></i></li>
+		<li class="filtrate-sort"><a href="javascript:void(0);" data-order-type="ng.is_new" data-sort="desc">{:lang('goods_new')}</a></li>
+		<li class="filtrate-sort"><a href="javascript:void(0);" data-order-type="ng.promotion_price" data-sort="desc">{:lang('goods_price')}</a><i class="fa fa-angle-up" aria-hidden="true" style="    position: relative;top: -4px;left: 3px;"></i><i class="fa fa-angle-down" aria-hidden="true" style="position: relative;bottom: -3px;left: -6px;"></i></li>
+	</ul>
+</section>
+<section class="members_goodspic" id="main_list">
+	<ul></ul>
+</section>
+<input type="hidden" id="page_count"><!-- 总页数 -->
+<input type="hidden" id="page" value="1"><!-- 当前页数 -->
+<input type="hidden" id="sear_type" >
+<input type="hidden" id='order' name="order"/>
+<input type="hidden" id='sort' name="sort"/>
+<script>
+$(function(){
+	GetgoodsList(1,1);
+	$(".filtrate-term ul li.filtrate-sort").click(function() {
+		$(this).addClass("cur").siblings().removeClass("cur");
+		var order_type = $(this).find("a").attr("data-order-type");
+		var data_sort = $(this).find("a").attr("data-sort");
+		var $this = $(this);
+		$(".filtrate-term ul li.filtrate-sort i").css("color","#aaa");
+		if(order_type != undefined && data_sort != undefined){
+			if(data_sort == "desc"){
+				goods_sort = "asc";
+				$(this).find("a").attr("data-sort","asc");
+				if(order_type == "ng.promotion_price" || order_type == "ng.sales"){
+					$this.find(".fa-angle-up").css("color","red");
+					$this.find(".fa-angle-down").css("color","#aaa");
+				}
+			}else if(data_sort == "asc"){
+				goods_sort = "desc";
+				$(this).find("a").attr("data-sort","desc");
+				if(order_type == "ng.promotion_price" || order_type == "ng.sales"){
+					$this.find(".fa-angle-down").css("color","red");
+					$this.find(".fa-angle-up").css("color","#aaa");
+				}
+			}
+			$("#order").val(order_type);
+			$("#sort").val(goods_sort);
+		}else{
+			$("#order").val("");
+			$("#sort").val("");
+		}
+		is_load = true;
+		GetgoodsList(1,1);
+	});
+})
+var is_load = true;
+function GetgoodsList(sear_type,page){
+	if(page == undefined || page == "") page = 1;
+	$("#page").val(page);//当前页
+	$("#sear_type").val(sear_type);//类型
+	var order = $("#order").val();
+	var goods_sort = $("#sort").val();
+	if(is_load){
+		is_load = false;
+		$.ajax({
+			type:"post",
+			url : __URL("APP_MAIN/[url]"),
+			data : {
+				'search_name':'{$search_name}',
+				'sear_type':sear_type,
+				'obyzd' : order,
+				'st' : goods_sort,
+				'controlType':'{$controlType}',
+				"shop_id" : "{$shop_id}",
+				"page" : page
+			},
+			success : function(data){
+				$("#page_count").val(data['page_count']);//总页数
+				if(data['data'].length > 0){
+					if(page == 1){
+						var html = "";
+					}else if(page > 1){
+						var html = $('#main_list').html();
+					}
+					html +='<ul>';
+					for(i=0; i<data['data'].length;i++){
+						html+='<li class="gooditem"><div class="img"> <a href="'+__URL('APP_MAIN/goods/goodsdetail?id='+data['data'][i]['goods_id'])+'">';
+						if(data['data'][i]['pic_cover_mid'] != null){
+                          	html += '<img src="' + __IMG(data['data'][i]['pic_cover_mid']) + '"/>';
+                        }else{
+                        	html += '<img src="' + __IMG("{$default_goods_img}") + '"/>';
+                        }
+					
+						html+='</a></div><div class="info">';
+						html+='<p class="goods-title"><a href="'+__URL('APP_MAIN/goods/goodsdetail?id='+data['data'][i]['goods_id'])+'" >';
+						if(data['data'][i]['gorup_list'].length > 0){
+							html += '<i class="goods_tab">'+data['data'][i]['gorup_list'][0]['group_name']+'</i>';
+						}
+						html+= data['data'][i]['goods_name'];
+						html+='</a></p>';
+						html+='<p class="goods-price"><em>'+data['data'][i]['display_price']+'</em>';
+						if(data['data'][i]['shipping_fee'] == 0){
+							html += '<i class="shipping_fee">包邮</i>';
+						}
+						html+='</p>';
+						html+='</div></li>';
+					}
+					html +='</ul>';
+					html += '<div class="h50"></div>';
+					is_load = true;
+					
+				}else{
+					html = '<p style="color:#939393;text-align:center;margin-top:100px;"><img src="__TEMP__/{$style}/public/images/wap_nodata.png" height="60" style="margin-bottom:20px;"><br>Sorry！{:lang("goods_no_goods_you_want")}…</p>';
+				}
+				$("#main_list").html(html);
+				img_lazyload();
+			}
+		})	
+	}
+}
+
+//滑动到底部加载
+$(window).scroll(function(){
+	var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
+	var content_box_height = parseFloat($("#main_list").height()); 
+	if(totalheight - content_box_height >= 80 && content_box_height > 0){
+		if(is_load){
+			var page = parseInt($("#page").val()) + 1;//页数
+			var total_page_count = $("#page_count").val(); // 总页数
+			var sear_type = $("#sear_type").val();
+			if(page > total_page_count){
+				return false;
+			}else{
+				GetgoodsList(sear_type,page);
+			}
+		}
+	}
+})
+</script>

@@ -1,0 +1,332 @@
+<input type="hidden" id="goodsId" value="{$goods_id}" />
+<input type="hidden" id="shop_type" value="{$shop_type}" />
+{if condition="$goods_id neq 0"}
+<input type="hidden" id="hidQRcode" value="0" />
+<input type="hidden" id="hidden_qrcode" value="{$goods_info.QRcode}" />
+<input type="hidden" id="hidden_sort" value="{$goods_info.sort}" />
+<input type="hidden" id="hidden_goods_brand_id" value="{$goods_info.brand_info.brand_id}" />
+<input type="hidden" id="hidden_goods_brand_name" value="{$goods_info.brand_info.brand_name}" />
+{if condition="$goods_info.goods_type == 0"}
+<input type="hidden" id="virtual_goods_type_id" value="{$virtual_goods_type_info.virtual_goods_type_id}" />
+{else/}
+<input type="hidden" id="virtual_goods_type_id" value="0" />
+{/if}
+<script>
+var specObjStr = StringTransference('{$goods_info.goods_spec_format}', {" " : "&nbsp;"});
+console.log(specObjStr);
+$specObj = eval(specObjStr);//SKU数据
+var sku_list = eval('{$goods_info.sku_list}');//SKU数据
+var goods_attribute_list = eval('{$goods_info.goods_attribute_list}');
+var province_id = '{$goods_info.province_id}';
+var city_id = '{$goods_info.city_id}';
+var sku_picture_array_str = '{$sku_picture_array_str}';
+$(function(){
+	
+	//初始化规格图片记录数组
+	var groupIdArray = eval('{$goods_info.goods_group_list}');
+	var $selDiv = $("#productcategory-selected");
+	var $lis = $("#procategory li");
+	var html = "";
+	for (var $i = 0; $i < groupIdArray.length; $i++) {
+		var groupId = groupIdArray[$i]["group_id"];
+		var name = groupIdArray[$i]["group_name"];
+		html += "<span class='label' id='" + groupId + "' group_name='"+ name +"'>" + name + "<i class='categoryclose'></i></span>";
+	}
+	$selDiv.append(html);
+	ue.ready(function() {
+		ue.setContent('{$goods_info.description}', false);
+	});
+    // 如果存在规格图片  默认选中
+    if ($specObj != undefined && $specObj != null && $specObj != '') {
+        var spec_span = $(".sku-picture-span");
+        spec_span.each(function (k, v) {
+            spec_id = $(v).attr('spec_id');
+            for(var i = 0; i < $specObj.length ; i ++ ){
+                if($specObj[i]["spec_id"] == spec_id){
+                    for(var l = 0; l < $sku_goods_picture.length ; l ++ ){
+                        if($sku_goods_picture[l].spec_id == spec_id){
+                            $(v).click();
+                            return true;
+                        }
+                    }
+                }
+            }
+        })
+    }
+});
+</script>
+{else/}
+<input type="hidden" id="virtual_goods_type_id" value="0" />
+<input type="hidden" id="hidQRcode" value="1" />
+<input type="hidden" id="hidden_qrcode" />
+<input type="hidden" id="hidden_sort" value="0" />
+<input type="hidden" id="hidden_goods_brand_id" value="0" />
+<input type="hidden" id="hidden_goods_brand_name" />
+<script>
+var sku_list = null;
+</script>
+{/if}
+<script type="text/javascript">
+//扩展分类个数
+var extent_sort = 0;
+//当前可搜索的下拉选项框
+var curr_searchable_select = null;
+$(function(){
+	
+	//将分页克隆到点卡库存列表弹出框中
+	$(".point-card-inventory-management-popup footer").append($("#turn-ul").clone());
+	$(".ns-main>#turn-ul").remove();
+
+	//可搜索的商品品牌下拉选项框
+	curr_searchable_select = $('#brand_id').searchableSelect();
+	getGoodsBrandList();
+
+	if(parseInt("{$extent_sort}") > 0){
+		extent_sort = parseInt("{$extent_sort}");
+	}
+	
+	if(parseInt($("#goodsId").val()) > 0){
+		initProvince("#provinceSelect",function(){
+			//编辑商品时，加载数据
+			$("#provinceSelect").find("option[value='"+province_id+"']").attr("selected",true);
+			$('#provinceSelect').selectric();
+			getProvince("#provinceSelect",'#citySelect',city_id);
+		});
+
+	}else{
+		initProvince("#provinceSelect");
+	}
+
+	//右键复制选择的相册
+	var menu = new BootstrapMenu('.searchable-select-holder', {
+		actions: [{
+		name: '复制',
+		onClick: function() {
+			var brand_name = $('#brand_id option:selected').text();
+			$("#selected_brand_name").val(brand_name);
+			var copy_content = document.getElementById('selected_brand_name');
+			copy_content.select();
+			document.execCommand("Copy");
+			showTip("复制成功",'success');
+		}
+		}]
+	});
+})
+
+function PopUpCallBack(id, src, upload_type, spec_id, spec_value_id) {
+
+	var idArr, srcArr;
+	if (id.indexOf(",")) {
+		idArr = id.split(',');
+		srcArr = src.split(',');
+	} else {
+		idArr = new Array(id);
+		srcArr = new Array(src);
+	}
+	switch(speciFicationsFlag){
+		case 0:
+			//商品主图
+			if(srcArr.length>=1){
+				html = "";
+				for(var i=0;i<srcArr.length;i++){
+					if(upload_type == 2){
+						html +='<div class="upload-thumb sku-draggable-element'+ spec_id +'-'+ spec_value_id +' sku-draggable-element">';
+							html +='<img src="'+ __IMG(srcArr[i]) +'">';
+							html +='<input type="hidden" class="sku_upload_img_id" spec_id="'+ spec_id +'" spec_value_id="'+ spec_value_id +'" value="'+idArr[i]+'">';
+							html +='<div class="black-bg hide">'; 
+								html +='<div class="sku-off-box">&times;</div>';
+							html +='</div>';
+						html +='</div>'; 
+						//将规格图片记录存入临时数组
+						var pic_id = idArr[i];
+						var pic_cover_mid = srcArr[i];
+						for(var t = 0; t < $sku_goods_picture.length ; t ++ ){
+							if($sku_goods_picture[t].spec_id == spec_id && $sku_goods_picture[t].spec_value_id == spec_value_id){
+								$sku_goods_picture[t]["sku_picture_query"].push({"pic_id":pic_id, "pic_cover_mid":pic_cover_mid});
+							}
+						}
+					}else if(upload_type == 1){
+						html +='<div class="upload-thumb draggable-element">';
+							html +='<img  src="'+__IMG(srcArr[i])+'">';  
+							html +='<input type="hidden" class="upload_img_id" value="'+idArr[i]+'">';
+							html +='<div class="black-bg hide">'; 
+								html +='<div class="off-box">&times;</div>';
+							html +='</div>';
+						html +='</div>';
+					}else{
+						var span_obj = $(".js-goods-sku").find("span[data-spec-id='"+ spec_id +"'][data-spec-value-id='"+ spec_value_id +"']");
+						span_obj.next().next().find("input").val(idArr[i]);
+						span_obj.next().next().find("img").attr("src",__IMG(srcArr[i]));
+						//规格spec图片返回并改变specObj对象
+						var spec = {
+							flag : span_obj.hasClass("selected"),
+							spec_id : span_obj.attr("data-spec-id"),
+							spec_name : span_obj.attr("data-spec-name"),
+							spec_value_id : span_obj.attr("data-spec-value-id"),
+							spec_value_data : srcArr[i]
+						};
+						editSpecValueData(spec);//修改图片对应的修改SKU数据
+
+						var upload_img_path = srcArr[i];
+						var curr_img_obj = $(".sku-display-mode li[data-spec-value-id='"+spec_value_id+"'][data-spec-show-type='3']");
+							curr_img_obj.find('#preview_sku_value_'+spec_value_id).attr("src",STATIC + "/blue/img/upload-common-select-blue.png").attr("data-src",__IMG(upload_img_path));
+							curr_img_obj.find("em").text("修改图片");
+						var curr_sku = $(".js-sku-list-popup li[data-spec-id='"+spec_id+"']");
+						var spec_value = eval(curr_sku.attr("data-spec-value-json"));
+						if(spec_value != null){
+							for(var i=0;i<spec_value.length;i++){
+								if(spec_value_id == spec_value[i].spec_value_id){			
+									spec_value[i].spec_value_data = upload_img_path;
+								}
+							}
+							curr_sku.attr("data-spec-value-json",JSON.stringify(spec_value));
+						}
+
+					}
+				}
+				if(upload_type == 2){
+					$(".sku-img-box[spec_id='"+ spec_id +"'][spec_value_id='"+ spec_value_id +"'] #sku_default_uploadimg").remove();
+					$(".sku-img-box[spec_id='"+ spec_id +"'][spec_value_id='"+ spec_value_id +"']").append(html);
+					$('.sku-draggable-element'+spec_id+'-'+ spec_value_id ).arrangeable();
+				}else if(upload_type == 1){	
+					$("#default_uploadimg").remove();
+					$(html).appendTo('.img-box');
+					$('.draggable-element').arrangeable();
+				}
+			}
+		break;
+		case 1:
+			//商品详情
+			for (var i = 0; i < srcArr.length; i++) {
+				var description = "<img src='"+__IMG(srcArr[i])+"' />";
+				//在光标后添加内容
+				UE.getEditor('editor').focus();
+				UE.getEditor('editor').execCommand('inserthtml',description);
+			}
+		break;
+	}
+}
+
+//设置商品详情的图片
+function setUeditorImg(upload_path) {
+	speciFicationsFlag = 1;
+	OpenPricureDialog("PopPicure", ADMINMAIN,30,3,0,0,upload_path);
+}
+
+//查询商品品牌列表
+function getGoodsBrandList(brand_name,search_name){
+	var page_index = 1;
+	var page_size = 20;
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/goods/getGoodsBrandList')}",
+		data : { "page_index" : page_index, "page_size" : page_size, "brand_name" : brand_name, "search_name" : search_name, "brand_id" : $("#hidden_goods_brand_id").val() },
+		success : function(res){
+			var html = '<option value="0">请选择商品品牌</option>';
+			//如果当前是编辑商品状态，则检测是否有品牌
+			if($("#hidden_goods_brand_name").val()){
+				html += '<option value="' + $("#hidden_goods_brand_id").val() + '" selected="selected">' + $("#hidden_goods_brand_name").val() + '</option>';
+			}
+			if(res.total_count>0){
+				for(var i=0;i<res['data'].length;i++){
+					html += '<option value="' + res['data'][i].brand_id + '">' + res['data'][i].brand_name + '</option>';
+				}
+			}
+			$("#brand_id").html(html);
+			//更新搜索结果
+			$(".js-brand-block .searchable-select-items .searchable-select-item").remove();
+			curr_searchable_select.buildItems();
+		}
+	});
+}
+
+//添加阶梯优惠
+$(".add_ladder_preference").click(function(){
+	var laddre_length = $(".ladder_preference_content .ladder_preference").length;
+	var html = '<div class="ladder_preference">';
+		html += '<input type="number" class="input-common short ladder" value="0">';
+		html += '<input type="number" class="input-common short preference" value="0">';
+		html += '<a href="javascript:;" class="delete_preference">删除</a></div>';
+	var prev_obj = $("#ladder_preference").prev();
+	if(laddre_length <= 9){
+		if(prev_obj.find(".ladder").val() != undefined &&　prev_obj.find(".preference").val() != undefined){
+			if(prev_obj.find(".ladder").val() == 0 || prev_obj.find(".preference").val() == 0){
+				showTip("请输入数量和优惠价格","warning");
+			}else{
+	 			$("#ladder_preference").before(html);
+			}
+		}else{
+			$("#ladder_preference").before(html);
+		}
+	}
+})
+
+$(".ladder_preference_content .ladder_preference .delete_preference").live("click",function(){
+	$(this).parent().remove();
+});
+
+/**
+ * 删除已选择的视频
+ */
+function del_video(event){
+	
+	// 通过ajax用php删除文件
+	var src = $("#video_url").val();
+	if(src!= ""){
+		
+
+		var video = 'my-video';
+		var myPlayer = videojs(video);
+
+		videojs(video).ready(function(){
+
+			var myPlayer = this;
+// 			myPlayer.src('');
+// 			myPlayer.load('');
+			myPlayer.pause();
+
+		});
+
+		
+		$("#my-video").attr('src', "");
+// 		$("#my-video").attr('poster','__STATIC__/blue/img/vs.png');
+		$("#videoupload").val('');
+// 		$(".del-video").hide();
+		$("#video_url").val('');
+		/* $.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/goods/delSelectedVideo')}",
+			data : {  
+				'src':src,
+			},
+			success : function(res){
+				//console.log(res);
+			}
+		}); */
+	}
+// 	event.stopPropagation();
+}
+$(window).scroll(function(){
+	var srcoll_top = $(window).scrollTop();
+	$(".goods-nav.fixed").css("max-width",($(".ncsc-form-goods").width() - 5)+'px');
+	if(srcoll_top > 50 && $(".ns-main").height() > 1000){
+		$(".goods-nav").addClass('fixed');
+	}else{
+		$(".goods-nav").removeClass('fixed');
+	}
+})
+
+$(".decimal_reservation_number").click(function(){
+	$(this).siblings().find("i").removeClass("selected").find("input[type='checkbox']").prop('checked', false);
+})
+
+$("input[name='integral_give_type']").click(function(){
+	if($(this).val() == 0){
+		$("#integration_available_give").parent('.controls').show();
+		$("#integration_available_give_ratio").parent('.controls').hide();
+	}else{
+		$("#integration_available_give").parent('.controls').hide();
+		$("#integration_available_give_ratio").parent('.controls').show();
+	}
+})
+</script>

@@ -1,0 +1,191 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/defau.css">
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style type="text/css">
+.account_info{background: #ffffff;margin-bottom: 10px;line-height: 40px;overflow: hidden;}
+.account_info .account_item{border-top: 1px solid #eeeeee;clear: both;}
+.account_info .account_item p{margin-bottom: -10px;}
+.account_info .account_item .item_value{color: #484848; float: left;display: inline-block;margin-right: 5%;}
+.account_info .account_item .item_value span{color: #999999;}
+.account_list{overflow: hidden;display: block;background: #ffffff;}
+</style>
+{/block}
+{block name="main"}
+<div class="set-style">
+	<div class="account_info">
+	
+		<div class="account_item">
+			<p>会员身份</p>
+			<div class="item_value">
+				<div>是否为推广员：<span>{if condition="$user_account_info['is_promoter'] eq 1"}是{else/}否{/if}</span></div>
+			</div>
+			<div class="item_value">
+				<div>是否为股东：<span>{if condition="$user_account_info['is_partner'] eq 1"}是{else/}否{/if}</span></div>
+			</div>
+			<div class="item_value">
+				<div>是否为代理：<span>{if condition="$user_account_info['is_region_agent'] eq 1"}是{else/}否{/if}</span></div>
+			</div>
+		</div>
+		
+		<div class="account_item">
+			<p>推广员信息</p>
+			<div class="item_value">
+				<div>推广编号：<span>{$promoter_info['promoter_no']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>会员账号：<span>{$promoter_info['real_name']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>推广等级：<span>{$promoter_info['level_name']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>店铺名称：<span>{$promoter_info['promoter_shop_name']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>推广人数：<span>{$promoter_info['promoter_num']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>粉丝数：<span>{$promoter_info['fans_num']}</span></div>
+			</div>
+			<div class="item_value">
+				{if condition = "$promoter_info.parent_realname eq null"}
+					<div>上级推广员：<span>无</span></div>
+				{else /}
+					<div>上级推广员：<span>{$promoter_info['parent_realname']}</span></div>
+				{/if}
+			</div>
+		</div>
+
+		<div class="account_item">
+			<p>账户信息</p>
+			<div class="item_value">
+				<div>总佣金：<span>{$user_account_info['commission']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>可提现佣金：<span>{$user_account_info['commission_cash']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>已提现佣金：<span>{$user_account_info['commission_withdraw']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>分销佣金：<span>{$user_account_info['commission_promoter']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>股东分红：<span>{$user_account_info['commission_partner']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>股东全球分红：<span>{$user_account_info['commission_partner_global']}</span></div>
+			</div>
+			<div class="item_value">
+				<div>区域代理佣金：<span>{$user_account_info['commission_region_agent']}</span></div>
+			</div>
+		</div>
+	</div>
+	
+		<table class="mytable">
+			<tr>
+				<th>
+					交易时间：
+					<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker()"> - 
+					<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker()">
+					交易类型：<select name="account_type" id="account_type" class="select-common  middle">
+						<option value="0">全部</option>
+						{volist name = "account_type" id="vo"}
+						<option value="{$vo.type_id}">{$vo.type_name}</option>
+						{/volist}
+						
+					</select>
+					<button onclick="searchData()" value="搜索" class="btn-common" >搜索</button>
+				</th>
+			</tr>
+		</table>
+	<div class="account_list">
+		<table class="table-class">
+			<colgroup>
+				<col style="width: 8%;">
+				<col style="width: 8%;">
+				<col style="width: 8%;">
+				<col style="width: 8%;">
+			</colgroup>
+			<thead>
+				<tr>						
+					<th>交易日期</th>					
+					<th>金额</th>
+					<th>交易类型</th>						
+					<th>描述</th>
+				</tr>
+			</thead>
+	
+			<tbody></tbody>
+		</table>
+	</div>
+</div>
+
+{/block}
+{block name="script"}
+
+<script type="text/javascript">	
+var promoter_uid = "{$promoter_uid}";
+//查询
+function searchData(){
+	LoadingInfo(1);
+}
+//加载数据
+function LoadingInfo(page_index) {
+	var user_name = $("#userName").val();
+	var user_phone = $("#userTel").val();
+	var role = $("#role").val();
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/Distribution/promoterAccount')}",
+		async : true,
+		data : {
+			"page_index" : page_index,
+			"page_size" : $("#showNumber").val(),
+			"uid" : promoter_uid,
+			"startDate" : $('#startDate').val(),
+			"endDate" : $('#endDate').val(),
+			"account_type" : $('#account_type').val()
+		},
+		success : function(data) {
+
+			$("#page_count").val(data["page_count"]);
+			$("#total_count").val(data["total_count"]);
+			$("#pageNumber a").remove();
+			
+			var html = '';
+			if (data["data"].length > 0) {
+				for (var i = 0; i < data["data"].length; i++) {
+				
+					var item_data = data['data'][i];
+					html += '<tr align="center">';
+					html += '<td>' + timeStampTurnTime(data["data"][i]["create_time"])+'</td>';
+					html += '<td>' + data["data"][i]["money"] +'</td>';
+					html += '<td>' + data["data"][i]["type_name"] +'</td>';
+					html += '<td>' + data["data"][i]["text"] +'</td>';
+					html += '</tr>';
+				}
+			} else {
+				html += '<tr align="center"><td colspan="11">暂无符合条件的数据记录</td></tr>';
+			}
+			
+			$(".table-class tbody").html(html);
+			
+			$("#page_count").val(data["page_count"]);
+			$("#total_count").val(data["total_count"]);
+			$("#pageNumber a").remove();
+			
+			var totalpage = $("#page_count").val();
+			if (totalpage == 1) {
+				changeClass("all");
+			}
+			initPageData(data["page_count"],data['data'].length,data['total_count']);
+			var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+			$("#pageNumber").append($html);
+		}
+	});
+}		
+
+</script>
+{/block}

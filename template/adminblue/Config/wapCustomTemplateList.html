@@ -1,0 +1,215 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" href="__STATIC__/blue/css/ns_table_style.css" />
+<link rel="stylesheet" href="__STATIC__/blue/css/ns_blue_common.css" />
+<style>
+.table-class tr th, .table-class tr td{padding:10px;}
+.tiphelp-info{margin:0;padding:8px;}
+.set-style h4{margin-left:0px;}
+.set-style dl dt{width:10%;}
+.ns-main{margin-top:0px;}
+</style>
+{/block}
+{block name="warm_prompt"}{/block}
+{block name="right_tab_tip"}{/block}
+{block name="main"}
+<div class="set-style">
+	<h4>开启设置</h4>
+	<dl>
+		<dt >是否开启自定义模板：</dt>
+		<dd>
+			<input type="checkbox" class="checkbox js-status" {if condition="$is_enable == 1"}checked="checked"{/if} />
+		</dd>
+	</dl>
+	<h4>模版设置</h4>
+</div>
+<table class="mytable">
+	<tbody>
+		<tr>
+			<td style="text-align: left;">
+				<button class="btn-common-delete" onclick="batchDelete()" style="margin:0 5px 0 0 !important;">批量删除</button>
+				<button class="btn-common" onclick="location.href='{:__URL('ADMIN_MAIN/config/wapCustomTemplateEdit')}';" style="margin:0 !important;">添加模板页面</button>
+			</td>
+			<td>
+				模板名称：<input id="template_name" class="input-medium input-common" type="text" placeholder="要搜索的模板名称">
+				<input type="button" onclick="searchData()" value="搜索" class="btn-common" style="line-height: initial;">
+			</td>
+		</tr>
+	</tbody>
+</table>
+<table class="table-class">
+	<colgroup>
+		<col width="2%">
+		<col width="68%">
+		<col width="15%">
+		<col width="15%">
+	</colgroup>
+	<thead>
+		<tr>
+			<th><i class="checkbox-common"><input type="checkbox" onclick="CheckAll(this)"></i></th>
+			<th align="left">模板名称</th>
+			<th>创建时间</th>
+			<th align="center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="list"></tbody>
+</table>
+{/block}
+{block name="script"}
+<script>
+$(function(){
+	
+	$(".switch-open").text("启用");
+	$(".switch-close").text("禁用");
+	
+});
+
+function LoadingInfo(page_index) {
+	$.ajax({
+		type : "post",
+		data : {
+			"page_index" : page_index,
+			"page_size" : $("#showNumber").val(),
+			"template_name" : $("#template_name").val()
+		},
+		url : "{:__URL('ADMIN_MAIN/config/wapCustomTemplateList')}",
+		success : function(data){
+			if(data['data'].length>0){
+				$("#list").empty();
+				for(var i=0;i<data['data'].length;i++){
+					var html = "";
+					var curr = data['data'][i];
+					html += '<tr>';
+						html += '<td align="center"><i class="checkbox-common"><input type="checkbox" name="sub" value="' + curr.id + '"></i></td>';
+						html += '<td align="left">' + curr.template_name + '</td>';
+						html += '<td align="center">' + timeStampTurnTime(curr.create_time) + '</td>';//curr.modify_time
+						html += '<td align="center">';
+							html += '<a href=\'{:__URL("ADMIN_MAIN/config/wapCustomTemplateEdit?id=' + curr.id + '")}\'>编辑</a>';
+							
+							html += '<a href="javascript:deleteCustomTemplateById(' + curr.id + ');">删除</a>';
+							if(curr.is_default == 1){
+								html += '<span href="javascript:;" style="color:rgb(153, 153, 153);margin-left:8px;">店铺主页</span>';
+							}else{
+								html += '<a href="javascript:setDefaultCustomTemplate(' + curr.id + ');">设为主页</a>';
+							}
+						html += '</td>';
+					html += '</tr>';
+					$("#list").append(html);
+				}
+			}else{
+				var html = '<tr align="center"><td colspan="5" style="text-align: center;font-weight: normal;color: #999;">暂无符合条件的数据记录</td></tr>';
+				$("#list").html(html);
+			}
+			initPageData(data["page_count"],data['data'].length,data['total_count']);
+			$("#pageNumber").html(pagenumShow(jumpNumber,$("#page_count").val(),{$pageshow}));
+		}
+	});
+}
+
+function deleteCustomTemplateById(id){
+
+	$( "#dialog" ).dialog({
+		buttons: {
+			"确定": function() {
+				$.ajax({
+					type : "post",
+					url : "{:__URL('ADMIN_MAIN/config/deleteWapCustomTemplateById')}",
+					data : { "id" : id.toString() },
+					success : function(data) {
+						if(data["code"] > 0 ){
+							LoadingInfo(getCurrentIndex(id,'#list'));
+							showTip(data["message"],"success");
+						}else{
+							showTip(data["message"],"error");
+						}
+					}
+				});
+				$(this).dialog('close');
+			},
+			"取消,#f5f5f5,#666": function() {
+				$(this).dialog('close');
+			},
+		},
+		contentText:"确定要删除吗？",
+	});
+}
+
+//全选
+function CheckAll(event){
+	var checked = event.checked;
+	$("#list input[type = 'checkbox']").prop("checked",checked);
+	if(checked) $("#list input[type = 'checkbox']").parent().addClass("selected");
+	else $("#list input[type = 'checkbox']").parent().removeClass("selected");
+}
+
+/**
+ * 批量删除
+ */
+function batchDelete() {
+	var custom_template_id_array= new Array();
+	$("#list input[type='checkbox']:checked").each(function() {
+		if (!isNaN($(this).val())) {
+			custom_template_id_array.push($(this).val());
+		}
+	});
+	if(custom_template_id_array.length ==0){
+		$( "#dialog" ).dialog({
+			buttons: {
+				"确定,#0059d6,#fff": function() {
+					$(this).dialog('close');
+				}
+			},
+			contentText:"请选择需要操作的记录",
+			title:"消息提醒",
+		});
+		return false;
+	}
+	deleteCustomTemplateById(custom_template_id_array);
+}
+
+/**
+ * 设置默认手机端自定义模板
+ */
+function setDefaultCustomTemplate(id){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/config/setDefaultWapCustomTemplate')}",
+		data : { "id" : id },
+		success : function(res){
+			if(res["code"]>0){
+				LoadingInfo(getCurrentIndex(id,'#list'));
+				showTip(res["message"],"success");
+			}else{
+				showTip(res["message"],"error");
+			}
+		}
+	});
+}
+
+function searchData(){
+	LoadingInfo(1);
+}
+
+/**
+ * 开启关闭自定义模板
+ * 创建时间：2017年8月15日 11:19:44 
+ * 更新时间：2017年8月9日 15:27:32
+ */
+$(".js-status").click(function(){
+	var is_enable = $(this).is(":checked") ? 0 : 1;
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/config/setIsEnableWapCustomTemplate')}",
+		data : { "is_enable" : is_enable },
+		success : function(res){
+			if(res.code>0){
+				LoadingInfo(1);
+				showTip(res.message,"success");
+			}else{
+				showTip(res.message,"error");
+			}
+		}
+	});
+});
+</script>
+{/block}

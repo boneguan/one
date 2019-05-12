@@ -1,0 +1,534 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/product.css">
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style type="text/css">
+#productTbody td{padding:5px;font-size:12px;}
+#productTbody td:first-child{border-left: 1px solid #E1E6F0;}
+#productTbody td:last-child{border-right: 1px solid #E1E6F0;}
+#productTbody tr:last-child td{border-bottom:1px solid #E1E6F0;}
+.tr-title td{border-top: 1px solid #E1E6F0;}
+.a-pro-view-img {float: left;}
+.thumbnail-img {width: 60px;margin-right: 10px;height: 60px;}
+.cell i {display: block;}
+.remodal-bg.with-red-theme.remodal-is-opening,.remodal-bg.with-red-theme.remodal-is-opened {filter: none;}
+.remodal-overlay.with-red-theme {background-color: #f44336;}
+.remodal.with-red-theme {background: #fff;}
+input[type="radio"], input[type="checkbox"] {margin: -1px 5px 0 0;}
+.edit-group{border-bottom: 1px solid #ebebeb;margin-bottom:10px;}
+.edit-group label{font-weight:normal;}
+.edit-group-title{height:15px;line-height:15px;width:140px;margin-top:3px;margin-bottom:3px;color:#126AE4;}
+.edit-group-button{border-color: #3283fa;border: 1px solid #bbb;height: 26px;line-height: 24px;padding: 0 5px;}
+.group-button-bg{background: #3283fa;color: #fff;}
+.div-pro-view-name {width: 100%;min-height: 60px;}
+i.hot,i.recommend,i.new{font-size:12px;margin-right:5px;font-style:normal;color:#fff;background-color:#FF6600;border-radius:2px;padding:1px 4px;position: relative;top:-5px;}
+.icon-qrcode:before {content: "\f029";}
+[class^="icon-"]:before, [class*=" icon-"]:before {text-decoration: inherit;display: inline-block;speak: none;}
+[class^="icon-"], [class*=" icon-"] {font-family: FontAwesome;font-weight: normal;font-style: normal;text-decoration: inherit;-webkit-font-smoothing: antialiased;}
+
+input[type=number] {-moz-appearance:textfield;}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {-webkit-appearance: none;margin: 0;}
+input, textarea, .uneditable-input {width: 147px;}
+.table th, .table td {vertical-align: middle;}
+.recommendBox{width: 360px;display: inline-block;float: right;}
+.introduction_box{width: 360px;display: inline-block;float: right;}
+.tab-content{overflow: visible;}
+.editGoodsIntroduction{display: inline-block;border:1px dashed #fff;padding: 0;width: 350px;line-height: 25px;max-height: 60px;overflow: hidden;text-overflow: ellipsis;height: 25px;}
+.editGoodsIntroduction:hover{border-color: #ddd;cursor: pointer;}
+.editGoodsIntroduction + input{display: inline-block;padding: 0 5px;width: 350px;line-height: 25px;height: 25px;background: #EEF7FF;display: none;margin:0 0 10px !important;}
+.editGoodsIntroduction>a{margin-left:0 !important;}
+.goods-fields-sort{cursor:pointer;}
+.goods-fields-sort span{background: url('ADMIN_IMG/goods_sort.png') no-repeat;width:20px;height:20px;display: inline-block;margin-left:5px;vertical-align: middle;position: absolute;}
+.goods-fields-sort span.asc{background-position: 0 5px;}
+.goods-fields-sort span.selected.asc{background-position: -30px 5px;}
+.goods-fields-sort span.desc{background-position: 0 -24px;}
+.goods-fields-sort span.selected.desc{background-position: -30px -24px;}
+.more-search{line-height: 20px;background: #fff;outline: none}
+.interval{width: 2px;display: inline-block;}
+.ns-main{margin-top: 0;}
+.table-class tbody td a{margin-left: 0;}
+.btn-common-white,.btn-common{outline: none;line-height: 20px;display: inline-block;}
+@media screen and (max-width:1260px) {
+	a.btn-common{margin-bottom:5px !important;}
+}
+.unit{
+	position: relative;
+    top: -1px;
+}
+.modal-body .set-style dl dt{
+	width: 145px!important;
+}
+.modal-body .set-style dl dd{
+	width: 50%;
+}
+</style>
+{/block}
+
+{block name="main"}
+<table class="mytable">
+	<tr>
+		<th align="left">
+			<a class="btn-common" href="javascript:void(0)"onclick="goodsIdDistribution('open')">开启分销</a>
+			<a class="btn-common-white" href="javascript:void(0)" onclick="goodsIdDistribution('off')">关闭分销</a>
+			<a class="btn-common-white" href="javascript:void(0)" onclick="showUpdateGoodsCommissionRate('',3)">分销设定(总)</a>
+			<a class="btn-common-white" href="javascript:void(0)" onclick="goodsGroupIdCount();"  data-html="true" href="javascript:void(0)" id="editGroup" title="<h6 class='edit-group-title'>修改分组</h6>"  
+         					data-container="body" data-placement="bottom"  data-trigger="manual"
+         					data-content="<div class='edit-group' id='goodsChecked' style='max-width:auto;'>
+ 							{foreach $goods_group as $vo} 
+ 							  <p>
+ 							  	<label class='checkbox-inline' style='display:inline-block;' >
+							    	<input  onclick=CheckType(this) type='checkbox' name='check_{$vo.group_id}' value='{$vo.group_id}'><b>{$vo.group_name}</b>&nbsp;&nbsp;&nbsp;
+							  	</label>
+							  	{foreach $vo['sub_list']['data'] as $vs}
+							  	<label style='display:inline-block;'>
+							    	<input type='checkbox' id='check_type' class='type_name' name='check_{$vo.group_id}' value='{$vs.group_id}'>{$vs.group_name}
+							  	</label>
+							  	{/foreach}
+							  </p>
+							  
+							{/foreach}
+							</div>							
+							<button class='edit-group-button group-button-bg' onclick=showUpdateGoodsCommissionRate('',2);>确认</button>
+							<button class='edit-group-button' onclick='hideEditGroup()'>取消</button>
+							" >分销设定(分组)</a>
+			<input type='hidden'value='' id='goods_type_ids'/>
+		</th>
+		<th style="position: relative;">
+			<th style="line-height:33px;">
+			创建时间：
+			<input type="text" id="startDate" class="input-common middle" placeholder="请选择开始日期" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			&nbsp;-&nbsp;
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-common middle" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			商品名：<input id="goods_name" class="input-medium input-common middle" type="text" value="">
+			<button onclick="searchData()" class="btn-common">搜索</button>
+			</th>
+	</tr>
+</table>
+<div id="myTabContent" class="tab-content">
+	<div class="tab-pane active">
+		<table class="table-class">
+			<colgroup>
+				<col style="width: 3%;">
+				<col style="width: 25%;">
+				<col style="width: 12%;">
+				<col style="width: 10%;">
+				<col style="width: 10%;">
+				<col style="width: 10%;">
+				<col style="width: 10%;">
+				<col style="width: 8%;">
+				<col style="width: 12%;">
+			</colgroup>
+			<tbody>
+				<tr class="table-title" >
+					<th>
+						<i class="checkbox-common">
+							<input onclick="CheckAll(this)" type="checkbox" id="chek_all">
+						</i>
+					</th>
+					<th style="padding-right: 166px;">商品名称</th>
+					<th style="padding-right: 55px;">价格(元)</th>
+					<th>三级分销比率</th>
+					<th>股东分红比率</th>
+					<th>全球分红比率</th>
+					<th>区域代理比率</th>
+					<th>是否分销</th>
+					<th>操作</th>
+				</tr>
+
+			</tbody>
+			<tbody id="productTbody" style="border: 0px;">
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- 此部分以下是弹出框内容 -->
+
+<!-- 修改用户上级（Modal）开始 -->
+<div class="modal fade hide" id="editGoodsCommissionRate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:400px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">商品分销设定</h4>
+            </div>
+            <div class="modal-body">
+            	<div class="set-style">
+            		<input type="hidden" id="distribution_type" value=""/>
+            		<input type="hidden"  id="distribution_condition"  value=''/>
+            		<dl>
+						<dt>分销佣金比率：</dt>
+						<dd>
+							<p><input name="" id="distribution_commission_rate" type="text"  class="input-common harf" value="" onkeyup="javascript:CheckInputIntFloat(this);" /><em class="unit">%</em></p>	
+							<p class="error">请输入等级名称</p>
+						</dd>
+					</dl>
+					<dl>
+						<dt>股东分红佣金比率：</dt>
+						<dd>
+							<p><input name="" id="partner_commission_rate" type="text" value="" class="input-common harf"  onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入升级条件</p>
+						</dd>
+					</dl>
+					<dl>
+						<dt>股东全球分红比率：</dt>
+						<dd>
+							<p><input name="" id="global_commission_rate" type="text" value="" class="input-common harf"  onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入本店销售佣金比率</p>
+						</dd>
+					</dl>
+					<dl style="display:none;">
+						<dt>分销团队分红佣金比率：</dt>
+						<dd>
+							<p><input name="" id="distribution_team_commission_rate" type="text" class="input-common harf"  value="" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入给上级的佣金比率</p>
+						</dd>
+					</dl>
+					<dl style="display:none;">
+						<dt>股东团队分红佣金比率：</dt>
+						<dd>
+							<p><input name="" id="partner_team_commission_rate" type="text" class="input-common harf"  value="" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入给上上级的佣金比率</p>
+						</dd>
+					</dl>
+					
+					<dl >
+						<dt>区域代理分红佣金比率：</dt>
+						<dd>
+							<p><input name="" id="regionagent_commission_rate" type="text" class="input-common harf"  value="" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入给上上级的佣金比率</p>
+						</dd>
+					</dl>
+					<dl style="display:none;">
+						<dt>渠道代理分红佣金比率：</dt>
+						<dd>
+							<p><input name="" id="channelagent_commission_rate" type="text" class="input-common harf"  value="" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+							<p class="error">请输入给上上级的佣金比率</p>
+						</dd>
+					</dl>        		            		
+            	</div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn-common btn-big" onclick="updateGoodsCommissionRate();">修改</button>
+                <button type="button" class="btn-common-cancle btn-big" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+{/block} {block name="script"}
+{include file="adminblue/pageCommon" /}
+<script src="__STATIC__/js/limit_input_digit.js"></script>
+<script type="text/javascript">
+	//查询
+	function searchData(){
+		LoadingInfo(1);
+	}
+	//查询商品分销列表
+	function LoadingInfo(pageIndex) {
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();
+		var is_open = $("#is_open").val();
+		var goods_name =$("#goods_name").val();
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/goodsCommissionRateList')}",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"start_date":start_date,
+				"end_date":end_date,
+				"is_open":is_open,
+				"goods_name":goods_name
+			},
+			success : function(data) {
+			//	alert(JSON.stringify(data));
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				var html = '';
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr class="tr-title" >';
+						html += '<td class="td-'+ data["data"][i]["goods_id"]+'" style="border-bottom:0;">';
+// 						<label><input value="'
+// 								+ data["data"][i]["goods_id"]
+// 								+ '" tj="" name="sub" data-is_open="'+data["data"][i]["is_open"]+'" type="checkbox"></label>';
+						html += '</td>';
+						html += '<td colspan="8" style="border-bottom:0;"><div style="display: inline-block; width: 100%;font-size:12px;color:#666;" class="pro-code"><span>商家编码：'
+								+ data["data"][i]["code"] + '</span>';
+								/* if(data["data"][i]["state"] == 1){
+									html += '<span class="pro-code" style="color: #f35252; float: right;"> <i class="fa fa-long-arrow-up" style="margin-right: 4px;"></i>已上架';
+								}else{
+										html += '<span class="pro-code" style="color: #27A9E3; float: right;"> <i class="fa fa-long-arrow-up" style="margin-right: 4px;"></i>已下架';
+								} */
+						html += '<span class="pro-code" style="margin-left:10px;"><i class="fa fa-long-arrow-up" style="margin-right: 4px;"></i>创建时间：'+timeStampTurnTime(data["data"][i]["create_time"]);
+						html += '</span></div></td></tr>';
+						html += '<tr>';
+						html += '<td align="center">';
+						html += '<i class="checkbox-common"><input value="' + data["data"][i]["goods_id"] + '" name="sub" data-state="'+data["data"][i]["state"]+'" type="checkbox"></i>';
+						html += '</td>';
+						html += '<td colspan="1" style="background: white;"><div><a class="a-pro-view-img"href="APP_MAIN/Goods/goodsDetail?id='+data["data"][i]["goods_id"]+'"target="_blank"><img class="thumbnail-img"src="'+ __IMG(data["data"][i]["pic_cover_micro"]) +'">';
+						html += '<div class="div-pro-view-name"><span style="color: #13A5D5;" class="thumbnail-name title='+ data["data"][i]["goods_name"]+'"><a target="_blank" href="'+__URL('APP_MAIN/Goods/goodsDetail?id='+data["data"][i]["goods_id"])+'">'
+								+ data["data"][i]["goods_name"]
+								+ '</a></span>';
+						html += '<div style="position: relative;margin-left: 75px;">';
+						html += data["data"][i]["is_hot"] == 1 ? '<i class="hot">热</i>' : '';
+						html += data["data"][i]["is_recommend"] == 1 ? '<i class="recommend">精</i>' : '';
+						html += data["data"][i]["is_new"] == 1 ? '<i class="new">新</i>' : '';
+						if(data["data"][i]['goods_group_name'] != '' && data["data"][i]['goods_group_name'] != undefined){
+							var tmp_array = data["data"][i]['goods_group_name'].split(",");
+							$.each(tmp_array,function(k,v){	
+								if(v != ""){
+									html += '<i style="color:#999;font-size:12px;margin-top:5px;padding:1px 2px;border-radius:3px;display:inline-block;color:#FFF;background-color:#de533c;text-decoration: none;height:16px;line-height: 16px;overflow:hidden;margin-right:5px;text-align:center;font-style:normal;">'+v+'</i>';
+								}
+							});
+						}
+					html += '</div>';
+						//html += '<div class="div-flag-style"><span class="" title=""><i class="icon-tablet"style="background: none; color: #555; font-size: 20px; margin-right: 0;"></i></span><span onmouseover="mouseover(this)" onmouseout="mouseout(this)"style="display: inline-block;"> <i class="icon-qrcode"style="background: none; color: #555; font-size: 20px; margin-right: 0;"></i></span>';
+						//html += '<div class="QRcode" style="display: none; position: absolute;"id="qrcode"><p><img src=""></p></div></div>';
+						html += '</td>';
+						html += '<td style="background: white;"><div class="priceaddactive"><span class="price-lable">单&nbsp;&nbsp;&nbsp;&nbsp;价</span><spanclass="price-numble" style="color: #666;"id="moreChangePrice'+ data["data"][i]["goods_id"]+'"  >'
+								+ data["data"][i]["price"]
+								+ '</span></div>';
+						html += '<div><span class="price-lable" >活动价:</span><span class="price-numble"id="moreChangePrice'+ data["data"][i]["goods_id"]+'" style="color:red;">'
+								+ data["data"][i]["promotion_price"]
+								+ '</span>';
+						html += '</td>';
+						html += '<td style="text-align:center;"><div class="cell"><span class="pro-stock" style="color: #666;">'
+								+ data["data"][i]["distribution_commission_rate"]
+								+ '%</span></div></td>';
+						html += '<td style="text-align:center;"><div class="cell"><span class="pro-stock" style="color: #666;">'
+								+ data["data"][i]["partner_commission_rate"]
+								+ '%</span></div></td>';
+						html += '<td style="text-align:center;"><div class="cell"><span class="pro-stock" style="color: #666;">'
+								+ data["data"][i]["global_commission_rate"]
+								+ '%</span></div></td>';
+						html += '<td style="text-align:center;"><div class="cell"><span class="pro-stock" style="color: #666;">'
+								+ data["data"][i]["regionagent_commission_rate"]
+								+ '%</span></div></td>';
+						if(data["data"][i]["is_open"] == 1){
+							html += '<td style="text-align:center;">已启用</td>';
+						}else{
+							html += '<td style="text-align:center;">未启用</td>';
+						}
+						html += '<td style="background: white;"><div class="cell"><div class="bs-docs-example tooltip-demo"style="text-align: center;">';
+						//html += '<a href="ADMIN_MAIN/Distribution/updateGoodsCommissionRate?goods_id='+data["data"][i]["goods_id"]+'" ><span class="edit" style="display: inline-block; width: 19%;" ><i class="icon-edit" style="width: initial;"></i>分销设定</span></a>';						
+						html += '<a style="display: inline-block;width:100%; " href="javascript:void(0);" onclick="showUpdateGoodsCommissionRate('+data["data"][i]["goods_id"]+',1)" ><span class="edit"  >分销设定</span></a>';
+						if(data["data"][i]["is_open"] == 1){
+							html += '<a  style="display: block;margin-right: 0; " href="javascript:void(0);" onclick="modifyGoodsDistribution('+data["data"][i]["goods_id"]+',&#39;off&#39;)" ><span class="edit"  >关闭分销</span></a>';
+						}else{
+							html += '<a  style="display: block;margin-right: 0;" href="javascript:void(0);" onclick="modifyGoodsDistribution('+data["data"][i]["goods_id"]+',&#39;open&#39;)" ><span class="edit"  >开启分销</span></a>';
+						}
+						html += '</div></div></td></tr>';
+					}
+				} else {
+					html += '<tr align="center"><td colspan="10" style="text-align: center;font-weight: normal;color: #999;background-color: #f9f9f9;">暂无符合条件的数据记录</td></tr>';
+				}
+				$("#productTbody").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+
+	//全选
+	function CheckAll(event){
+		var checked = event.checked;
+		$("#productTbody input[type = 'checkbox']").prop("checked",checked);
+		if(checked) $(".table-class tbody input[type = 'checkbox']").parent().addClass("selected");
+		else $(".table-class tbody input[type = 'checkbox']").parent().removeClass("selected");
+	}
+	//选择分类
+	function CheckType(even){
+		if($(even).is(":checked")) {
+			$(even).parent().parent().find("[name='"+$(even).attr("name")+"']").attr("checked", true);
+		} else {
+			$(even).parent().parent().find("[name='"+$(even).attr("name")+"']").attr("checked", false);
+		}
+	}
+	//商品上架id合计
+	function goodsIdDistribution(line){
+		var goods_ids= "";
+		$("#productTbody input[type='checkbox']:checked").each(function() {
+			if (!isNaN($(this).val())) {
+				var is_open= $(this).data("is_open");
+				if(line == "open"){
+					if(is_open == 1){
+						$( "#dialog" ).dialog({				
+				            buttons: {
+				                "确定,#62c462": function() {
+				                    $(this).dialog('close');
+				                }
+				            },
+				            contentText:"记录中包含已开启分销记录",
+				            title:"消息提醒",
+				        });
+						return false;
+					}
+				}else{
+				if(is_open == 0){
+					$( "#dialog" ).dialog({
+			            buttons: {
+			                "确定,#62c462": function() {
+			                    $(this).dialog('close');
+			                }
+			            },
+			            contentText:"记录中包含未开启分销记录",
+			            title:"消息提醒",
+			        });
+					return false;
+					}
+				}
+				goods_ids = $(this).val() + "," + goods_ids;
+			}
+		});
+		goods_ids = goods_ids.substring(0, goods_ids.length - 1);
+		if(goods_ids == ""){
+			$( "#dialog" ).dialog({				
+	            buttons: {
+	                "确定,#62c462": function() {
+	                    $(this).dialog('close');
+	                }
+	            },
+	            contentText:"请选择需要操作的记录",
+	            title:"消息提醒",
+	        });
+			return false;
+		}
+		modifyGoodsDistribution(goods_ids,line);
+	}
+	//商品是否开启分销
+	function modifyGoodsDistribution(goods_ids,line){
+		if(line == "open"){
+			var is_open = 1;
+			var lingStr = "开启分销";
+		}else{
+			var is_open = 0;
+			var lingStr = "关闭分销";
+		}
+		$.ajax({
+			type : "post",
+			url : "{:__URL('ADMIN_MAIN/Distribution/modifyGoodsDistribution')}",
+			async : true,
+			data : {
+				"goods_ids" : goods_ids,
+				"is_open":is_open
+				
+			},
+			success : function(data) {
+				if(data["code"] > 0 ){
+					LoadingInfo(1);
+					$( "#dialog" ).dialog({
+			            buttons: {
+			                "确定,#62c462": function() {
+			                    $(this).dialog('close');
+			                }
+			            },
+			            contentText:"商品"+lingStr+"成功",
+			            title:"消息提醒",
+			      		time:5
+			        });
+				}
+			}
+		})
+	}
+	//显示商品分销设定 type 1单独设置 2总设置 3分组设置
+	function showUpdateGoodsCommissionRate(condition, type){
+		$("#distribution_type").val(type);
+		$("#distribution_condition").val(condition);		
+		if(type == 1){
+			$.ajax({
+				type : "post",
+				url : "{:__URL('ADMIN_MAIN/Distribution/getGoodsCommissionRateDetail')}",
+				async : true,
+				data : {
+					"goods_id" : condition				
+				},
+				success : function(data) {
+					$("#distribution_commission_rate").val(data.distribution_commission_rate);
+					$("#partner_commission_rate").val(data.partner_commission_rate);
+					$("#global_commission_rate").val(data.global_commission_rate);
+					$("#distribution_team_commission_rate").val(data.distribution_team_commission_rate);
+					$("#partner_team_commission_rate").val(data.partner_team_commission_rate);
+					$("#regionagent_commission_rate").val(data.regionagent_commission_rate);
+					$("#channelagent_commission_rate").val(data.channelagent_commission_rate);
+				}
+			})	
+		}else if(type == 2){
+			var goods_type = "";
+			var goods_ids = $("#goods_type_ids").val();
+			$("#goodsChecked input[type='checkbox']:checked").each(function(){
+				if (!isNaN($(this).val())) {
+					goods_type = $(this).val() + "," + goods_type;
+				}
+			})			
+			goods_type = goods_type.substring(0, goods_type.length - 1);
+			$("#distribution_condition").val(goods_type);
+		}
+		$("#editGroup").popover("hide");
+		$("#editGoodsCommissionRate").modal("show");
+	}
+
+	
+	//修改商品分销设定
+	function updateGoodsCommissionRate(){
+		var condition = $("#distribution_condition").val();
+		var condition_type = $("#distribution_type").val();
+		var distribution_commission_rate = $("#distribution_commission_rate").val();
+		var partner_commission_rate = $("#partner_commission_rate").val();
+		var global_commission_rate = $("#global_commission_rate").val();
+		var distribution_team_commission_rate = $("#distribution_team_commission_rate").val();
+		var partner_team_commission_rate = $("#partner_team_commission_rate").val();		
+		var regionagent_commission_rate = $("#regionagent_commission_rate").val();
+		var channelagent_commission_rate = $("#channelagent_commission_rate").val();
+		var all = parseFloat(distribution_commission_rate) + parseFloat(partner_commission_rate) + parseFloat(global_commission_rate) + parseFloat(distribution_team_commission_rate) + parseFloat(partner_team_commission_rate) + parseFloat(regionagent_commission_rate) + parseFloat(channelagent_commission_rate);
+		if(all > 100){
+			showMessage('error', "总和不能大于100%");
+			return false;
+		}
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/updateGoodsCommissionRate')}",
+			data:{
+				'distribution_commission_rate':distribution_commission_rate,
+				'partner_commission_rate':partner_commission_rate,
+				'global_commission_rate':global_commission_rate,
+				'distribution_team_commission_rate':distribution_team_commission_rate,
+				'partner_team_commission_rate':partner_team_commission_rate,
+				'regionagent_commission_rate':regionagent_commission_rate,
+				'channelagent_commission_rate':channelagent_commission_rate,
+				'condition':condition,
+				'condition_type':condition_type
+			},
+			async:true,
+			success:function (data) {
+				$("#editGoodsCommissionRate").modal("hide");
+				if (data["code"] > 0) {
+					showMessage('success', data["message"]);
+					LoadingInfo(1);
+				}else{
+					showMessage('error', data["message"]);
+					LoadingInfo(1);
+				}	
+			}
+		});
+	}
+	//商品修改分组id合计
+	function goodsGroupIdCount(){
+		$("#editGroup").popover("show");
+		$(".popover").css("max-width",'1000px');
+	}
+	/**
+	 * 隐藏商品分组
+	 */
+	function hideEditGroup(){
+		$("#editGroup").popover("hide");
+	}
+	
+</script>
+{/block}

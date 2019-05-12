@@ -1,0 +1,207 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+{/block}
+{block name="main"}
+
+<div class="set-style">
+	<dl>
+		<dt><span style="color:red;">*</span>&nbsp;&nbsp;门店名称：</dt>
+		<dd>
+			<p><input id="name" type="text" class="input-common"></p>
+			<p class="error">门店名称不能为空</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt><span style="color:red;">*</span>&nbsp;&nbsp;门店地址：</dt>
+		<dd>
+			<p>
+				<select name="province" id="seleAreaNext" onchange="GetProvince();getSelCity();" class="select-common">
+					<option value="">请选择省</option>
+				</select>
+				<select name="city" id="seleAreaThird" onchange="getSelCity();" class="select-common">
+					<option value="">请选择市</option>
+				</select>
+				<select name="district" id="seleAreaFouth" class="select-common">
+					<option value="-1">请选择区/县</option>
+				</select>
+			</p>
+			<p class="error">请选择门店完整地址</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt><span style="color:red;">*</span>&nbsp;&nbsp;详细地址：</dt>
+		<dd>
+			<p><textarea id="address" class="textarea-common"></textarea></p>
+			<p class="error">详细地址不能为空</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>门店联系人：</dt>
+		<dd>
+			<p><input id="contact" type="text" class="input-common"></p>
+		</dd>
+	</dl>
+	<dl>
+		<dt><span style="color:red;">*</span>&nbsp;&nbsp;门店电话：</dt>
+		<dd>
+			<p><input id="phone" type="text" class="input-common"></p>
+			<p class="error">门店电话不能为空</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt></dt>
+		<dd>
+			<button class="btn-common btn-big" onclick="addReturnAjax();" >保存</button>
+			<button class="btn-common-cancle btn-big" onclick="javascript:history.back(-1);" >返回</button>
+		</dd>
+	</dl>
+</div>
+<script>
+//选择省份弹出市区
+function GetProvince() {
+	var id = $("#seleAreaNext").find("option:selected").val();
+	var selCity = $("#seleAreaThird")[0];
+	for (var i = selCity.length - 1; i >= 0; i--) {
+		selCity.options[i] = null;
+	}
+	var opt = new Option("请选择市", "-1");
+	selCity.options.add(opt);
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/shop/getcity')}",
+		dataType : "json",
+		data : { "province_id" : id },
+		success : function(data) {
+			if (data != null && data.length > 0) {
+ 				for (var i = 0; i < data.length; i++) {
+					var opt = new Option(data[i].city_name,data[i].city_id);
+					selCity.options.add(opt);
+				}
+				if(typeof($("#cityid").val())!='undefined'){
+					$("#seleAreaThird").val($("#cityid").val());
+					getSelCity();
+					$("#cityid").val('-1');
+				}
+				$('.select-common').selectric();
+			}
+		}
+	});
+};
+// 选择市区弹出区域
+function getSelCity() {
+	var id = $("#seleAreaThird").find("option:selected").val();
+	var selArea = $("#seleAreaFouth")[0];
+	for (var i = selArea.length - 1; i >= 0; i--) {
+		selArea.options[i] = null;
+	}
+	var opt = new Option("请选择区/县", "-1");
+	selArea.options.add(opt);
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/shop/getdistrict')}",
+		dataType : "json",
+		data : { "city_id" : id },
+		success : function(data) {
+			if (data != null && data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					var opt = new Option(data[i].district_name,data[i].district_id);
+					selArea.options.add(opt);
+				}
+				if(typeof($("#districtid").val())!='undefined'){
+					$("#seleAreaFouth").val($("#districtid").val());
+					$("#districtid").val('-1');
+				}
+				$('.select-common').selectric();
+			}
+		}
+	});
+}
+
+$(function() {
+	var selCity = $("#seleAreaNext")[0];
+	for (var i = selCity.length - 1; i >= 0; i--) {
+		selCity.options[i] = null;
+	}
+	var opt = new Option("请选择省", "-1");
+	selCity.options.add(opt);
+	// 添加省
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/shop/getprovince')}",
+		dataType : "json",
+		success : function(data) {
+			if (data != null && data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					var opt = new Option(data[i].province_name,data[i].province_id);
+					selCity.options.add(opt);
+				}
+				if(typeof($("#provinceid").val())!='undefined'){
+					$("#seleAreaNext").val($("#provinceid").val());
+					GetProvince();
+					$("#provinceid").val('-1');
+				}
+				$('.select-common').selectric();
+			}
+		}
+	});
+});
+
+//添加自提点
+function addReturnAjax() {
+	var name = $("#name").val();
+	var address = $("#address").val();
+	var province = $("#seleAreaNext").val();
+	var city = $("#seleAreaThird").val();
+	var district = $("#seleAreaFouth").val();
+	var contact = $("#contact").val();
+	var phone = $("#phone").val();
+	if (name == '') {
+		$("#name").parent().next().show();
+		return false;
+	}else{
+		$(".error").hide();
+	}
+	if(address == ''){
+		$("#address").parent().next().show();
+		return false;
+	}else{
+		$(".error").hide();
+	}
+	if ($("#seleAreaFouth").val() < 0 || $("#seleAreaFouth").val() == "") {
+		$("#seleAreaFouth").parent().next().show();
+		return false;
+	}else{
+		$(".error").hide();
+	}
+	
+	if(phone.length == 0){
+		$("#phone").parent().next().show();
+		return false;
+	} else {
+		$(".error").hide();
+	}
+	
+	$.ajax({
+		type : "post",
+		url : "{:__URL('ADMIN_MAIN/shop/addpickuppoint')}",
+		data : {
+			'name' : name,
+			'address' : address,
+			'contact' : contact,
+			'phone' : phone,
+			'province_id' : province,
+			'city_id' : city,
+			'district_id' : district
+		},
+		success : function(data) {
+			if (data['code'] > 0) {
+				showTip(data["message"],'success');
+				location.href = __URL("ADMIN_MAIN/shop/pickuppointlist");
+			} else {
+				showTip(data["message"],'error');
+			}
+		}
+	});
+}
+</script>
+{/block}

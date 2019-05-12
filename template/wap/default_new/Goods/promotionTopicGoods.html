@@ -1,0 +1,115 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/components.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/group_goods_list.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/category.css">
+<style>
+.sliding{overflow-y: auto;background: #ffffff;}
+.sliding::-webkit-scrollbar {display: none;}
+.sliding ul {white-space: nowrap;height:51px;line-height: 50px;text-align: left;}
+.sliding ul li {white-space: pre-line;padding:0 10px 0 10px;display: inline-block;background:#ffffff;border-right:2px solid #f8f8f8;}
+.sliding ul li:LAST-CHILD{border:0;}
+.selected{color:red;}
+.brand{width: 100%;height: 280px;overflow: hidden;position: relative;margin-top: 10px;}
+.brand_img{display: inline-block;vertical-align: middle;width: 100%;height: auto;}
+.goods-list-grid{margin-top: 0px;}
+#goods_list{padding:8px;background:url({$info['background_img']}) no-repeat;background-size: 100% 100%; background-color: {$info['background_color']}}
+.openList li{list-style: none;}
+.article_class {overflow-x: scroll; height: 32px; white-space: nowrap; margin-top: 5px; border-bottom: 1px solid #ddd;}
+.article_class::-webkit-scrollbar {display: none;}
+.goods_price{font-size: 16px;color: red;}
+.topic_scroll{height: auto;width: 100%;}
+.topic_scroll img{width: 100%;}
+.openList li .item{    background-color: rgba(255, 255, 255, .2);}
+.head-title span.topic-title{margin-left: 40px;overflow: hidden;white-space: nowrap;display: inline-block;text-overflow: ellipsis;max-width: calc(100% - 90px);}
+</style>
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="javascript:window.history.go(-1)"><i class="icon-back"></i></a>
+	<div class="head-title"><span class="topic-title">{$info['topic_name']}</span>{include file="wap/default_new/controGroup" /}</div>
+</section>
+<div style="height: 45px;"></div>
+{if condition="$brand_adv['is_use'] eq 1"}
+    {if condition="$brand_adv['adv_list'][0]['adv_image'] neq ''"}
+<div class="slick">
+	<a href="{:__URL($brand_adv['adv_list'][0]['adv_url'])}">
+		<img src="{:__IMG($brand_adv['adv_list'][0]['adv_image'])}" style="width:100%;">
+	</a>
+</div>
+   {/if}
+{/if}
+
+{/block}
+
+{block name="main"}
+<div class="goods-list-grid openList">
+	<div class="blank-div"></div>
+	<div class="topic_scroll"><img src="{:__IMG($info['scroll_img'])}" alt=""></div>
+	<div id="goods_list">
+		<div class="tablelist-append clearfix" style="overflow: hidden;">
+			<div class="product single_item info">
+				{foreach name="info['goods_list']" id="v"}
+				<li>
+					<div class="item">
+						<div class="item-tag-box">
+						</div>
+						<div class="item-pic">
+							<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$v['goods_id'])}">
+								<img src="{:__IMG($default_goods_img)}" class="lazy_load" data-original="{:__IMG($v['picture_info']['pic_cover_small'])}" alt="{$v['goods_name']}" style="display: block;max-width:100%;max-height:100%;">
+							</a>
+						</div>
+
+						<dl>
+							<dt>
+								<a href="{:__URL('APP_MAIN/goods/goodsinfo?goodsid='.$v['goods_id'])}">{$v['goods_name']}</a>
+							</dt>
+							<dd>
+								{in name="$v.point_exchange_type" value="0,2"}
+									<p class="goods_price">￥{$v['promotion_price']}</p>
+								{else/}
+									{if $v['point_exchange_type'] == 1 && $v['promotion_price'] > 0}
+										<p class="goods_price">￥{$v.promotion_price}+{$v.point_exchange}积分</p>
+									{else/}
+										<p class="goods_price">{$v.point_exchange}积分</p>
+									{/if}
+								{/in}
+							</dd>
+						</dl>
+					</div>
+				</li>
+				{/foreach}
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="page_count"><!-- 总页数 -->
+<input type="hidden" id="page" value="1"><!-- 当前页数 -->
+<input type="hidden" id="group_id" >
+
+<script src="__TEMP__/{$style}/public/js/public_assembly.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	$('.defaualt').eq(0).click();
+})
+/* var is_load = false;
+//滑动到底部加载
+$(window).scroll(function(){
+	var totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());
+	var content_box_height = parseFloat($(".tablelist-append").height());
+	if(totalheight - content_box_height >= 100){
+		if(!is_load){
+			var page = parseInt($("#page").val()) + 1;//页数
+			var total_page_count = $("#page_count").val(); // 总页数
+			var group_id = $("#group_id").val();
+			if(page > total_page_count){
+				return false;
+			}else{
+				showCategorySecond(group_id,null,page);
+			}
+		}
+	}
+}) */
+</script>
+{/block}
+{block name="bottom"}{/block}

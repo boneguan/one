@@ -1,0 +1,32 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/VerificationOrder.css">
+{/block}
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" onclick="window.history.go(-1)" href="javascript:void(0)"><i class="icon-back"></i></a>
+	<div class="head-title">虚拟商品详情</div>
+</section>
+<div style="clear: both;height: 45px;"></div>
+{/block}
+{block name="main"}
+<div class="container">
+	<div class="verification_goods_info">
+		<div class="goods_img">
+			<img src="{:__IMG($info.picture.pic_cover_micro)}" alt="">
+		</div>
+		<p class="name">{$info.goods_name}</p>
+		<p class="desc">{$info.virtual_goods_name}</p>
+		<p class="desc">{$info.remark}</p>
+	</div>
+	<a href="{:__URL('APP_MAIN/verification/virtualGoodsShare','vg_id='.$info.virtual_goods_id)}" class="immediateUuse">立即使用</a>
+</div>
+<!-- 导航列表 -->
+<div class="list-container">
+	<ul>
+		<a href="{:__URL('APP_MAIN/member/index')}"><li><span class="title">会员中心</span><span class="tip">点击进入会员中心</span></li></a>
+	</ul>
+</div>
+{/block}
+{block name="bottom"}
+{/block}

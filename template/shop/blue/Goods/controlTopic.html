@@ -1,0 +1,47 @@
+<style>
+.topic_list ul li{width: 49%;height: auto;position: relative;display: inline-block;margin-right: 2%;margin-bottom: 20px;float: left;}
+.topic_list ul li:nth-child(even){margin-right: 0};
+.topic_list ul li a{position: relative;}
+.topic_img_s{    width: 100%;height: auto;max-height: 300px;}
+.topic_name{position: absolute;top: 50%;left: 50%;font-size: 30px;color: #fff;transform: translate(-50%);}
+.block{display: block;}
+.topic_detail{position: absolute;bottom: 0px;background: #333;opacity: 0.8;width: 100%;height: auto;overflow: hidden}
+.topic_desc{    font-size: 24px;color: #fff;height: 32px;line-height: 32px;padding:5px;}
+.topic_introduce{    font-size: 16px;color: #fff;padding: 0 5px 5px;height: 20px;}
+</style>
+<div class="brand-floor ">
+	{if condition="$total_count eq 0"}
+	<div class="tip-box" style="position: static;">
+		<i class="tip-icon"></i>
+		<div class="tip-text">{:lang('sorry')}！{:lang('no_special_events')}……</div>
+	</div>
+	{else /}
+	<div class="topic_content">
+		<div class="sale-container">
+			<div class="wrapper">
+				<h3 class="topic_title">专题活动</h3>
+				<div class="topic_list">
+					<ul>
+						{foreach name="info['data']" id="v"}
+						<li>
+							<a href="{:__URL('SHOP_MAIN/goods/promotionTopicGoods','topic_id='.$v['topic_id'])}" class="block"><img src="{$v['picture_img']}" alt="" class="topic_img_s"><span class="topic_name">{$v['topic_name']}</span>
+							</a>
+							<div class="topic_detail">
+							<a href="{:__URL('SHOP_MAIN/goods/promotionTopicGoods','topic_id='.$v['topic_id'])}" class="block">
+									{if condition="$v['desc'] != ''"}
+									<span class="topic_desc block">{$v['desc']}</span>
+									{/if}
+									{if condition="$v['introduce'] != ''"}
+										<div class="topic_introduce">{$v['introduce']}</div>
+									{/if}
+							</a>
+							</div>
+						</li>
+						{/foreach}
+					</ul>				
+				</div>
+			</div>
+		</div>
+	</div>
+	{/if}
+</div>

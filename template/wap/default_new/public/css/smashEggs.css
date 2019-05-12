@@ -1,0 +1,160 @@
+@CHARSET "UTF-8";
+.clear:after{
+	content:'';
+	display:block;
+	height:0px;
+	clear:both;
+}
+.smash-eggs-bg{
+	width:100%!important;
+}
+.game-content{
+	background-color:#ffe881;
+	padding-bottom:30px;
+	padding-top:1px;
+}
+.egg{
+	width:100%; 
+	margin:30px auto 20px;
+}
+.egg ul li{
+	z-index:5;
+}
+.eggList{
+	padding-top:10px;
+	position:relative;
+	width:100%;
+}
+.eggList li{
+	list-style-type:none;
+	float:left;
+	background:url(../images/egg_1.png) no-repeat bottom;
+	background-size:100%;
+	width:30vw;
+	height:40vw;
+	position:relative;
+	margin-left:3vw;
+}
+.eggList li span{
+	position:absolute;
+	display:inline-block;
+	width:30px; 
+	height:60px; 
+	text-align:center; 
+	left:50%; 
+	top:50%; 
+	color:#ff0; 
+	font-size:42px; 
+	font-weight:bold;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+.eggList li.curr{
+	background:url(../images/egg_2.png) no-repeat bottom;
+	background-size:100%;
+	z-index:300;
+}
+.eggList li.curr sup{
+	position:absolute;
+	background:url(../images/egg_ben.png) no-repeat;
+	background-size:100%;
+	width:46vw; 
+	height:181px;
+	top:-3.5vw;
+	left:-7.3vw;
+	z-index:800;
+}
+.hammer{
+	background:url('../images/hammer.png') no-repeat;
+	background-size:100%;
+	width:14vw;
+	height:18vw;
+	position:absolute; 
+	text-indent:-9999px;
+	z-index:6;
+	left:58%;
+	top:9%;
+}
+.resultTip{
+	position:absolute; 
+	background:#ffc ;
+	width:30vw;
+	padding:6px;
+	z-index:500;
+	top:200px; 
+	left:6px; 
+	color:#f60; 
+	text-align:center;
+	overflow:hidden;
+	display:none;
+	z-index:500;
+}
+.resultTip b{
+	font-size:12px;
+	line-height:24px;
+}
+img.title{
+	width:68%!important;
+	display:block;
+	margin:10px auto 0;
+}
+.rule-desc,.list-desc{
+	background-color:#fefad7;
+	border:4px solid #f7d03f;
+	width:88%;
+	margin:0 auto;
+	padding:6px;
+}
+.list-desc{
+	height:104px;
+	line-height:26px;
+	overflow:hidden;
+}
+.list-desc ul li{
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.rule-table{
+	border-color: #999!important;
+    border: none;
+    width: 100%;
+    margin: 5px 0;
+}
+.rule-table td.left{
+	text-indent:8px;
+}
+.restriction{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10;
+}
+.restriction .tip-info-container{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    width: 220px;
+    padding: 15px;
+    margin:0 auto;
+    text-align: center;
+    border-radius: 8px;
+}
+.restriction .tip-info-container .tip-info{
+    margin:10px 0 15px;
+    font-size: 15px;
+    color: #666;
+}
+.restriction .tip-info-container button{
+    border:none;
+    color: #fff;
+    background: #FF5B3F;
+    padding: 0 15px;  
+    border-radius: 3px;
+    height: 35px;
+    line-height: 1;
+}

@@ -1,0 +1,94 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/defau.css">
+<style type="text/css">
+	.ns-main{
+		margin-top: 0;
+	}
+</style>
+{/block}
+{block name="main"}
+<div class="set-style">
+	<dl>
+		<dt>等级名称：</dt>
+		<dd>
+			<p><input name="" id="level_name" class="input-common" type="text" value=""/></p>	
+			<p class="error">请输入股东等级名称</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>申请最低消费：</dt>
+		<dd>
+			<p><input name="" id="level_money" class="input-common harf" type="text" value="" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit" style="position: relative;top: -1px;">元</em></p>	
+			<p class="error">请输入申请股东所需最低消费</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>股东分红佣金比率：</dt>
+		<dd>
+			<p><input name="" id="commission_rate" type="text" value="" class="input-common harf" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit" style="position: relative;top: -1px;">%</em></p>	
+			<p class="error">请输入本店销售佣金比率</p>
+		</dd>
+	</dl>
+	<!-- <dl>
+		<dt>全球分红分值:</dt>
+		<dd>
+			<p><input name="" id="global_value" type="text" value="" onkeyup="javascript:CheckInputIntFloat(this);"/>&nbsp;%</p>	
+			<p class="error">请输入本店销售佣金比率</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>全球分红权重:</dt>
+		<dd>
+			<p><input name="" id="global_weight" type="text" value="" onkeyup="javascript:CheckInputIntFloat(this);"/>&nbsp;%</p>	
+			<p class="error">请输入给上级的佣金比率</p>
+		</dd>
+	</dl>	 -->
+	<dl>
+	<dt></dt>
+	<dd>
+		<button class="btn-common btn-big" onclick="addPartherLevel();">提交</button>
+	</dd>
+	</dl>
+</div>
+<script src="__STATIC__/js/limit_input_digit.js"></script>
+<script>		
+	function addPartherLevel(){
+		var level_name = $("#level_name").val();
+		var level_money = $("#level_money").val();
+		var commission_rate = $("#commission_rate").val();
+		//var global_value = $("#global_value").val();
+		//var global_weight = $("#global_weight").val();
+		if(level_name == ""){
+			$("#level_name").focus();
+			$("#level_name").parent().next().show();
+			return false;
+		}else{
+			$("#level_name").parent().next().hide();
+		}
+		if((parseFloat(commission_rate))>100 ){
+			showMessage('error', "佣金比率不可超过100%！");	
+			return false;
+		}
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/distribution/addpartnerlevel')}",
+			data:{
+				'level_name':level_name,
+				'level_money':level_money,
+				'commission_rate':commission_rate,
+				//'global_value':global_value,
+				//'global_weight':global_weight
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/shareholderdividendsconfig')}");
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+</script>
+{/block}

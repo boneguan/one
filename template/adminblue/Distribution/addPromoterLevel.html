@@ -1,0 +1,92 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}
+<link rel="stylesheet" type="text/css" href="ADMIN_CSS/defau.css">
+<style type="text/css">
+.unit{position: relative;top: -1px;}
+</style>
+{/block}
+{block name="main"}
+<div class="set-style">
+	<dl>
+		<dt>等级名称:</dt>
+		<dd>
+			<p><input name="" id="level_name" type="text" value="" class="input-common"/></p>	
+			<p class="error">请输入等级名称</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>升级条件:</dt>
+		<dd>
+			<p><input name="" id="level_money" type="text" value="" class="input-common" onkeyup="javascript:CheckInputIntFloat(this);"/></p>	
+			<p class="error">请输入升级条件</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>本店销售佣金比率:</dt>
+		<dd>
+			<p><input name="" id="level_0" type="text" value="" class="input-common harf" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+			<p class="error">请输入本店销售佣金比率</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>给上级的佣金比率:</dt>
+		<dd>
+			<p><input name="" id="level_1" type="text" value="" class="input-common harf" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+			<p class="error">请输入给上级的佣金比率</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>给上上级的佣金比率:</dt>
+		<dd>
+			<p><input name="" id="level_2" type="text" value="" class="input-common harf" onkeyup="javascript:CheckInputIntFloat(this);"/><em class="unit">%</em></p>	
+			<p class="error">请输入给上上级的佣金比率</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt></dt>
+		<dd>
+		<button class="btn-common btn-big" onclick="addPromoterLevel();">提交</button>
+		</dd>
+	</dl>
+</div>
+<script src="__STATIC__/js/limit_input_digit.js"></script>
+<script>		
+	function addPromoterLevel(){
+		var level_name = $("#level_name").val();
+		var level_money = $("#level_money").val();
+		var level_0 = $("#level_0").val();
+		var level_1 = $("#level_1").val();
+		var level_2 = $("#level_2").val();
+		if(level_name == ""){
+			$("#level_name").focus();
+			$("#level_name").parent().next().show();
+			return false;
+		}else{
+			$("#level_name").parent().next().hide();
+		}
+		if((parseFloat(level_0) +parseFloat(level_1)+ parseFloat(level_2))>100 ){
+			showMessage('error', "佣金比率不可超过100%！");	
+			return false;
+		}
+		$.ajax({
+			type:"post",
+			url:"{:__URL('ADMIN_MAIN/Distribution/addPromoterLevel')}",
+			data:{
+				'level_name':level_name,
+				'level_money':level_money,
+				'level_0':level_0,
+				'level_1':level_1,
+				'level_2':level_2
+			},
+			async:true,
+			success:function (data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],"{:__URL('ADMIN_MAIN/distribution/promoterlevellist')}");
+				}else{
+					showMessage('error', data["message"]);
+				}	
+			}
+		});
+	}
+</script>
+{/block}

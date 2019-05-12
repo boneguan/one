@@ -1,0 +1,136 @@
+{extend name="wap/default_new/base" /}
+{block name="resources"}
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/order.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/pro-detail.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/payment_order_new.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/payment_order_popup.css">
+{/block}
+
+{block name="goodsHead"}
+<section class="head">
+	<a class="head_back" href="{:__URL('APP_MAIN')}"><i class="icon-back"></i></a>
+	<div class="head-title">{:lang('to_receive_the_prize')}</div>
+</section>
+{/block}
+ 
+{block name="main"}
+<div class="h50"></div>
+{if condition="$address_default.id neq ''"}
+<div id="addressok">
+	<input type="hidden" id="addressid" value="{$address_default.id}" />
+	<div class="js-order-address express-panel js-edit-address express-panel-edit">
+		<ul class="express-detail">
+			<a href="{:__URL('APP_MAIN/member/memberaddress?url=cart&flag=2')}">
+				<li class="clearfix">
+					<span class="name">{:lang('member_consignee')}：{$address_default.consigner}</span>
+					<span class="tel">{$address_default.mobile}</span>
+				</li>
+				<li class="address-detail">{:lang('member_delivery_address')}：{$address_default.address_info}-{$address_default.address}</li>
+			</a>
+		</ul>
+	</div>
+</div>
+{else /}
+<div class="empty-address-tip">
+	<div id="noaddress"><a href="{:__URL('APP_MAIN/member/memberaddress')}">{:lang('member_new_delivery_address')}</a></div>
+</div>
+{/if}
+
+<div class="block-item express" style="padding: 0;"></div>
+<section class="order">	
+	<!-- 赠品 -->
+	{if count($giftDetail["gift_goods"]) > 0}
+		<div class="order-goods-item clearfix">
+			<div class="name-card block-item">
+				<img src="__TEMP__/{$style}/public/images/gift.png" alt="" class="gift">
+				<a href="{:__URL('APP_MAIN/goods/goodsdetail?id='.$giftDetail['gift_goods']['goods_id'])}" class="thumb">
+					<img src="{:__IMG($giftDetail['gift_goods']['picture_info']['pic_cover_small'])}" alt="{$giftDetail.gift_goods.goods_name}" />
+				</a>
+				<div class="detail">
+					<div class="clearfix detail-row">
+						<div class="right-col">
+							<input type="hidden" name="goods_point_exchange"/>
+							￥<s>{$giftDetail.gift_goods.price}</s>
+						</div>
+						<div class="left-col">
+							<h3 style="font-weight: normal;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 3;overflow: hidden;">
+								<a href="javascript:;">{$giftDetail.gift_goods.goods_name}</a>
+							</h3>
+						</div>
+					</div>
+					<div class="clearfix detail-row">
+						<div class="right-col">
+							<div class=" c-gray-darker">
+								×<span>1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+		<div class="item-options">
+			<label>{:lang('member_buyer_message')}</label>
+			<textarea id="leavemessage" placeholder="{:lang('leave_a_message_for_the_seller')}" maxlength="100"></textarea>
+		</div>
+</section>
+
+<div class="footer" style="min-height: 86px;" id="bottom_copyright">
+	<div class="copyright">
+		<div class="ft-copyright">
+			<img src="__TEMP__/{$style}/public/images/logo_copy.png" id="copyright_logo_wap">
+			<a href="{:__URL('APP_MAIN')}" target="_blank" id="copyright_companyname"></a>
+		</div>
+	</div>
+</div>
+
+
+<div style="height: 50px"></div>
+<input type="hidden" id="hidden_record_id" value="{$winning['record_id']}">
+<div class="order-total-pay bottom-fix">
+	<div class="pay-container clearfix">
+		<button class="commit-bill-btn" onclick="immediateReveive();">{:lang('immediately_receive')}</button>
+	</div>
+</div>
+{/block}
+{block name="bottom"}{/block}
+{block name="javascript"}
+
+<script>
+//解决 在IOS手机中，点击左上角返回按钮不会刷新当前页面的问题 2018年1月27日17:45:40
+var isPageHide = false;
+window.addEventListener('pageshow', function () {
+	if (isPageHide) location.href= __URL("APP_MAIN/member/toReceiveThePrize");
+});
+window.addEventListener('pagehide', function () {
+	isPageHide = true;
+});
+
+var is_sub = false;
+function immediateReveive(){
+	if ($("#addressid").val() == undefined ||$("#addressid").val() == '' ) {
+		showBox("请先选择收货地址","warning");
+		return false;
+	}
+	if(is_sub) return;
+	is_sub = true;
+	$.ajax({
+		type : "post",
+		url : __URL("APP_MAIN/member/toReceiveThePrize"),
+		data : {
+			"record_id" : $("#hidden_record_id").val(),
+			"buyer_message" : $("#leavemessage").val()
+		},
+		success : function(data){
+			if(data["code"] == 0){
+				showBox(data["message"],"success",__URL("APP_MAIN/member/index"));
+			}else{
+				showBox(data["message"],"error",__URL("APP_MAIN/order/myorderlist"));
+				is_sub = false;
+			}
+		}
+	})
+}
+
+</script>
+{/block}

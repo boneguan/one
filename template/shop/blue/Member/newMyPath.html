@@ -1,0 +1,231 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/shopping_cart.js"></script>
+<link rel="stylesheet" href="__TEMP__/{$style}/public/css/newMyPath.css">
+<script src="__TEMP__/{$style}/public/js/newMyPath.js"></script>
+{/block}
+{block name="main"}
+<div id="page">
+	<div id="content" class="main-cont clearfix">
+		<div class="filter-bar">
+			<div class="filter-bar-wrap">
+<!-- 				<div class="cal-mode"> -->
+<!-- 					<a class="cal-mode-btn" data-spm-click="gostr=/tbgltjph;locaid=d1">足迹日历</a> -->
+<!-- 				</div> -->
+				<div class="cat-selector check3ed clearfix">
+					<div class="current-cat">
+						<span class="name">全部类目</span>
+<!-- 						<span class="arrow"></span> -->
+					</div>
+					<div class="cats">
+						<p class="J_Scroll_Cats"></p>
+					</div>
+<!-- 					<i class="split-v"></i> -->
+				</div>
+				<div class="all-date J_back_allDate">全部日期<i class="split-v"></i></div>
+				<!-- <div class="promotion-box J_PromoGoods"><span class="check-box"></span>只看促销宝贝<i class="split-v"></i></div> -->
+				<a href="#" class="enter-del J_EditBtn">批量删除</a>
+			</div>
+		</div>
+
+		<div class="main-data goods-page">
+			<div class="side-area-box" id="newhot" style="display: none;">
+				<ul class="tab-nav ks-switchable-nav clearfix">
+					<li class="tab1 selected"><a href="#">最热</a></li>
+					<li class="tab2"><a href="#">最新</a></li>
+				</ul>
+				<div class="tab-content ks-switchable-content">
+					<div class="tab-pannel" style="display: block;">
+				
+					</div>
+				</div>
+			</div>
+			<div class="main-data-wrap goods-area-box">
+					<div class="line-mask"></div>
+			</div>
+		</div>
+		<div class="data-loading" style="display: none;"></div>
+	</div>
+</div>
+
+{/block}
+
+{block name="RightSideBar"}{/block}
+{block name="javascript"}
+<script type="text/javascript">
+// 足记日历的显示与隐藏
+$(".cal-mode-btn").bind('click',function(){
+	$(".cal-wrapper").show();
+})
+
+$(".cal-close").bind('click',function(){
+	$(".cal-wrapper").hide();
+})
+
+// 分类列表的出现与消失
+$(".cat-selector").bind('mouseover',function(){
+	$(".cat-selector").addClass("checked");
+})
+
+$(".cat-selector").bind('mouseout',function(){
+	$(".cat-selector").removeClass("checked");
+})
+
+// 相关操作的显示与隐藏
+function show_more(element){
+	$(element).addClass('goods-pic-hover');
+}
+
+function hide_more(element){
+	$(element).removeClass('goods-pic-hover');
+}
+
+// 批量操作的出现与消失
+$(".enter-del").bind('click',function(){
+	
+	var status = $("#page").hasClass('edit-status');
+	
+	if(status == false){
+		$("#page").addClass('edit-status');
+	}else{
+		$("#page").removeClass('edit-status');
+	}
+})
+
+
+var category_id = '';
+var current_date = '';
+
+function LoadingClass(){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('SHOP_MAIN/member/newMyPath')}",
+		data : {'category_id':category_id,},
+		success : function(data) {
+			var category_list = data['category_list'];
+			var category_html = '';
+
+			for(var j = 0;j < category_list.length;j++){
+				category_html += '<a href="javascript:" class="cat cat-item-link cat-item-all" onclick="category_select('+category_list[j]['category_id'] +')">'+ category_list[j]['category_name'] +'</a>';		
+			}
+			
+			$(".J_Scroll_Cats").append(category_html);
+			
+		}
+	});
+}
+
+function LoadingInfo(){
+	
+	$.ajax({
+		type : "post",
+		url : "{:__URL('SHOP_MAIN/member/newMyPath')}",
+		data : { "page_index" : 1, "page_size" : 10, 'category_id':category_id},
+		success : function(data) {
+			var list = data['data'];
+			var html = '';
+			var day = '';
+			for(var i = 0;i < list.length;i++){
+				if(list[i]['goods_info']['goods_name'] != undefined){
+					html += '<div class="goods "  id="browse-'+ list[i]['browse_id'] +'">';
+						html += '<div class="goods-box">';
+							html += '<div class="goods-date">';
+								if(list[i]['day'] != day){
+									day = list[i]['day'];
+									html += '<span>';
+										html += '<i class="month-lite">'+ list[i]['month'] +'</i>月';
+										html += '<i class="day-lite">'+ list[i]['day'] +'</i>日';
+										html += '<i class="date-desc"></i>';
+										html += '<i class="count"></i>';
+									html += '</span>';
+								}
+								html += '<s class="line"></s>';
+							html += '</div>';
+							
+							html += '<div class="goods-pic J_GoodsPic" onmouseover="show_more(this)" onmouseout="hide_more(this)">';
+								html += '<div class="goods-pic-box">';
+									html += '<a class="goods-pic-link" target="_blank" href="'+ __URL('SHOP_MAIN/goods/goodsinfo?goodsid=' + list[i]['goods_id']) +'" title="'+ list[i]['goods_info']['goods_name'] +'">';
+										if(list[i]['goods_info']['picture_info'] != null){
+											html += '<img src="{:__IMG($default_goods_img)}" class="lazy_load goods-img" data-original="'+ __IMG(list[i]['goods_info']['picture_info']['pic_cover']) +'">';
+										}else{
+											html += '<img src="{:__IMG($default_goods_img)}" class="lazy_load goods-img" data-original="">';
+										}
+									html += '</a>';
+								html += '</div>';
+									html += '<a class="goods-delete" href="javascript:;" onclick="del_by_id(this)"  browse_id="'+ list[i]['browse_id'] +'" ><i></i></a>';
+									html += '<div class="goods-delete-mask"></div>';
+							html += '</div>';
+							
+							html += '<div class="goods-attr">';
+								html += '<div class="goods-price clearfix">';
+									html += '<span class="g_price">';
+										if(list[i]['goods_info']['point_exchange_type'] == 0 || list[i]['goods_info']['point_exchange_type'] == 2){
+											html += '<span>¥</span><strong>'+ list[i]['goods_info']['promotion_price'] +'</strong>';
+										}else{
+											if(list[i]['goods_info']['point_exchange_type'] == 1 && list[i]['goods_info']['promotion_price'] > 0){
+												html += '<span>¥</span><strong>'+ list[i]['goods_info']['promotion_price'] +'+'+ list[i]['goods_info']['point_exchange']+'积分</strong>';
+											}else{
+												html += '<strong>'+ list[i]['goods_info']['point_exchange'] +'积分</strong>';
+											}
+										}
+									html += '</span>';
+								html += '</div>';
+								
+								html += '<div class="good-title">';
+									html += '<a class="title" href="'+ __URL('SHOP_MAIN/goods/goodsinfo?goodsid=' + list[i]['goods_id']) +'" target="_blank">'+ list[i]['goods_info']['goods_name'] +'</a>';
+								html += '</div>';
+								
+							html += '</div>';
+							
+						html += '</div>';
+						
+					html += '</div>';
+
+				}
+			}
+			$(".goods-area-box").html(html);
+			//加载现有商品分类
+			var category_list = data['category_list'];
+			var category_html = '';
+
+			for(var j = 0;j < category_list.length;j++){
+				category_html += '<a href="javascript:" class="cat cat-item-link cat-item-all" onclick="category_select('+category_list[j]['category_id'] +')">'+ category_list[j]['category_name'] +'</a>';
+			}
+			
+			$(".J_Scroll_Cats").append(category_html);
+			img_lazyload();
+		}
+	});
+}
+
+$(function(){
+//	LoadingClass();
+	LoadingInfo();
+})
+
+function del_by_id(element){
+	var type = 'browse_id';
+	var value = $(element).attr('browse_id');
+	delMyPath(type, value)
+}
+
+function delMyPath(type, value){
+	$.ajax({
+		type : "post",
+		url : "{:__URL('SHOP_MAIN/member/delMyPath')}",
+		data : { "type" : type, "value" : value },
+		success : function(data) {
+			if(data['code'] > 0){
+				$("#browse-"+value).remove();
+			}
+		}
+	});
+}
+
+/* 通过分类筛选 */
+function category_select(id){
+	category_id = id;
+	LoadingInfo();
+}
+</script>
+{/block}
